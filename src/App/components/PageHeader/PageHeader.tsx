@@ -1,8 +1,10 @@
-import { AnimateSharedLayout, motion } from 'framer-motion';
 import { memo, useContext, useEffect, useRef, useState } from 'react';
 import { AiOutlineQuestionCircle } from 'react-icons/ai';
 import { Link, useLocation } from 'react-router-dom';
-import { DISABLE_ALL_TUTOS } from '../../../ambient-utils/constants';
+import {
+    DISABLE_ALL_TUTOS,
+    LINK_TO_PERPS_HOME,
+} from '../../../ambient-utils/constants';
 import {
     chainNumToString,
     checkEoaHexAddress,
@@ -42,7 +44,7 @@ const PageHeader = function () {
         walletModal: { open: openWalletModal },
         appHeaderDropdown,
     } = useContext(AppStateContext);
-    const { headerImage } = useContext(BrandContext);
+    const { headerImage, platformName } = useContext(BrandContext);
     const { setCrocEnv } = useContext(CrocEnvContext);
     const { resetTokenBalances } = useContext(TokenBalanceContext);
     const { resetUserGraphData } = useContext(GraphDataContext);
@@ -335,12 +337,11 @@ const PageHeader = function () {
     }
 
     const routeDisplay = (
-        <AnimateSharedLayout>
-            <nav className={styles.primaryNavigation} id='primary_navigation'>
-                {linkData.map((link, idx) =>
-                    link.shouldDisplay ? (
-                        <Link
-                            className={`${styles.navigationLink}
+        <nav className={styles.primaryNavigation} id='primary_navigation'>
+            {linkData.map((link, idx) =>
+                link.shouldDisplay ? (
+                    <Link
+                        className={`${styles.navigationLink}
                         ${
                             isActive(
                                 link.title,
@@ -350,29 +351,17 @@ const PageHeader = function () {
                                 ? styles.activeNavigationLink
                                 : ''
                         }
-
                         `}
-                            tabIndex={0}
-                            to={link.destination}
-                            key={idx}
-                        >
-                            {link.title}
-
-                            {isActive(
-                                link.title,
-                                link.destination,
-                                location.pathname,
-                            ) && (
-                                <motion.span
-                                    className={styles.underlineMotion}
-                                    layoutId='underline'
-                                />
-                            )}
-                        </Link>
-                    ) : null,
-                )}
-            </nav>
-        </AnimateSharedLayout>
+                        tabIndex={0}
+                        to={link.destination}
+                        key={idx}
+                    >
+                        {link.title}
+                        <span className={styles.underline} />
+                    </Link>
+                ) : null,
+            )}
+        </nav>
     );
     // ----------------------------END OF NAVIGATION FUNCTIONALITY-------------------------------------
     const [show, handleShow] = useState(false);
@@ -417,26 +406,49 @@ const PageHeader = function () {
                     }}
                     className={styles.left_side}
                 >
-                    <Link
-                        to='/'
-                        className={styles.logoContainer}
-                        aria-label='Home'
-                    >
-                        {desktopScreen ? (
-                            <img
-                                src={headerImage}
-                                alt='ambient'
-                                style={{ marginRight: '20px' }}
-                            />
-                        ) : (
-                            <img
-                                className={styles.logoText}
-                                src={logo}
-                                alt='ambient'
-                                width='60px'
-                            />
-                        )}
-                    </Link>
+                    {platformName === 'ambient' && LINK_TO_PERPS_HOME ? (
+                        <a
+                            href='/'
+                            className={styles.logoContainer}
+                            aria-label='Home'
+                        >
+                            {desktopScreen ? (
+                                <img
+                                    src={headerImage}
+                                    alt='ambient'
+                                    style={{ marginRight: '20px' }}
+                                />
+                            ) : (
+                                <img
+                                    className={styles.logoText}
+                                    src={logo}
+                                    alt='ambient'
+                                    width='60px'
+                                />
+                            )}
+                        </a>
+                    ) : (
+                        <Link
+                            to='/'
+                            className={styles.logoContainer}
+                            aria-label='Home'
+                        >
+                            {desktopScreen ? (
+                                <img
+                                    src={headerImage}
+                                    alt='ambient'
+                                    style={{ marginRight: '20px' }}
+                                />
+                            ) : (
+                                <img
+                                    className={styles.logoText}
+                                    src={logo}
+                                    alt='ambient'
+                                    width='60px'
+                                />
+                            )}
+                        </Link>
+                    )}
                     {routeDisplay}
                 </div>
                 <div className={styles.rightSide}>

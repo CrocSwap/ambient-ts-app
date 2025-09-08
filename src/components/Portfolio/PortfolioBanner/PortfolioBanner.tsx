@@ -96,7 +96,7 @@ export default function PortfolioBanner(props: propsIF) {
     const BANNER_ID = 'portfolio_banner_elem';
     // JSX DOM element to show noisy lines as an SVG, runs when the DOM
     // ... gets a new address for programmatic generation
-    const noisyLines = useMemo<JSX.Element | null>(() => {
+    const noisyLines = useMemo<React.ReactNode | null>(() => {
         // early return if address is not available (first render)
         if (!addressOfAccountDisplayed) return null;
         // locate rendered parent element in DOM by element ID

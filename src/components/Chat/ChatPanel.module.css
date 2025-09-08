@@ -391,6 +391,12 @@
     opacity: 1;
 }
 
+.reaction_picker_close_button{
+    position: absolute;
+    top: 16px;
+    right: 5px;
+}
+
 .scroll_to_icon {
     transition: all 0.2s ease-in-out;
     font-size: 1rem;

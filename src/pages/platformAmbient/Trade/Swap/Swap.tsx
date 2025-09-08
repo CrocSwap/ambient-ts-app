@@ -10,6 +10,7 @@ import {
     getFormattedNumber,
     getPriceImpactString,
     isStablePair,
+    performFastLaneSwap,
     performSwap,
     waitForTransaction,
 } from '../../../../ambient-utils/dataLayer';
@@ -32,7 +33,9 @@ import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContex
 import { FlexContainer } from '../../../../styled/Common';
 import { WarningContainer } from '../../../../styled/Components/TradeModules';
 
+import { ethers } from 'ethers';
 import {
+    ATLAS_ROUTER_ADDRESS,
     GAS_DROPS_ESTIMATE_SWAP_FROM_DEX,
     GAS_DROPS_ESTIMATE_SWAP_FROM_WALLET_TO_DEX,
     GAS_DROPS_ESTIMATE_SWAP_FROM_WALLET_TO_WALLET,
@@ -47,6 +50,7 @@ import {
     SWAP_BUFFER_MULTIPLIER_MAINNET,
     ZERO_ADDRESS,
 } from '../../../../ambient-utils/constants';
+import { MAINNET_TOKENS } from '../../../../ambient-utils/constants/networks/ethereumMainnet';
 import { useApprove } from '../../../../App/functions/approve';
 import { calcL1Gas } from '../../../../App/functions/calcL1Gas';
 import useDebounce from '../../../../App/hooks/useDebounce';
@@ -74,12 +78,17 @@ function Swap(props: propsIF) {
         nativeTokenUsdPrice,
         isActiveNetworkL2,
         isActiveNetworkPlume,
+        isActiveNetworkMainnet,
     } = useContext(ChainDataContext);
     const { isPoolInitialized, poolData } = useContext(PoolContext);
     const { tokens } = useContext(TokenContext);
 
-    const { tokenAAllowance, tokenABalance, tokenADexBalance } =
-        useContext(TradeTokenContext);
+    const {
+        tokenAAllowance,
+        tokenABalance,
+        tokenADexBalance,
+        fastLaneProtection,
+    } = useContext(TradeTokenContext);
     const { swapSlippage, dexBalSwap, bypassConfirmSwap } = useContext(
         UserPreferenceContext,
     );
@@ -189,6 +198,7 @@ function Swap(props: propsIF) {
     const slippageTolerancePercentage = isStablePair(
         tokenA.address,
         tokenB.address,
+        chainId,
     )
         ? swapSlippage.stable
         : swapSlippage.volatile;
@@ -248,6 +258,7 @@ function Swap(props: propsIF) {
         sellQtyNoExponentString,
         tokenASurplusMinusTokenARemainderNum,
         isWithdrawFromDexChecked,
+        tokenA.decimals,
     ]);
 
     const isTokenAWalletBalanceSufficient =
@@ -258,6 +269,15 @@ function Swap(props: propsIF) {
         tokenAAllowance === undefined
             ? true
             : tokenAAllowance >= tokenAQtyCoveredByWalletBalance;
+
+    const isUsdtResetRequired = useMemo(() => {
+        return (
+            tokenA.address.toLowerCase() ===
+                MAINNET_TOKENS.USDT.address.toLowerCase() &&
+            !!tokenAAllowance &&
+            tokenAAllowance < tokenAQtyCoveredByWalletBalance
+        );
+    }, [tokenA.address, tokenAAllowance, tokenAQtyCoveredByWalletBalance]);
 
     // values if either token needs to be confirmed before transacting
     const needConfirmTokenA = useMemo(() => {
@@ -395,9 +415,7 @@ function Swap(props: propsIF) {
             ) {
                 setSwapAllowed(false);
                 setSwapButtonErrorMessage(
-                    `${
-                        tokenA.address === ZERO_ADDRESS ? 'ETH ' : ''
-                    } Wallet Balance Insufficient to Cover Gas`,
+                    `${tokenA.symbol} Wallet Balance Insufficient to Cover Gas`,
                 );
             } else {
                 setSwapAllowed(true);
@@ -566,10 +584,24 @@ function Swap(props: propsIF) {
     ]);
 
     useEffect(() => {
-        setIsWithdrawFromDexChecked(
-            fromDisplayQty(tokenADexBalance || '0', tokenA.decimals) > 0n,
-        );
-    }, [tokenADexBalance]);
+        if (
+            fastLaneProtection?.isEnabled &&
+            fastLaneProtection.isChainAccepted
+        ) {
+            setIsWithdrawFromDexChecked(false);
+            dexBalSwap?.outputToDexBal.disable();
+        } else {
+            setIsWithdrawFromDexChecked(
+                fromDisplayQty(tokenADexBalance || '0', tokenA.decimals) > 0n,
+            );
+            setIsSaveAsDexSurplusChecked(dexBalSwap?.outputToDexBal.isEnabled);
+        }
+    }, [
+        tokenADexBalance,
+        fastLaneProtection?.isEnabled,
+        dexBalSwap?.outputToDexBal.isEnabled,
+        fastLaneProtection.isChainAccepted,
+    ]);
 
     const resetConfirmation = () => {
         setShowConfirmation(false);
@@ -593,17 +625,29 @@ function Swap(props: propsIF) {
         try {
             const sellTokenAddress = tokenA.address;
             const buyTokenAddress = tokenB.address;
+            const acceptedChainId = fastLaneProtection?.isChainAccepted;
 
-            tx = await performSwap({
-                crocEnv,
-                isQtySell,
-                qty,
-                buyTokenAddress,
-                sellTokenAddress,
-                slippageTolerancePercentage,
-                isWithdrawFromDexChecked,
-                isSaveAsDexSurplusChecked,
-            });
+            tx = await (fastLaneProtection.isEnabled && acceptedChainId
+                ? performFastLaneSwap({
+                      crocEnv,
+                      isQtySell,
+                      qty,
+                      buyTokenAddress,
+                      sellTokenAddress,
+                      slippageTolerancePercentage,
+                      isWithdrawFromDexChecked,
+                      isSaveAsDexSurplusChecked,
+                  })
+                : performSwap({
+                      crocEnv,
+                      isQtySell,
+                      qty,
+                      buyTokenAddress,
+                      sellTokenAddress,
+                      slippageTolerancePercentage,
+                      isWithdrawFromDexChecked,
+                      isSaveAsDexSurplusChecked,
+                  }));
             activeTxHash.current = tx?.hash;
             setNewSwapTransactionHash(tx?.hash);
             addPendingTx(tx?.hash);
@@ -670,6 +714,14 @@ function Swap(props: propsIF) {
     const { approve, isApprovalPending } = useApprove();
 
     const toggleDexSelection = (tokenAorB: 'A' | 'B') => {
+        if (
+            fastLaneProtection?.isEnabled &&
+            fastLaneProtection.isChainAccepted
+        ) {
+            // Show tooltip message
+            return;
+        }
+
         if (tokenAorB === 'A') {
             setIsWithdrawFromDexChecked(!isWithdrawFromDexChecked);
         } else {
@@ -816,6 +868,7 @@ function Swap(props: propsIF) {
                     slippage={swapSlippage}
                     dexBalSwap={dexBalSwap}
                     bypassConfirm={bypassConfirmSwap}
+                    fastLaneProtection={fastLaneProtection}
                     settingsTitle='Swap'
                     isSwapPage={!isOnTradeRoute}
                 />
@@ -892,8 +945,12 @@ function Swap(props: propsIF) {
                         isTokenAPrimary={isTokenAPrimary}
                         priceImpactWarning={priceImpactWarning}
                         isSaveAsDexSurplusChecked={isSaveAsDexSurplusChecked}
+                        isMevProtectionEnabled={
+                            fastLaneProtection.isChainAccepted
+                                ? fastLaneProtection?.isEnabled
+                                : undefined
+                        }
                         percentDiffUsdValue={percentDiffUsdValue}
-                        crocEnv={crocEnv}
                     />
                 ) : (
                     <></>
@@ -942,8 +999,12 @@ function Swap(props: propsIF) {
                         style={{ textTransform: 'none' }}
                         title={
                             !isApprovalPending
-                                ? `Approve ${tokenA.symbol}`
-                                : `${tokenA.symbol} Approval Pending`
+                                ? isUsdtResetRequired
+                                    ? 'Reset USDT Approval (Step 1/2)'
+                                    : `Approve ${tokenA.symbol}`
+                                : isUsdtResetRequired
+                                  ? 'USDT Approval Reset Pending...'
+                                  : `${tokenA.symbol} Approval Pending...`
                         }
                         disabled={isApprovalPending}
                         action={async () => {
@@ -951,19 +1012,19 @@ function Swap(props: propsIF) {
                                 tokenA.address,
                                 tokenA.symbol,
                                 undefined,
-                                isActiveNetworkPlume
-                                    ? isTokenAPrimary
-                                        ? tokenAQtyCoveredByWalletBalance
-                                        : // add 1% buffer to avoid rounding errors
-                                          (tokenAQtyCoveredByWalletBalance *
-                                              101n) /
-                                          100n
-                                    : tokenABalance
-                                      ? fromDisplayQty(
-                                            tokenABalance,
-                                            tokenA.decimals,
-                                        )
-                                      : undefined,
+                                isUsdtResetRequired
+                                    ? 0n
+                                    : isActiveNetworkPlume
+                                      ? isTokenAPrimary
+                                          ? tokenAQtyCoveredByWalletBalance
+                                          : // add 1% buffer to avoid rounding errors
+                                            (tokenAQtyCoveredByWalletBalance *
+                                                101n) /
+                                            100n
+                                      : ethers.MaxUint256,
+                                fastLaneProtection.isEnabled
+                                    ? ATLAS_ROUTER_ADDRESS
+                                    : undefined,
                             );
                         }}
                         flat

@@ -51,40 +51,39 @@ export interface CrocEnvContextIF {
     swellProvider: BatchedJsonRpcProvider | undefined;
     blastProvider: BatchedJsonRpcProvider | undefined;
     plumeProvider: BatchedJsonRpcProvider | undefined;
-    isPrimaryRpcNodeInactive: React.MutableRefObject<boolean>;
 }
 
 export const CrocEnvContext = createContext({} as CrocEnvContextIF);
 const mainnetProvider = new BatchedJsonRpcProvider(
-    ethereumMainnet.fallbackRpcUrl,
+    ethereumMainnet.evmRpcUrls,
     parseInt(ethereumMainnet.chainId),
     {
         staticNetwork: true,
     },
 );
 const scrollProvider = new BatchedJsonRpcProvider(
-    scrollMainnet.fallbackRpcUrl,
+    scrollMainnet.evmRpcUrls,
     parseInt(scrollMainnet.chainId),
     {
         staticNetwork: true,
     },
 );
 const swellProvider = new BatchedJsonRpcProvider(
-    swellMainnet.fallbackRpcUrl,
+    swellMainnet.evmRpcUrls,
     parseInt(swellMainnet.chainId),
     {
         staticNetwork: true,
     },
 );
 const blastProvider = new BatchedJsonRpcProvider(
-    blastMainnet.fallbackRpcUrl,
+    blastMainnet.evmRpcUrls,
     parseInt(blastMainnet.chainId),
     {
         staticNetwork: true,
     },
 );
 const plumeProvider = new BatchedJsonRpcProvider(
-    plumeMainnet.fallbackRpcUrl,
+    plumeMainnet.evmRpcUrls,
     parseInt(plumeMainnet.chainId),
     {
         staticNetwork: true,
@@ -93,15 +92,9 @@ const plumeProvider = new BatchedJsonRpcProvider(
 
 export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
     const {
-        activeNetwork: { chainId, evmRpcUrl, fallbackRpcUrl },
+        activeNetwork: { chainId, evmRpcUrls },
         isUserOnline,
     } = useContext(AppStateContext);
-
-    const isPrimaryRpcNodeInactive = useRef<boolean>(false);
-
-    const activeNetworkRPC = !isPrimaryRpcNodeInactive.current
-        ? evmRpcUrl
-        : fallbackRpcUrl;
 
     const { userAddress } = useContext(UserDataContext);
     const { walletProvider } = useAppKitProvider('eip155');
@@ -196,7 +189,7 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
         useState<UrlRoutesTemplateIF>(initUrl);
 
     const [provider, setProvider] = useState<BatchedJsonRpcProvider>(
-        new BatchedJsonRpcProvider(activeNetworkRPC, parseInt(chainId), {
+        new BatchedJsonRpcProvider(evmRpcUrls, parseInt(chainId), {
             staticNetwork: true,
         }),
     );
@@ -208,13 +201,10 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
                     await provider.getNetwork()
                 ).chainId.toString();
 
-                if (
-                    currentProviderChainId !== parseInt(chainId).toString() ||
-                    provider._getConnection().url !== activeNetworkRPC
-                ) {
+                if (currentProviderChainId !== parseInt(chainId).toString()) {
                     setProvider(
                         new BatchedJsonRpcProvider(
-                            activeNetworkRPC,
+                            evmRpcUrls,
                             parseInt(chainId),
                             {
                                 staticNetwork: true,
@@ -224,7 +214,7 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
                 }
             }
         })();
-    }, [provider, chainId, activeNetworkRPC]);
+    }, [provider, chainId, evmRpcUrls]);
 
     useBlacklist(userAddress);
 
@@ -250,7 +240,7 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
                 setCrocEnv(newCrocEnv);
             }
         })();
-    }, [isUserOnline, provider, walletProvider, userAddress, activeNetworkRPC]);
+    }, [isUserOnline, provider, walletProvider, userAddress, evmRpcUrls]);
 
     useEffect(() => {
         setDefaultUrlParams(createDefaultUrlParams(chainId));
@@ -268,7 +258,6 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
         swellProvider,
         blastProvider,
         plumeProvider,
-        isPrimaryRpcNodeInactive,
     };
 
     return (

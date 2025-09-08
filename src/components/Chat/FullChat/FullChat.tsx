@@ -39,9 +39,9 @@ import { Message } from '../Model/MessageModel';
 import styles from './FullChat.module.css';
 
 interface FullChatPropsIF {
-    messageList: JSX.Element;
-    chatNotification: JSX.Element;
-    messageInput: JSX.Element;
+    messageList: React.ReactNode;
+    chatNotification: React.ReactNode;
+    messageInput: React.ReactNode;
     setRoom: Dispatch<SetStateAction<string>>;
     setIsCurrentPool: Dispatch<SetStateAction<boolean>>;
     userName: string;
@@ -78,7 +78,7 @@ interface FullChatPropsIF {
     showDeleteConfirmation: boolean;
     handleConfirmDelete: () => void;
     handleCancelDelete: () => void;
-    rndShowPreviousMessages: () => JSX.Element;
+    rndShowPreviousMessages: () => React.ReactNode;
     room: string;
     isFocusMentions: boolean;
     setIsFocusMentions: any;
@@ -92,14 +92,15 @@ interface FullChatPropsIF {
         SetStateAction<ChatGoToChatParamsIF | undefined>
     >;
     setUserCurrentPool: any;
-    rndMentSkipper?: () => JSX.Element;
+    rndMentSkipper?: () => React.ReactNode;
     messageForNotificationBubble?: Message;
     setSelectedMessageForReply: Dispatch<SetStateAction<Message | undefined>>;
     setIsReplyButtonPressed: Dispatch<SetStateAction<boolean>>;
     setMessageForNotificationBubble: Dispatch<
         SetStateAction<Message | undefined>
     >;
-    reactionPicker: JSX.Element;
+    showReactionPicker: boolean;
+    reactionPicker: React.ReactNode;
 }
 
 interface ChannelDisplayPropsIF {
@@ -847,6 +848,7 @@ function FullChat(props: FullChatPropsIF) {
                     {readableRoomName}
                 </header>{' '}
                 {channelsDropdown} */}
+                {props.isChatOpen && props.showPicker && props.reactionPicker}
 
                 <Room
                     selectedRoom={props.room}
@@ -916,7 +918,9 @@ function FullChat(props: FullChatPropsIF) {
                 }}
             />
             {props.rndShowPreviousMessages()}
-            {props.isChatOpen && props.showPicker && props.reactionPicker}
+            {props.isChatOpen &&
+                props.showReactionPicker &&
+                props.reactionPicker}
         </div>
     );
 }

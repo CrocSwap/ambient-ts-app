@@ -3,6 +3,9 @@
 
 name: Vitest CI Runner
 
+permissions:
+    contents: read
+
 on:
     push:
         branches: ['develop']

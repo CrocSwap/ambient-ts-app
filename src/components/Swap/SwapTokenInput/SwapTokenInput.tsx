@@ -193,7 +193,15 @@ function SwapTokenInput(props: propsIF) {
             slippageTolerancePercentage / 100,
             input,
         );
-        if (impact === undefined) return;
+        if (impact === undefined) {
+            setIsLiquidityInsufficient(true);
+            setSwapAllowed(false);
+            setIsBuyLoading(false);
+            setIsSellLoading(false);
+            return;
+        }
+
+        setIsLiquidityInsufficient(false);
 
         setLastImpactQuery({
             input,
@@ -474,6 +482,7 @@ function SwapTokenInput(props: propsIF) {
                         ? undefined
                         : usdValueTokenA
                 }
+                isSwap={true}
             />
             <FlexContainer
                 fullWidth
@@ -518,6 +527,7 @@ function SwapTokenInput(props: propsIF) {
                 percentDiffUsdValue={
                     isLiquidityInsufficient ? undefined : percentDiffUsdValue
                 }
+                isSwap={true}
             />
         </FlexContainer>
     );

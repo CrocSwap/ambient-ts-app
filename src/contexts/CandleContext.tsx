@@ -125,7 +125,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
 
     const [isChartOpen, setIsChartOpen] = useState(false);
 
-    const offlineFetcherRef = useRef<NodeJS.Timeout>();
+    const offlineFetcherRef = useRef<NodeJS.Timeout>(undefined);
     offlineFetcherRef.current = offlineFetcher;
 
     const poolTokenAddress = (

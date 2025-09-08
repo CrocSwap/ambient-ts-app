@@ -9,10 +9,10 @@ import { GCGO_PLUME_URL } from '../gcgo';
 import { TopPool } from './TopPool';
 
 const RPC_URLS = {
-    PUBLIC: 'https://phoenix-rpc.plumenetwork.xyz',
-    SECONDARY_PUBLIC: 'https://phoenix-rpc.plumenetwork.xyz',
+    PUBLIC: 'https://rpc.plume.org',
+    SECONDARY_PUBLIC: 'https://rpc.plume.org',
     RESTRICTED: import.meta.env.VITE_PLUME_RPC_URL,
-    WEBSOCKET: 'wss://phoenix-rpc.plumenetwork.xyz',
+    WEBSOCKET: 'wss://rpc.plume.org',
 };
 
 const PRIMARY_RPC_URL = RPC_URLS.RESTRICTED || RPC_URLS.PUBLIC;
@@ -30,7 +30,7 @@ const chainSpecForAppKit: Chain = {
             webSocket: [RPC_URLS.WEBSOCKET],
         },
     },
-    name: 'Plume',
+    name: 'Plume Mainnet',
     nativeCurrency: {
         name: 'Plume',
         symbol: 'PLUME',
@@ -39,8 +39,8 @@ const chainSpecForAppKit: Chain = {
     blockExplorers: {
         default: {
             name: 'Blockscout',
-            url: 'https://phoenix-explorer.plumenetwork.xyz',
-            apiUrl: 'https://phoenix-explorer.plumenetwork.xyz/api',
+            url: 'https://explorer.plume.org/',
+            apiUrl: 'https://explorer.plume.org/api/',
         },
     },
 };
@@ -48,11 +48,15 @@ const chainSpecForAppKit: Chain = {
 const defaultTokenEntries = [
     ['PLUME', '0x0000000000000000000000000000000000000000'],
     ['pUSD', '0xdddD73F5Df1F0DC31373357beAC77545dC5A6f3F'],
-    ['nRWA', '0x11a8d8694b656112d9a94285223772F4aAd269fc'],
+    ['pETH', '0x39d1F90eF89C52dDA276194E9a832b484ee45574'],
+    ['USDC.e', '0x78adD880A697070c1e765Ac44D65323a0DcCE913'],
+    ['USDT', '0xda6087E69C51E7D31b6DBAD276a3c44703DFdCAd'],
+    ['WETH', '0xca59cA09E5602fAe8B629DeE83FfA819741f14be'],
+    ['nBASIS', '0x11113Ff3a60C2450F4b22515cB760417259eE94B'],
     ['nTBILL', '0xE72Fe64840F4EF80E3Ec73a1c749491b5c938CB9'],
-    ['nYIELD', '0x892DFf5257B39f7afB7803dd7C81E8ECDB6af3E8'],
-    ['nUSDY', '0x7Fca0Df900A11Ae1d17338134a9e079a7EE87E31'],
-    ['nELIXIR', '0xD3BFd6E6187444170A1674c494E55171587b5641'],
+    ['nRWA', '0x593cCcA4c4bf58b7526a4C164cEEf4003C6388db'],
+    ['nELIXIR', '0x9fbC367B9Bb966a2A537989817A088AFCaFFDC4c'],
+    ['nCREDIT', '0xa5f78b2a0ab85429d2dfbf8b60abc70f4cec066c'],
 ] as const;
 
 type PlumeTokens = Record<(typeof defaultTokenEntries)[number][0], TokenIF>;
@@ -66,8 +70,6 @@ export const PLUME_TOKENS: PlumeTokens = Object.fromEntries(
 
 const curentTopPoolsList: [keyof PlumeTokens, keyof PlumeTokens][] = [
     ['PLUME', 'pUSD'],
-    ['PLUME', 'nRWA'],
-    ['PLUME', 'nTBILL'],
 ];
 
 const topPools = curentTopPoolsList.map(
@@ -91,21 +93,21 @@ export const plumeMainnet: NetworkIF = {
     chainId: chainIdHex,
     chainSpec: chainSpecFromSDK,
     GCGO_URL: GCGO_PLUME_URL,
-    evmRpcUrl: PRIMARY_RPC_URL,
-    fallbackRpcUrl: FALLBACK_RPC_URL,
+    evmRpcUrls: [PRIMARY_RPC_URL, FALLBACK_RPC_URL],
     chainSpecForAppKit,
     defaultPair: [PLUME_TOKENS.PLUME, PLUME_TOKENS.pUSD],
     defaultPairFuta: [PLUME_TOKENS.PLUME, PLUME_TOKENS.pUSD],
     poolIndex: chainSpecFromSDK.poolIndex,
     gridSize: chainSpecFromSDK.gridSize,
     isTestnet: chainSpecFromSDK.isTestNet,
+    fastLaneProtectionEnabled: false,
     blockExplorer: (
         chainSpecForAppKit.blockExplorers?.default.url || ''
     ).replace(/\/?$/, '/'),
     displayName: 'Plume',
     tokenPriceQueryAssetPlatform: 'plume',
-    vaultsEnabled: false,
-    tempestApiNetworkName: '',
+    vaultsEnabled: true,
+    tempestApiNetworkName: 'plume',
     topPools,
     getGasPriceInGwei,
 };

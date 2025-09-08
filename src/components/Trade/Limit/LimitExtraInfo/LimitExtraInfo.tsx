@@ -23,8 +23,13 @@ function LimitExtraInfo(props: propsIF) {
         showExtraInfoDropdown,
         liquidityFee,
     } = props;
-    const { poolPriceDisplay, isTradeDollarizationEnabled, usdPrice } =
-        useContext(PoolContext);
+    const {
+        poolPriceDisplay,
+        isTradeDollarizationEnabled,
+        usdPrice,
+        basePrice,
+        quotePrice,
+    } = useContext(PoolContext);
 
     const { baseToken, quoteToken, isDenomBase } = useContext(TradeDataContext);
 
@@ -42,25 +47,45 @@ function LimitExtraInfo(props: propsIF) {
           })
         : '…';
 
+    const startPriceInUsdOrToken = startDisplayPrice
+        ? isTradeDollarizationEnabled
+            ? startDisplayPrice *
+              (isDenomBase ? quotePrice || 1 : basePrice || 1)
+            : startDisplayPrice
+        : 1;
+
+    const middlePriceInUsdOrToken = middleDisplayPrice
+        ? isTradeDollarizationEnabled
+            ? middleDisplayPrice *
+              (isDenomBase ? quotePrice || 1 : basePrice || 1)
+            : middleDisplayPrice
+        : 1;
+
+    const endPriceInUsdOrToken = endDisplayPrice
+        ? isTradeDollarizationEnabled
+            ? endDisplayPrice * (isDenomBase ? quotePrice || 1 : basePrice || 1)
+            : endDisplayPrice
+        : 1;
+
     const usdPriceDisplay = usdPrice
         ? getFormattedNumber({ value: usdPrice })
         : '…';
 
-    const startPriceString = startDisplayPrice
+    const startPriceString = startPriceInUsdOrToken
         ? getFormattedNumber({
-              value: startDisplayPrice,
+              value: startPriceInUsdOrToken,
           })
         : '...';
 
-    const middlePriceString = middleDisplayPrice
+    const middlePriceString = middlePriceInUsdOrToken
         ? getFormattedNumber({
-              value: middleDisplayPrice,
+              value: middlePriceInUsdOrToken,
           })
         : '...';
 
-    const endPriceString = endDisplayPrice
+    const endPriceString = endPriceInUsdOrToken
         ? getFormattedNumber({
-              value: endDisplayPrice,
+              value: endPriceInUsdOrToken,
           })
         : '...';
 
@@ -77,24 +102,24 @@ function LimitExtraInfo(props: propsIF) {
             tooltipTitle:
                 'Price at which the limit order will begin to be filled',
             data: isDenomBase
-                ? `${startPriceString} ${quoteTokenSymbol} per ${baseTokenSymbol}`
-                : `${startPriceString} ${baseTokenSymbol} per ${quoteTokenSymbol}`,
+                ? `${startPriceString} ${isTradeDollarizationEnabled ? 'USD' : quoteTokenSymbol} per ${baseTokenSymbol}`
+                : `${startPriceString} ${isTradeDollarizationEnabled ? 'USD' : baseTokenSymbol} per ${quoteTokenSymbol}`,
         },
         {
             title: 'Fill Middle',
             tooltipTitle:
                 'Average price at which the limit order will be filled',
             data: isDenomBase
-                ? `${middlePriceString} ${quoteTokenSymbol} per ${baseTokenSymbol}`
-                : `${middlePriceString} ${baseTokenSymbol} per ${quoteTokenSymbol}`,
+                ? `${middlePriceString} ${isTradeDollarizationEnabled ? 'USD' : quoteTokenSymbol} per ${baseTokenSymbol}`
+                : `${middlePriceString} ${isTradeDollarizationEnabled ? 'USD' : baseTokenSymbol} per ${quoteTokenSymbol}`,
         },
         {
             title: 'Fill End',
             tooltipTitle:
                 'Price at which the limit order will finish being filled and become claimable',
             data: isDenomBase
-                ? `${endPriceString} ${quoteTokenSymbol} per ${baseTokenSymbol}`
-                : `${endPriceString} ${baseTokenSymbol} per ${quoteTokenSymbol}`,
+                ? `${endPriceString} ${isTradeDollarizationEnabled ? 'USD' : quoteTokenSymbol} per ${baseTokenSymbol}`
+                : `${endPriceString} ${isTradeDollarizationEnabled ? 'USD' : baseTokenSymbol} per ${quoteTokenSymbol}`,
         },
         {
             title: 'Minimum Rebate Rate',

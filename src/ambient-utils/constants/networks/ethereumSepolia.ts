@@ -40,8 +40,8 @@ const chainSpecForAppKit: Chain = {
     blockExplorers: {
         default: {
             name: 'Etherscan',
-            url: 'https://sepolia.etherscan.io',
-            apiUrl: 'https://api-sepolia.etherscan.io/api',
+            url: 'https://sepolia.etherscan.io/',
+            apiUrl: 'https://api-sepolia.etherscan.io/api/',
         },
     },
     contracts: {
@@ -76,14 +76,14 @@ export const ethereumSepolia: NetworkIF = {
     chainId: chainIdHex,
     chainSpec: chainSpecFromSDK,
     GCGO_URL: GCGO_TESTNET_URL,
-    evmRpcUrl: PRIMARY_RPC_URL,
-    fallbackRpcUrl: FALLBACK_RPC_URL,
+    evmRpcUrls: [PRIMARY_RPC_URL, FALLBACK_RPC_URL],
     chainSpecForAppKit,
     defaultPair: [SEPOLIA_TOKENS.ETH, SEPOLIA_TOKENS.USDC],
     defaultPairFuta: [SEPOLIA_TOKENS.ETH, SEPOLIA_TOKENS.WBTC],
     poolIndex: chainSpecFromSDK.poolIndex,
     gridSize: chainSpecFromSDK.gridSize,
     isTestnet: chainSpecFromSDK.isTestNet,
+    fastLaneProtectionEnabled: false,
     blockExplorer: (
         chainSpecForAppKit.blockExplorers?.default.url || ''
     ).replace(/\/?$/, '/'),

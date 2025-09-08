@@ -196,7 +196,7 @@ export default function SearchableTicker(props: propsIF) {
             const localContainerRef = containerRef.current;
 
             if (itemRef && tableRef && localContainerRef) {
-                tickerTableRef.current.scrollTo({
+                tableRef.scrollTo({
                     top: itemRef.offsetTop - localContainerRef.offsetTop,
                     behavior: 'smooth',
                 });

@@ -40,6 +40,7 @@ export function lookupChainId(
             break;
         case 'swell':
         case 'swellchain':
+        case '0xswell':
         case '1923':
         case '0x783':
             chainIdHex = '0x783';
@@ -49,7 +50,7 @@ export function lookupChainId(
         case '0x18232':
             chainIdHex = '0x18232';
             break;
-        case 'plumeLegacy':
+        case 'plumelegacy':
         case '98865':
         case '0x18231':
             chainIdHex = '0x18231';
@@ -63,11 +64,6 @@ export function lookupChainId(
         case '11155111':
         case '0xaa36a7':
             chainIdHex = '0xaa36a7';
-            break;
-        case 'plumesepolia':
-        case '98864':
-        case '0x18230':
-            chainIdHex = '0x18230';
             break;
         case 'swellsepolia':
         case '1924':

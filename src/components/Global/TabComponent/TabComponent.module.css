@@ -16,6 +16,27 @@
     margin-top: 6px;
     flex: 1;
     overflow: hidden;
+    position: relative;
+}
+
+.tabContent {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.tabContent[hidden] {
+    display: none;
+}
+
+.tabContent:not([hidden]) {
+    opacity: 1;
+    transform: translateY(0);
 }
 
 .navbar_header_container {
@@ -164,12 +185,25 @@
 
 .underline {
     position: absolute;
-    bottom: -1px;
+    bottom: 0;
     left: 0;
     right: 0;
-    height: 1px;
+    height: 2px;
     background: var(--accent1);
+    border-radius: 1px;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s ease;
 }
+
+.underline.underlineActive {
+    transform: scaleX(1);
+}
+
+.underline:not(.underlineActive) {
+    opacity: 0;
+}
+
 .tab_with_option_container {
     display: flex;
     flex-direction: row;

@@ -9,8 +9,8 @@ import { GCGO_SCROLL_URL } from '../gcgo';
 import { TopPool } from './TopPool';
 
 const RPC_URLS = {
-    PUBLIC: 'https://rpc.ankr.com/scroll',
-    SECONDARY_PUBLIC: 'https://rpc.scroll.io',
+    PUBLIC: 'https://rpc.scroll.io',
+    SECONDARY_PUBLIC: 'https://rpc.ankr.com/scroll',
     RESTRICTED: import.meta.env.VITE_SCROLL_RPC_URL,
 };
 const PRIMARY_RPC_URL = RPC_URLS.RESTRICTED || RPC_URLS.PUBLIC;
@@ -34,8 +34,8 @@ const chainSpecForAppKit: Chain = {
     blockExplorers: {
         default: {
             name: 'Scrollscan',
-            url: 'https://scrollscan.com',
-            apiUrl: 'https://api.scrollscan.com/api',
+            url: 'https://scrollscan.com/',
+            apiUrl: 'https://api.scrollscan.com/api/',
         },
     },
 };
@@ -61,7 +61,7 @@ const defaultTokenEntries = [
     ['rETH', '0x53878B874283351D26d206FA512aEcE1Bef6C0dD'],
     ['SolvBTC', '0x3Ba89d490AB1C0c9CC2313385b30710e838370a4'],
     ['SCR', '0xd29687c813d741e2f938f4ac377128810e217b1b'],
-    ['USDQ', '0x6f2a1a886dbf8e36c4fa9f25a517861a930fbf3a'],
+    ['USDQ', '0xdb9e8f82d6d45fff803161f2a5f75543972b229a'],
 ] as const;
 
 type ScrollTokens = Record<(typeof defaultTokenEntries)[number][0], TokenIF>;
@@ -102,13 +102,13 @@ export const scrollMainnet: NetworkIF = {
     chainId: chainIdHex,
     chainSpec: chainSpecFromSDK,
     GCGO_URL: GCGO_SCROLL_URL,
-    evmRpcUrl: PRIMARY_RPC_URL,
-    fallbackRpcUrl: FALLBACK_RPC_URL,
+    evmRpcUrls: [PRIMARY_RPC_URL, FALLBACK_RPC_URL],
     chainSpecForAppKit,
     defaultPair: [SCROLL_TOKENS.ETH, SCROLL_TOKENS.USDC],
     poolIndex: chainSpecFromSDK.poolIndex,
     gridSize: chainSpecFromSDK.gridSize,
     isTestnet: chainSpecFromSDK.isTestNet,
+    fastLaneProtectionEnabled: false,
     blockExplorer: (
         chainSpecForAppKit.blockExplorers?.default.url || ''
     ).replace(/\/?$/, '/'),
@@ -117,6 +117,6 @@ export const scrollMainnet: NetworkIF = {
     vaultsEnabled: true,
     tempestApiNetworkName: 'scroll',
     topPools,
-    // priorityPool: [SCROLL_TOKENS['USDQ'], SCROLL_TOKENS['USDC']],
+    priorityPool: [SCROLL_TOKENS['USDQ'], SCROLL_TOKENS['USDC']],
     getGasPriceInGwei,
 };

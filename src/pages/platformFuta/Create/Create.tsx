@@ -232,13 +232,7 @@ export default function Create() {
 
     return (
         <section className={styles.mainContainer}>
-            <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.6 }}
-                className={styles.create_token}
-            >
+            <span>
                 {createHeader}
 
                 <CreateInput
@@ -249,7 +243,7 @@ export default function Create() {
                 />
 
                 {footerDisplay}
-            </motion.div>
+            </span>
 
             {getActionTrigger('create_auction_input_trigger', () => {
                 setTickerInput('MY TOKEN');

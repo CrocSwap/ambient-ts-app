@@ -10,7 +10,6 @@ import {
     futaBrandAssets,
     monadTestnetBrandAssets,
     plumeBrandAssets,
-    plumeSepoliaBrandAssets,
     scrollBrandAssets,
     swellBrandAssets,
     swellSepoliaBrandAssets,
@@ -90,8 +89,6 @@ export const BrandContextProvider = (props: { children: ReactNode }) => {
                 return ambientProductionBrandAssets;
             case 'ambientTestnet':
                 return ambientTestnetBrandAssets;
-            case 'plumeSepolia':
-                return plumeSepoliaBrandAssets;
             case 'swellSepolia':
                 return swellSepoliaBrandAssets;
             case 'monadTestnet':
@@ -146,7 +143,8 @@ export const BrandContextProvider = (props: { children: ReactNode }) => {
             theme1: premiumAccess.get('theme1') as boolean,
             theme2: premiumAccess.get('theme2') as boolean,
         },
-        includeCanto: brandAssets.includeCanto,
+        includeCanto: false, // marking false for now, as canto appears to be defunct
+        // includeCanto: brandAssets.includeCanto,
         cobrandingLogo:
             brandAssets.networks[chainId as chainHexIds]?.cobrandingLogo,
     };

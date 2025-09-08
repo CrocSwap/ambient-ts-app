@@ -31,7 +31,7 @@ function TutorialComponent(props: propsIF) {
         initialStep ? initialStep : 0,
     );
 
-    const stepIndexRef = useRef<number>();
+    const stepIndexRef = useRef<number>(undefined);
     stepIndexRef.current = stepIndex;
     const [step, setStep] = useState<TutorialStepIF | undefined>(
         steps.length > 0 && steps[stepIndex] ? steps[stepIndex] : undefined,

@@ -260,6 +260,25 @@ function Portfolio(props: propsIF) {
         TokenIF[]
     >([]);
 
+    const [
+        intermediateResolvedAddressTokens,
+        setIntermediateResolvedAddressTokens,
+    ] = useState<TokenIF[] | undefined>(undefined);
+
+    useEffect(() => {
+        setResolvedAddressTokens([]);
+        setIntermediateResolvedAddressTokens(undefined);
+    }, [resolvedAddress, chainId]);
+
+    useEffect(() => {
+        if (
+            intermediateResolvedAddressTokens &&
+            intermediateResolvedAddressTokens[0]?.chainId === Number(chainId)
+        ) {
+            setResolvedAddressTokens(intermediateResolvedAddressTokens);
+        }
+    }, [intermediateResolvedAddressTokens, chainId]);
+
     // used to trigger token balance refreshes every 5 minutes
     const everyFiveMinutes = Math.floor(Date.now() / 300000);
 
@@ -277,7 +296,6 @@ function Portfolio(props: propsIF) {
                 )
                     return;
                 try {
-                    setResolvedAddressTokens([]);
                     const combinedBalances: TokenIF[] = [];
 
                     // fetch wallet balances for tokens in ambient token list
@@ -286,6 +304,7 @@ function Portfolio(props: propsIF) {
                             address: resolvedAddress,
                             chain: chainId,
                             crocEnv: crocEnv,
+                            ackTokens: tokens.ackTokens,
                             _refreshTime: everyFiveMinutes,
                         });
 
@@ -356,7 +375,7 @@ function Portfolio(props: propsIF) {
                         return newToken;
                     });
 
-                    setResolvedAddressTokens(tokensWithLogos);
+                    setIntermediateResolvedAddressTokens(tokensWithLogos);
                 } catch (error) {
                     console.error({ error });
                 }

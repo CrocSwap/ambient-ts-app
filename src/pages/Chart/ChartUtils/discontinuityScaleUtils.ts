@@ -19,20 +19,17 @@ export function filterCandleWithTransaction(
         .map((item, index, array) => {
             let isShowData = false;
 
-            if (
-                //                index === 0 ||
-                index ===
-                array.length - 1
-            ) {
+            if (index === 0) {
                 isShowData = true;
             }
 
-            const previousTvlData = index > 0 ? array[index - 1].tvlData : null;
+            const previousTvlRawData =
+                index > 0 ? array[index - 1].tvlData : null;
 
             if (
-                !previousTvlData ||
+                !previousTvlRawData ||
                 item.volumeUSD !== 0 ||
-                item.tvlData.tvl !== previousTvlData.tvl
+                item.tvlData.tvlRaw !== previousTvlRawData.tvlRaw
             ) {
                 isShowData = true;
             }

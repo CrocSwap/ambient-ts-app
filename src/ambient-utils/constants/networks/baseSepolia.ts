@@ -40,8 +40,8 @@ const chainSpecForAppKit: Chain = {
     blockExplorers: {
         default: {
             name: 'Basescan',
-            url: 'https://sepolia.basescan.org',
-            apiUrl: 'https://api-sepolia.basescan.org/api',
+            url: 'https://sepolia.basescan.org/',
+            apiUrl: 'https://api-sepolia.basescan.org/api/',
         },
     },
     contracts: {
@@ -83,8 +83,7 @@ export const baseSepolia: NetworkIF = {
     chainId: chainIdHex,
     chainSpec: chainSpecFromSDK,
     GCGO_URL: GCGO_TESTNET_URL,
-    evmRpcUrl: PRIMARY_RPC_URL,
-    fallbackRpcUrl: FALLBACK_RPC_URL,
+    evmRpcUrls: [PRIMARY_RPC_URL, FALLBACK_RPC_URL],
     chainSpecForAppKit,
     defaultPair: [BASE_SEPOLIA_TOKENS.ETH, BASE_SEPOLIA_TOKENS.USDC],
     defaultPairFuta: [BASE_SEPOLIA_TOKENS.ETH, BASE_SEPOLIA_TOKENS.USDC],
@@ -98,6 +97,7 @@ export const baseSepolia: NetworkIF = {
     tokenPriceQueryAssetPlatform: undefined,
     vaultsEnabled: false,
     tempestApiNetworkName: '',
+    fastLaneProtectionEnabled: false,
     topPools: [
         new TopPool(
             BASE_SEPOLIA_TOKENS.ETH,

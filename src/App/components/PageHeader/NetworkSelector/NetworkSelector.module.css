@@ -31,6 +31,7 @@
     font-size: var(--header2-size);
     width: 100%;
     color: var(--text1);
+    position: relative;
     z-index: 9999;
 }
 .chainNameStatus:hover,

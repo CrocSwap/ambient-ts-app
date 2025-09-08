@@ -254,6 +254,7 @@ function decorateCandleData(
                 tvlData: {
                     time: p.time,
                     tvl: p.tvlBase * baseUsdMult + p.tvlQuote * quoteUsdMult,
+                    tvlRaw: p.tvlBase * baseDecMult + p.tvlQuote * quoteDecMult,
                 },
                 volumeUSD:
                     (p.volumeBase * baseUsdMult +

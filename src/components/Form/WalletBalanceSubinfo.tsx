@@ -5,6 +5,7 @@ import ambientLogo from '../../assets/images/icons/ambient_icon.png';
 import walletEnabledIcon from '../../assets/images/icons/wallet-enabled.svg';
 import walletIcon from '../../assets/images/icons/wallet.svg';
 import { AppStateContext } from '../../contexts/AppStateContext';
+import { TradeTokenContext } from '../../contexts/TradeTokenContext';
 import { FlexContainer } from '../../styled/Common';
 import { MaxButton } from '../../styled/Components/Portfolio';
 import IconWithTooltip from '../Global/IconWithTooltip/IconWithTooltip';
@@ -22,6 +23,7 @@ interface PropsIF {
     availableBalance?: bigint;
     onMaxButtonClick?: () => void;
     percentDiffUsdValue: number | undefined;
+    isSwap?: boolean;
 }
 export default function WalletBalanceSubinfo(props: PropsIF) {
     const {
@@ -35,10 +37,15 @@ export default function WalletBalanceSubinfo(props: PropsIF) {
         isDexSelected,
         onToggleDex,
         onMaxButtonClick,
+        isSwap,
     } = props;
 
     const {
         globalPopup: { open: openGlobalPopup },
+    } = useContext(AppStateContext);
+    const { fastLaneProtection } = useContext(TradeTokenContext);
+    const {
+        activeNetwork: { chainId },
     } = useContext(AppStateContext);
 
     // const walletEnabledIcon = (
@@ -87,11 +94,15 @@ export default function WalletBalanceSubinfo(props: PropsIF) {
     const exchangeWithTooltip =
         isWithdraw || isDexSelected ? (
             <IconWithTooltip
-                title={`${
-                    isWithdraw
-                        ? 'Use Wallet and Exchange Balance'
-                        : 'Send to Exchange Balance'
-                }`}
+                title={
+                    fastLaneProtection?.isEnabled &&
+                    isSwap &&
+                    fastLaneProtection.isChainAccepted
+                        ? 'Exchange Balance disabled with MEV Protection'
+                        : isWithdraw
+                          ? 'Use Wallet and Exchange Balance'
+                          : 'Send to Exchange Balance'
+                }
                 placement='right'
             >
                 <div
@@ -100,9 +111,31 @@ export default function WalletBalanceSubinfo(props: PropsIF) {
                         filter: !isDexSelected
                             ? 'grayscale(100%)'
                             : 'contrast(1) brightness(1) saturate(1)',
-                        cursor: isWithdraw ? 'pointer' : 'default',
+                        cursor:
+                            isWithdraw &&
+                            !(
+                                fastLaneProtection.isChainAccepted &&
+                                fastLaneProtection?.isEnabled
+                            )
+                                ? 'pointer'
+                                : 'default',
+                        opacity:
+                            isSwap &&
+                            fastLaneProtection.isChainAccepted &&
+                            fastLaneProtection?.isEnabled
+                                ? 0.5
+                                : 1,
                     }}
-                    onClick={onToggleDex}
+                    onClick={
+                        !isSwap ||
+                        (isWithdraw &&
+                            !(
+                                fastLaneProtection.isChainAccepted &&
+                                fastLaneProtection?.isEnabled
+                            ))
+                            ? onToggleDex
+                            : undefined
+                    }
                 >
                     <img src={ambientLogo} width='20' alt='surplus' />
                 </div>

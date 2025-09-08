@@ -1,4 +1,3 @@
-import { AnimateSharedLayout, motion } from 'framer-motion';
 import {
     cloneElement,
     Dispatch,
@@ -191,7 +190,7 @@ export default function TabComponent(props: TabPropsIF) {
         shouldSyncWithTradeModules,
     ]);
 
-    function handleMobileMenuIcon(icon: string, label: string): JSX.Element {
+    function handleMobileMenuIcon(icon: string, label: string): ReactNode {
         return (
             <div className={styles.tab_icon_container}>
                 <DefaultTooltip
@@ -258,12 +257,13 @@ export default function TabComponent(props: TabPropsIF) {
                             <div className={styles.underline} />
                         )}
 
-                        {item.label === selectedTab.label ? (
-                            <motion.div
-                                className={styles.underline}
-                                layoutId='underline'
-                            />
-                        ) : null}
+                        <div
+                            className={`${styles.underline} ${
+                                item.label === selectedTab.label
+                                    ? styles.underlineActive
+                                    : ''
+                            }`}
+                        />
                     </div>
                 ))}
             </div>
@@ -318,13 +318,14 @@ export default function TabComponent(props: TabPropsIF) {
                     </button>
                     {/* // )} */}
 
-                    {item.label === selectedTab.label && (
-                        <motion.div
-                            className={styles.underline}
-                            layoutId='underline'
-                            role='presentation'
-                        />
-                    )}
+                    <div
+                        className={`${styles.underline} ${
+                            item.label === selectedTab.label
+                                ? styles.underlineActive
+                                : ''
+                        }`}
+                        role='presentation'
+                    />
                 </li>
             ))}
         </ul>
@@ -345,9 +346,7 @@ export default function TabComponent(props: TabPropsIF) {
             aria-label=''
         >
             <nav className={`${styles.tab_nav} ${tabAlignStyle}`}>
-                {/* <AnimateSharedLayout> */}
                 {rightTabOptions ? tabsWithRightOption : fullTabs}
-                {/* </AnimateSharedLayout> */}
             </nav>
 
             <div className={styles.main_tab_content}>
@@ -362,21 +361,16 @@ export default function TabComponent(props: TabPropsIF) {
                         {selectedTab ? selectedTab.content : null}
                     </div>
                 ) : (
-                    <AnimateSharedLayout>
-                        <motion.div
-                            key={selectedTab ? selectedTab.label : 'empty'}
-                            initial={{ y: 10, opacity: 0 }}
-                            animate={{ y: 0, opacity: 1 }}
-                            exit={{ y: -10, opacity: 0 }}
-                            transition={{ duration: 0.2 }}
-                            role='tabpanel'
-                            tabIndex={0}
-                            style={{ height: '100%' }}
-                            hidden={!selectedTab}
-                        >
-                            {selectedTab ? selectedTab.content : null}
-                        </motion.div>
-                    </AnimateSharedLayout>
+                    <div
+                        key={selectedTab ? selectedTab.label : 'empty'}
+                        className={styles.tabContent}
+                        role='tabpanel'
+                        tabIndex={0}
+                        style={{ height: '100%' }}
+                        hidden={!selectedTab}
+                    >
+                        {selectedTab ? selectedTab.content : null}
+                    </div>
                 )}
             </div>
         </div>

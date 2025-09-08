@@ -34,8 +34,8 @@ const chainSpecForAppKit: Chain = {
     blockExplorers: {
         default: {
             name: 'Scrollscan',
-            url: 'https://sepolia.scrollscan.com',
-            apiUrl: 'https://api-sepolia.scrollscan.com/api',
+            url: 'https://sepolia.scrollscan.com/',
+            apiUrl: 'https://api-sepolia.scrollscan.com/api/',
         },
     },
     contracts: {
@@ -68,8 +68,7 @@ export const scrollSepolia: NetworkIF = {
     chainId: chainIdHex,
     chainSpec: chainSpecFromSDK,
     GCGO_URL: GCGO_TESTNET_URL,
-    evmRpcUrl: PRIMARY_RPC_URL,
-    fallbackRpcUrl: FALLBACK_RPC_URL,
+    evmRpcUrls: [PRIMARY_RPC_URL, FALLBACK_RPC_URL],
     chainSpecForAppKit,
     defaultPair: [SCROLL_SEPOLIA_TOKENS.ETH, SCROLL_SEPOLIA_TOKENS.USDC],
     poolIndex: chainSpecFromSDK.poolIndex,
@@ -82,6 +81,7 @@ export const scrollSepolia: NetworkIF = {
     tokenPriceQueryAssetPlatform: undefined,
     vaultsEnabled: false,
     tempestApiNetworkName: '',
+    fastLaneProtectionEnabled: false,
     topPools: [
         new TopPool(
             SCROLL_SEPOLIA_TOKENS.ETH,

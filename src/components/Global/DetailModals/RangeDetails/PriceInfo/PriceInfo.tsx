@@ -315,7 +315,7 @@ export default function PriceInfo(props: propsIF) {
 const BlastRewardRow = (props: {
     rewardType: string;
     reward: string;
-    logo: JSX.Element | undefined;
+    logo: React.ReactNode | undefined;
 }) => {
     const { rewardType, reward, logo } = props;
     return (

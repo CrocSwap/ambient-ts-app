@@ -19,7 +19,15 @@ export const BRANCH_NAME =
 export const APP_ENVIRONMENT: AppEnvironment =
     (BRANCH_NAME as AppEnvironment) || 'local';
 
+export const FASTLANE_LS_KEY = 'fastlane_protection';
+export const MEV_PROTECTION_PREF_LS_KEY = 'mev_protection_preference';
+
 export const IS_LOCAL_ENV = APP_ENVIRONMENT === 'local';
+
+export const LINK_TO_PERPS_HOME =
+    import.meta.env.VITE_LINK_TO_PERPS_HOME !== undefined
+        ? import.meta.env.VITE_LINK_TO_PERPS_HOME.toLowerCase() === 'true'
+        : false;
 
 export const ANALYTICS_URL =
     import.meta.env.VITE_ANALYTICS_URL ||
@@ -137,8 +145,8 @@ export const REQUEST_TIMEOUT_DELAY = import.meta.env.VITE_REQUEST_TIMEOUT_DELAY
 export const NETWORK_ACCESS = import.meta.env.NETWORK_ACCESS || 'disabled';
 export const CACHE_UPDATE_FREQ_IN_MS = 60000; // 1 minute
 
-// Refresh USD prices in 15 minute windows
-export const PRICE_WINDOW_GRANULARITY = 15 * 60 * 1000;
+// Refresh USD prices in 30 second windows
+export const PRICE_WINDOW_GRANULARITY = 30 * 1000;
 
 export const DEFAULT_POPUP_CTA_DISMISSAL_DURATION_MINUTES =
     brand === 'futa'
@@ -184,3 +192,16 @@ export const SHOW_TUTOS_DEFAULT =
 // using for disabling all tutorials and to hide help button on ui
 export const DISABLE_ALL_TUTOS =
     import.meta.env.VITE_DISABLE_ALL_TUTOS || false;
+
+export const ATLAS_ROUTER_ADDRESS =
+    import.meta.env.VITE_ATLAS_ROUTER_ADDRESS ||
+    '0xbB010Cb7e71D44d7323aE1C267B333A48D05907C';
+export const ATLAS_AUCTIONEER_ENDPOINT =
+    import.meta.env.VITE_ATLAS_AUCTIONEER_ENDPOINT ||
+    'https://auctioneer-fra.fastlane-labs.xyz';
+export const ATLAS_REFUND_RECIPIENT =
+    import.meta.env.VITE_ATLAS_REFUND_RECIPIENT ||
+    '0x0000000000000000000000000000000000000000';
+export const ATLAS_REFUND_PERCENT = import.meta.env.VITE_ATLAS_REFUND_PERCENT
+    ? import.meta.env.VITE_ATLAS_REFUND_PERCENT
+    : '0x0';

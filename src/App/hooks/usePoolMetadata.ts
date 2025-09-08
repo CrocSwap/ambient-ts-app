@@ -70,7 +70,7 @@ export function usePoolMetadata() {
         limitOrdersByPool,
     } = useContext(GraphDataContext);
 
-    const { blockPollingUrl, activePoolList } = useContext(ChainDataContext);
+    const { activePoolList } = useContext(ChainDataContext);
 
     const {
         tokenA,
@@ -78,6 +78,7 @@ export function usePoolMetadata() {
         defaultRangeWidthForActivePool,
         currentPoolPriceTick,
         activeTab,
+        contextMatchesParams,
     } = useContext(TradeDataContext);
 
     const {
@@ -106,31 +107,6 @@ export function usePoolMetadata() {
 
     const ticksInParams =
         pathname.includes('lowTick') && pathname.includes('highTick');
-
-    // hook to sync token addresses in RTK to token addresses in RTK
-    const contextMatchesParams = useMemo(() => {
-        let matching = false;
-        const tokenAAddress = tokenA.address;
-        const tokenBAddress = tokenB.address;
-
-        if (pathname.includes('tokenA') && pathname.includes('tokenB')) {
-            const getAddrFromParams = (token: string) => {
-                const idx = pathname.indexOf(token);
-                const address = pathname.substring(idx + 7, idx + 49);
-                return address;
-            };
-            const addrTokenA = getAddrFromParams('tokenA');
-            const addrTokenB = getAddrFromParams('tokenB');
-            if (
-                addrTokenA.toLowerCase() === tokenAAddress.toLowerCase() &&
-                addrTokenB.toLowerCase() === tokenBAddress.toLowerCase()
-            ) {
-                matching = true;
-            }
-        }
-
-        return matching;
-    }, [pathname, tokenA, tokenB]);
 
     const baseTokenAddress = useMemo(
         () => sortBaseQuoteTokens(tokenA.address, tokenB.address)[0],
@@ -668,7 +644,6 @@ export function usePoolMetadata() {
             : Math.floor(Date.now() / 10000), // cache for 10 seconds if not idle
         provider,
         sessionReceipts.length,
-        blockPollingUrl,
         isTradeRoute,
         activePoolList,
     ]);
@@ -843,7 +818,6 @@ export function usePoolMetadata() {
     }, [rawLiqData, crocEnv, chainId, currentPoolPriceTick]);
 
     return {
-        contextMatchesParams,
         baseTokenAddress,
         quoteTokenAddress,
         baseTokenDecimals, // Token contract decimals

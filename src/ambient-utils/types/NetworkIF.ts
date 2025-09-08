@@ -17,8 +17,7 @@ export interface NetworkIF {
     chainId: string;
     GCGO_URL: string;
     chainSpecForAppKit: Chain;
-    evmRpcUrl: string;
-    fallbackRpcUrl: string;
+    evmRpcUrls: string[];
     poolIndex: number;
     gridSize: number;
     isTestnet: boolean;
@@ -33,6 +32,8 @@ export interface NetworkIF {
     tempestApiNetworkName: string;
     chainSpec: ChainSpec;
     getGasPriceInGwei: (provider?: Provider) => Promise<number | undefined>;
+    fastLaneProtectionEnabled: boolean;
+    indexerTimeout?: number;
 }
 
 export interface NetworkSessionIF {

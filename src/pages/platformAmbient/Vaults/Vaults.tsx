@@ -1,37 +1,24 @@
-import { memo, useContext, useEffect, useState } from 'react';
-import { VAULTS_API_URL } from '../../../ambient-utils/constants';
+import { memo, useContext } from 'react';
 import {
     AllVaultsServerIF,
     UserVaultsServerIF,
     VaultIF,
 } from '../../../ambient-utils/types';
 import TokenRowSkeleton from '../../../components/Global/Explore/TokenRow/TokenRowSkeleton';
-import {
-    AppStateContext,
-    ChainDataContext,
-    ReceiptContext,
-    UserDataContext,
-} from '../../../contexts';
+import { ChainDataContext, UserDataContext } from '../../../contexts';
 import { fallbackVaultsList } from './fallbackVaultsList';
 import { Vault } from './Vault';
 import VaultRow from './VaultRow/VaultRow';
 import styles from './Vaults.module.css';
-
 function Vaults() {
     // !important:  once we have mock data, change the type on this
     // !important:  ... value to `AllVaultsServerIF[]` and then fix linter
     // !important:  ... warnings which manifest in response
 
-    const {
-        activeNetwork: { chainId },
-        isUserIdle,
-    } = useContext(AppStateContext);
-    const { sessionReceipts } = useContext(ReceiptContext);
+    const { allVaultsData, vaultsOnCurrentChain } =
+        useContext(ChainDataContext);
 
-    const { allVaultsData, setAllVaultsData } = useContext(ChainDataContext);
-
-    const { userAddress, isUserConnected, userVaultData, setUserVaultData } =
-        useContext(UserDataContext);
+    const { isUserConnected, userVaultData } = useContext(UserDataContext);
 
     const vaultHeader = (
         <div className={styles.vaultHeader}>
@@ -52,130 +39,11 @@ function Vaults() {
         </div>
     );
 
-    async function getAllVaultsData(): Promise<void> {
-        const allVaultsEndpoint = `${VAULTS_API_URL}/vaults`;
-        const chainVaultsEndpoint = `${VAULTS_API_URL}/vaults?chainId=${parseInt(chainId)}`;
-
-        try {
-            // Fetch both responses concurrently
-            const [allVaultsResponse, chainVaultsResponse] = await Promise.all([
-                fetch(allVaultsEndpoint),
-                fetch(chainVaultsEndpoint),
-            ]);
-
-            // Parse JSON responses concurrently
-            const [allVaultsData, chainVaultsData] = await Promise.all([
-                allVaultsResponse.json(),
-                chainVaultsResponse.json(),
-            ]);
-
-            const uniqueVaults = new Map<string, AllVaultsServerIF>();
-
-            // Combine vaults and filter for uniqueness based on the 'id' property
-            allVaultsData?.data?.vaults
-                .concat(chainVaultsData?.data?.vaults)
-                .forEach((vault: AllVaultsServerIF) => {
-                    if (vault.id && !uniqueVaults.has(vault.id)) {
-                        uniqueVaults.set(vault.id, vault);
-                    }
-                });
-
-            // Convert the map back to an array and sort it
-            const sorted: AllVaultsServerIF[] = Array.from(
-                uniqueVaults.values(),
-            ).sort(
-                (a: AllVaultsServerIF, b: AllVaultsServerIF) =>
-                    parseFloat(b.tvlUsd) - parseFloat(a.tvlUsd),
-            );
-
-            setAllVaultsData(sorted ?? undefined);
-        } catch (error) {
-            console.error('Error fetching vault data:', error);
-            setAllVaultsData(undefined);
-            setServerErrorReceived(true);
-        }
-    }
-
-    const [serverErrorReceived, setServerErrorReceived] =
-        useState<boolean>(false);
-
-    // logic to get user vault data
-    async function getUserVaultData(): Promise<void> {
-        // endpoint to query
-        // const endpoint = `${VAULTS_API_URL}/users/positions?walletAddress=0xe09de95d2a8a73aa4bfa6f118cd1dcb3c64910dc`;
-        const endpoint = `${VAULTS_API_URL}/users/positions?walletAddress=${userAddress}`;
-        // fn to fetch data from endpoint and send to local state
-        const fetchData = async () => {
-            try {
-                const response = await fetch(endpoint);
-                const { data } = await response.json();
-                setUserVaultData(data ?? undefined);
-                setServerErrorReceived(false);
-            } catch (error) {
-                console.log({ error });
-                setUserVaultData(undefined);
-                setServerErrorReceived(true);
-                return;
-            }
-        };
-
-        const timeout = new Promise<void>((resolve) => {
-            setTimeout(() => {
-                resolve();
-            }, 2000);
-        });
-
-        await Promise.race([fetchData(), timeout]);
-    }
-
-    useEffect(() => {
-        if (userAddress && chainId) {
-            getUserVaultData();
-            const period = isUserIdle ? 600000 : 60000; // 10 minutes while idle, 1 minute while active
-            const interval = setInterval(getUserVaultData, period);
-            return () => clearInterval(interval);
-        }
-    }, [chainId, userAddress, isUserIdle]);
-
-    // logic to fetch vault data from API
-    useEffect(() => {
-        // run the first fetch immediately
-        getAllVaultsData();
-        // run subsequent fetches on an interval
-        const period = isUserIdle ? 600000 : 60000; // 10 minutes while idle, 1 minute while active
-        const interval = setInterval(getAllVaultsData, period);
-        // clear the interval when this component dismounts
-        return () => clearInterval(interval);
-    }, [isUserIdle, chainId]);
-
-    useEffect(() => {
-        // also run the user data fetch after a receipt is received
-        if (sessionReceipts.length === 0) return;
-        getUserVaultData();
-        // and repeat after a delay
-        setTimeout(() => {
-            getUserVaultData();
-        }, 5000);
-        setTimeout(() => {
-            getUserVaultData();
-        }, 15000);
-        setTimeout(() => {
-            getUserVaultData();
-        }, 30000);
-    }, [sessionReceipts.length]);
-
     const tempItems = [1, 2, 3, 4, 5];
 
     const skeletonDisplay = tempItems.map((item, idx) => (
         <TokenRowSkeleton key={idx} isVaultPage />
     ));
-
-    const vaultsOnCurrentChain =
-        allVaultsData !== undefined
-            ? allVaultsData?.filter(
-                  (vault) => Number(vault.chainId) === Number(chainId),
-              )
-            : undefined;
 
     return (
         <div data-testid={'vaults'} className={styles.container}>
@@ -228,9 +96,6 @@ function Vaults() {
                                                               vault.chainId,
                                                   ),
                                               )
-                                          }
-                                          needsFallbackQuery={
-                                              serverErrorReceived
                                           }
                                       />
                                   );

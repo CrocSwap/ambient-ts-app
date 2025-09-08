@@ -1,10 +1,11 @@
-import { CrocEnv } from '@crocswap-libs/sdk';
+import { CrocEnv, toDisplayQty } from '@crocswap-libs/sdk';
 import moment from 'moment';
 import {
     createContext,
     Dispatch,
     ReactNode,
     SetStateAction,
+    useCallback,
     useContext,
     useEffect,
     useMemo,
@@ -26,12 +27,18 @@ import {
     GCGO_SWELL_URL,
     hiddenTokens,
     supportedNetworks,
+    VAULTS_API_URL,
     vaultSupportedNetworkIds,
     ZERO_ADDRESS,
 } from '../ambient-utils/constants';
 import { tokens as AMBIENT_TOKEN_LIST } from '../ambient-utils/constants/ambient-token-list.json';
 import { getChainStats, getFormattedNumber } from '../ambient-utils/dataLayer';
-import { AllVaultsServerIF, PoolIF, TokenIF } from '../ambient-utils/types';
+import {
+    AllVaultsServerIF,
+    PoolIF,
+    TokenIF,
+    UserVaultsServerIF,
+} from '../ambient-utils/types';
 import { usePoolList } from '../App/hooks/usePoolList';
 import { AppStateContext } from './AppStateContext';
 import { BrandContext } from './BrandContext';
@@ -56,8 +63,6 @@ export interface ChainDataContextIF {
     lastBlockNumber: number;
     setLastBlockNumber: Dispatch<SetStateAction<number>>;
     rpcNodeStatus: RpcNodeStatus;
-    isPrimaryRpcNodeInactive: React.MutableRefObject<boolean>;
-    blockPollingUrl: string;
     connectedUserXp: UserXpDataIF;
     connectedUserBlastXp: BlastUserXpDataIF;
     isActiveNetworkBlast: boolean;
@@ -85,23 +90,19 @@ export interface ChainDataContextIF {
     setIsGasPriceFetchManuallyTriggerered: Dispatch<SetStateAction<boolean>>;
     isAnalyticsPoolListDefinedOrUnavailable: boolean;
     activePoolList: PoolIF[] | undefined;
+    vaultsOnCurrentChain: AllVaultsServerIF[] | undefined;
 }
 
 export const ChainDataContext = createContext({} as ChainDataContextIF);
 
 export const ChainDataContextProvider = (props: { children: ReactNode }) => {
     const {
-        activeNetwork: {
-            chainId,
-            evmRpcUrl,
-            fallbackRpcUrl,
-            GCGO_URL,
-            isTestnet,
-        },
+        activeNetwork: { chainId, GCGO_URL, isTestnet },
         isUserIdle,
         isUserOnline,
         isTradeRoute,
         isAccountRoute,
+        isAccountOrVaultRoute,
     } = useContext(AppStateContext);
     const {
         setTokenBalances,
@@ -118,7 +119,6 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
         blastProvider,
         swellProvider,
         plumeProvider,
-        isPrimaryRpcNodeInactive,
     } = useContext(CrocEnvContext);
 
     const [
@@ -144,6 +144,7 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
         isfetchNftTriggered,
         nftTestWalletAddress,
         setNftTestWalletAddress,
+        setUserVaultData,
     } = useContext(UserDataContext);
 
     const [lastBlockNumber, setLastBlockNumber] = useState<number>(0);
@@ -166,9 +167,7 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
     const isActiveNetworkBlast = ['0x13e31', '0xa0c71fd'].includes(chainId);
     const isActiveNetworkScroll = ['0x82750', '0x8274f'].includes(chainId);
     const isActiveNetworkMainnet = ['0x1'].includes(chainId);
-    const isActiveNetworkPlume = ['0x18230', '0x18231', '0x18232'].includes(
-        chainId,
-    );
+    const isActiveNetworkPlume = ['0x18231', '0x18232'].includes(chainId);
     const isActiveNetworkSwell = ['0x783', '0x784'].includes(chainId);
     const isActiveNetworkBase = ['0x14a34'].includes(chainId);
     const isActiveNetworkMonad = ['0x279f'].includes(chainId);
@@ -189,10 +188,6 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
         string | undefined
     >();
 
-    const blockPollingUrl = !isPrimaryRpcNodeInactive.current
-        ? evmRpcUrl
-        : fallbackRpcUrl;
-
     // array of network IDs for supported L2 networks
     const L1_NETWORKS: string[] = [
         '0x1', // ethereum mainnet
@@ -207,6 +202,181 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
     const poolStatsPollingCacheTime = Math.floor(
         Date.now() / (isUserIdle || isTestnet ? 120000 : 30000),
     ); // poll for new pool stats every 120 seconds when user is idle or on a testnet, every 30 seconds when user is active
+
+    const [receiptRefreshTimeouts, setReceiptRefreshTimeouts] = useState<
+        NodeJS.Timeout[]
+    >([]);
+
+    async function getAllVaultsData(): Promise<void> {
+        const allVaultsEndpoint = `${VAULTS_API_URL}/vaults`;
+        const chainVaultsEndpoint = `${VAULTS_API_URL}/vaults?chainId=${parseInt(chainId)}`;
+
+        try {
+            // Fetch both responses concurrently
+            const [allVaultsResponse, chainVaultsResponse] = await Promise.all([
+                fetch(allVaultsEndpoint),
+                fetch(chainVaultsEndpoint),
+            ]);
+
+            // Parse JSON responses concurrently
+            const [allVaultsData, chainVaultsData] = await Promise.all([
+                allVaultsResponse.json(),
+                chainVaultsResponse.json(),
+            ]);
+
+            const uniqueVaults = new Map<string, AllVaultsServerIF>();
+
+            // Combine vaults and filter for uniqueness based on the 'id' property
+            allVaultsData?.data?.vaults
+                .concat(chainVaultsData?.data?.vaults)
+                .forEach((vault: AllVaultsServerIF) => {
+                    if (vault.id && !uniqueVaults.has(vault.id)) {
+                        uniqueVaults.set(vault.id, vault);
+                    }
+                });
+
+            // Convert the map back to an array and sort it
+            const sorted: AllVaultsServerIF[] = Array.from(
+                uniqueVaults.values(),
+            ).sort(
+                (a: AllVaultsServerIF, b: AllVaultsServerIF) =>
+                    parseFloat(b.tvlUsd) - parseFloat(a.tvlUsd),
+            );
+
+            setAllVaultsData(sorted ?? undefined);
+        } catch (error) {
+            console.error('Error fetching vault data:', error);
+            setAllVaultsData(undefined);
+        }
+    }
+
+    const vaultsOnCurrentChain: AllVaultsServerIF[] | undefined =
+        useMemo(() => {
+            return allVaultsData !== undefined
+                ? allVaultsData?.filter(
+                      (vault) => Number(vault.chainId) === Number(chainId),
+                  )
+                : undefined;
+        }, [allVaultsData, chainId]);
+
+    // logic to get user vault data
+    async function getUserVaultData(): Promise<void> {
+        if (userAddress && chainId && crocEnv && allVaultsData) {
+            let calls: Map<AllVaultsServerIF, Promise<bigint>> = new Map();
+            for (const vaultSpec of allVaultsData || []) {
+                if (parseInt(vaultSpec.chainId) != parseInt(chainId)) continue;
+                let vault = crocEnv.tempestVault(
+                    vaultSpec.address,
+                    vaultSpec.mainAsset,
+                    vaultSpec.strategy,
+                );
+                calls.set(vaultSpec, vault.balanceToken1(userAddress));
+            }
+            await Promise.all(calls.values());
+            const chainUserVaults: UserVaultsServerIF[] = [];
+            for (const [vaultSpec, balanceInt] of calls.entries()) {
+                if ((await balanceInt) == 0n) continue;
+                const balance = (await balanceInt).toString();
+                const balanceAmount = toDisplayQty(
+                    await balanceInt,
+                    vaultSpec.mainAsset == vaultSpec.token0Address
+                        ? vaultSpec.token0Decimals
+                        : vaultSpec.token1Decimals,
+                );
+                let price = 0;
+                try {
+                    const priceObj = await cachedFetchTokenPrice(
+                        vaultSpec.mainAsset,
+                        chainId,
+                    );
+                    price = priceObj?.usdPrice ?? 0;
+                } catch {}
+
+                const balanceUsd = price * Number(balanceAmount);
+
+                chainUserVaults.push({
+                    chainId: vaultSpec.chainId,
+                    vaultAddress: vaultSpec.address,
+                    walletAddress: userAddress as `0x${string}`,
+                    balance,
+                    balanceAmount,
+                    balanceUsd: balanceUsd.toString(),
+                });
+            }
+
+            setUserVaultData(chainUserVaults);
+        }
+    }
+
+    useEffect(() => {
+        // clear user vault data when the user changes
+        setUserVaultData(undefined);
+    }, [userAddress]);
+
+    useEffect(() => {
+        if (
+            isVaultSupportedOnNetwork &&
+            isAccountOrVaultRoute &&
+            userAddress &&
+            chainId &&
+            allVaultsData &&
+            crocEnv
+        ) {
+            getUserVaultData();
+            const period = isUserIdle ? 600000 : 60000; // 10 minutes while idle, 1 minute while active
+            const interval = setInterval(getUserVaultData, period);
+            return () => clearInterval(interval);
+        }
+    }, [
+        isVaultSupportedOnNetwork,
+        isAccountOrVaultRoute,
+        chainId,
+        userAddress,
+        isUserIdle,
+        allVaultsData,
+        crocEnv,
+    ]);
+
+    // logic to fetch vault data from API
+    useEffect(() => {
+        if (!isAccountOrVaultRoute || !isVaultSupportedOnNetwork) return;
+        // run the first fetch immediately
+        getAllVaultsData();
+        // run subsequent fetches on an interval
+        const period = isUserIdle ? 600000 : 60000; // 10 minutes while idle, 1 minute while active
+        const interval = setInterval(getAllVaultsData, period);
+        // clear the interval when this component dismounts
+        return () => clearInterval(interval);
+    }, [isAccountOrVaultRoute, isUserIdle, chainId]);
+
+    useEffect(() => {
+        // also run the user data fetch after a receipt is received
+        if (sessionReceipts.length === 0 || !isVaultSupportedOnNetwork) return;
+        getUserVaultData();
+        // and repeat after a delay
+        const t1 = setTimeout(() => {
+            getUserVaultData();
+        }, 5000);
+        const t2 = setTimeout(() => {
+            getUserVaultData();
+        }, 15000);
+        const t3 = setTimeout(() => {
+            getUserVaultData();
+        }, 30000);
+
+        setReceiptRefreshTimeouts([t1, t2, t3]);
+
+        // clear the timeouts when this component dismounts
+        return () => {
+            receiptRefreshTimeouts.forEach((timeout) => clearTimeout(timeout));
+        };
+    }, [sessionReceipts.length, isVaultSupportedOnNetwork]);
+
+    useEffect(() => {
+        // clear the timeouts when the user or chain changes
+        receiptRefreshTimeouts.forEach((timeout) => clearTimeout(timeout));
+        setReceiptRefreshTimeouts([]);
+    }, [userAddress, chainId]);
 
     useEffect(() => {
         (async () => {
@@ -231,28 +401,25 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
         })();
     }, [
         chainId,
-        blockPollingUrl,
         provider,
         poolStatsPollingCacheTime,
         isTradeRoute,
         isGasPriceFetchManuallyTriggerered,
     ]);
 
-    async function pollBlockNum(): Promise<void> {
+    const pollBlockNum = useCallback(async () => {
         try {
-            const lastBlockNumber = await fetchBlockNumber(blockPollingUrl);
+            const lastBlockNumber = await fetchBlockNumber(provider);
             if (lastBlockNumber > 0) {
                 setLastBlockNumber(lastBlockNumber);
                 setRpcNodeStatus('active');
             } else {
                 setRpcNodeStatus('inactive');
-                isPrimaryRpcNodeInactive.current = true;
             }
         } catch (error) {
             setRpcNodeStatus('inactive');
-            isPrimaryRpcNodeInactive.current = true;
         }
-    }
+    }, [provider]);
 
     useEffect(() => {
         if (!isUserOnline) return;
@@ -265,7 +432,7 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
 
         // Clean up the interval when the component unmounts or when dependencies change
         return () => clearInterval(interval);
-    }, [isUserOnline, chainId, BLOCK_NUM_POLL_MS, blockPollingUrl]);
+    }, [isUserOnline, chainId, BLOCK_NUM_POLL_MS, provider]);
 
     const [gcgoPoolList, setGcgoPoolList] = useState<PoolIF[] | undefined>();
 
@@ -357,10 +524,6 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
               ? gcgoPoolList
               : undefined;
     }, [gcgoPoolList, analyticsPoolList]);
-
-    useEffect(() => {
-        isPrimaryRpcNodeInactive.current = false;
-    }, [chainId]);
 
     // used to trigger token balance refreshes every 5 minutes
     const everyFiveMinutes = Math.floor(Date.now() / 300000);
@@ -499,7 +662,6 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
             ) {
                 try {
                     const combinedBalances: TokenIF[] = [];
-
                     // Run both API calls concurrently
                     const [ambientListWalletBalances, dexBalancesFromCache] =
                         await Promise.all([
@@ -507,6 +669,7 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
                                 address: userAddress,
                                 chain: chainId,
                                 crocEnv: crocEnv,
+                                ackTokens: tokens.ackTokens,
                                 _refreshTime: everyFiveSeconds,
                             }),
                             cachedFetchDexBalances({
@@ -585,7 +748,12 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
                         setIsTokenBalanceFetchManuallyTriggerered(false);
                     }
                 } catch (error) {
-                    console.error({ error });
+                    if (error instanceof Error) {
+                        console.error(error.message); // Prints the error message
+                        console.error(error.stack); // Prints the stack trace
+                    } else {
+                        console.error('Unknown error', error);
+                    }
                 }
             }
         })();
@@ -953,8 +1121,6 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
         lastBlockNumber,
         setLastBlockNumber,
         rpcNodeStatus,
-        isPrimaryRpcNodeInactive,
-        blockPollingUrl,
         gasPriceInGwei,
         connectedUserXp,
         connectedUserBlastXp,
@@ -980,6 +1146,7 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
         setIsGasPriceFetchManuallyTriggerered,
         isAnalyticsPoolListDefinedOrUnavailable,
         activePoolList,
+        vaultsOnCurrentChain,
     };
 
     return (

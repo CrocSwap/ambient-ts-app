@@ -27,11 +27,18 @@ const HexReveal: React.FC<HexRevealProps> = ({
     const [revealedTexts, setRevealedTexts] = useState<string[]>([]);
 
     useEffect(() => {
-        const childTexts = React.Children.map(children, (child) =>
-            typeof child === 'string'
-                ? child
-                : (child as React.ReactElement).props.children,
-        ) as string[];
+        const childTexts = React.Children.toArray(children)
+            .map((child) => {
+                if (typeof child === 'string') {
+                    return child;
+                }
+                if (React.isValidElement<{ children?: ReactNode }>(child)) {
+                    const children = child.props.children;
+                    return typeof children === 'string' ? children : '';
+                }
+                return '';
+            })
+            .filter(Boolean);
 
         const hexifiedTexts = childTexts.map((text) => hexifyText(text));
         setRevealedTexts(hexifiedTexts);
@@ -77,12 +84,17 @@ const HexReveal: React.FC<HexRevealProps> = ({
         <>
             {React.Children.map(children, (child, index) => {
                 if (typeof child === 'string') {
-                    return <span>{revealedTexts[index]}</span>;
-                } else {
-                    return React.cloneElement(child as React.ReactElement, {
-                        children: revealedTexts[index],
+                    return <span key={index}>{revealedTexts[index]}</span>;
+                } else if (
+                    React.isValidElement<{ children?: ReactNode }>(child)
+                ) {
+                    return React.cloneElement(child, {
+                        ...child.props,
+                        children: revealedTexts[index] || '',
+                        key: child.key || index,
                     });
                 }
+                return child;
             })}
         </>
     );

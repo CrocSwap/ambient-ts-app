@@ -1,10 +1,11 @@
-import { useContext, useEffect, useMemo, useState } from 'react';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
 
-import { CrocEnv, CrocPoolView } from '@crocswap-libs/sdk';
+import { AiOutlineInfoCircle } from 'react-icons/ai';
 import { getFormattedNumber } from '../../../ambient-utils/dataLayer';
 import { TokenPairIF } from '../../../ambient-utils/types';
-import { ChainDataContext } from '../../../contexts/ChainDataContext';
+import { AppStateContext } from '../../../contexts';
 import { FlexContainer, Text } from '../../../styled/Common';
+import { ExplanationButton } from '../../Form/Icons/Icons.styles';
 import { WarningBox } from '../../RangeActionModal/WarningBox/WarningBox';
 import TradeConfirmationSkeleton from '../../Trade/TradeModules/TradeConfirmationSkeleton';
 
@@ -25,10 +26,10 @@ interface propsIF {
     buyQtyString: string;
     onClose?: () => void;
     isTokenAPrimary: boolean;
-    priceImpactWarning: JSX.Element | undefined;
+    priceImpactWarning: React.ReactNode | undefined;
     isSaveAsDexSurplusChecked: boolean;
     percentDiffUsdValue: number | undefined;
-    crocEnv: CrocEnv | undefined;
+    isMevProtectionEnabled: boolean | undefined;
 }
 
 export default function ConfirmSwapModal(props: propsIF) {
@@ -52,49 +53,29 @@ export default function ConfirmSwapModal(props: propsIF) {
         priceImpactWarning,
         isSaveAsDexSurplusChecked,
         percentDiffUsdValue,
-        crocEnv,
+        isMevProtectionEnabled,
     } = props;
-
-    const { lastBlockNumber } = useContext(ChainDataContext);
-
+    const {
+        globalPopup: { open: openGlobalPopup },
+    } = useContext(AppStateContext);
     const sellTokenData = tokenPair.dataTokenA;
     const buyTokenData = tokenPair.dataTokenB;
 
     const [isDenomBaseLocal, setIsDenomBaseLocal] = useState(isDenomBase);
 
-    const [baselineBlockNumber, setBaselineBlockNumber] =
-        useState<number>(lastBlockNumber);
-
-    const [baselineBuyTokenPrice, setBaselineBuyTokenPrice] = useState<
-        number | undefined
-    >();
-
-    const [currentBuyTokenPrice, setCurrentBuyTokenPrice] = useState<
-        number | undefined
-    >();
-
     const [isWaitingForPriceChangeAckt, setIsWaitingForPriceChangeAckt] =
         useState<boolean>(false);
 
     // logic to prevent swap quantities updating during/after swap completion
-    const [memoTokenAQty, setMemoTokenAQty] = useState<string | undefined>();
-    const [memoTokenBQty, setMemoTokenBQty] = useState<string | undefined>();
+    const [memoTokenAQty, setMemoTokenAQty] = useState<string | undefined>(
+        sellQtyString,
+    );
+    const [memoTokenBQty, setMemoTokenBQty] = useState<string | undefined>(
+        buyQtyString,
+    );
     const [memoEffectivePrice, setMemoEffectivePrice] = useState<
         number | undefined
-    >();
-
-    const [poolView, setPoolView] = useState<CrocPoolView | undefined>();
-
-    useEffect(() => {
-        if (tokenPair) {
-            setPoolView(
-                crocEnv?.pool(
-                    tokenPair.dataTokenA.address,
-                    tokenPair.dataTokenB.address,
-                ),
-            );
-        }
-    }, [tokenPair.dataTokenA.address, tokenPair.dataTokenB.address]);
+    >(effectivePrice);
 
     useEffect(() => {
         if (newSwapTransactionHash === '') {
@@ -104,54 +85,26 @@ export default function ConfirmSwapModal(props: propsIF) {
         }
     }, [newSwapTransactionHash, sellQtyString, buyQtyString, effectivePrice]);
 
-    const setBaselinePriceAsync = async () => {
-        if (!poolView) return;
-        const newBaselinePrice =
-            await poolView.displayPrice(baselineBlockNumber);
-        const baselineBuyTokenPrice = isTokenABase
-            ? 1 / newBaselinePrice
-            : newBaselinePrice;
-        setBaselineBuyTokenPrice(baselineBuyTokenPrice);
-    };
-
-    const setCurrentPriceAsync = async () => {
-        if (!poolView) return;
-        const currentBasePrice = await poolView.displayPrice(lastBlockNumber);
-        const currentBuyTokenPrice = isTokenABase
-            ? 1 / currentBasePrice
-            : currentBasePrice;
-        setCurrentBuyTokenPrice(currentBuyTokenPrice);
-    };
+    const [initialEffectivePrice, setInitialEffectivePrice] = useState<
+        number | undefined
+    >(effectivePrice);
 
     useEffect(() => {
-        if (poolView) {
-            const fetchPrices = async () => {
-                await Promise.allSettled([
-                    setBaselinePriceAsync(),
-                    setCurrentPriceAsync(),
-                ]);
-            };
-
-            fetchPrices();
-        }
-    }, [!!poolView]);
-
-    useEffect(() => {
-        if (!isWaitingForPriceChangeAckt) setBaselinePriceAsync();
+        if (!isWaitingForPriceChangeAckt)
+            setInitialEffectivePrice(effectivePrice);
     }, [isWaitingForPriceChangeAckt]);
 
-    useEffect(() => {
-        if (lastBlockNumber > baselineBlockNumber) {
-            setCurrentPriceAsync();
-        }
-    }, [lastBlockNumber, baselineBlockNumber]);
+    const priceChangePercentage = useMemo(() => {
+        if (!memoEffectivePrice || !initialEffectivePrice) return;
 
-    const buyTokenPriceChangePercentage = useMemo(() => {
-        if (!currentBuyTokenPrice || !baselineBuyTokenPrice) return;
+        // calculate the percentage change in pool price since the confirm modal was opened
+        // effectivePrice is the qty of buyToken user should receive per 1 sellToken
+        // changePercentage is positive when the qty of buyToken per sellToken decreases
+        // user must acknowledge price change > 0.01% to proceed with swap
 
         const changePercentage =
-            ((currentBuyTokenPrice - baselineBuyTokenPrice) /
-                baselineBuyTokenPrice) *
+            ((initialEffectivePrice - memoEffectivePrice) /
+                initialEffectivePrice) *
             100;
 
         if (changePercentage >= 0.01) {
@@ -161,10 +114,10 @@ export default function ConfirmSwapModal(props: propsIF) {
         }
 
         return changePercentage;
-    }, [currentBuyTokenPrice, baselineBuyTokenPrice]);
+    }, [memoEffectivePrice, initialEffectivePrice]);
 
-    const buyTokenPriceChangeString = buyTokenPriceChangePercentage
-        ? buyTokenPriceChangePercentage.toLocaleString('en-US', {
+    const buyTokenPriceChangeString = priceChangePercentage
+        ? priceChangePercentage.toLocaleString('en-US', {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
           })
@@ -188,7 +141,6 @@ export default function ConfirmSwapModal(props: propsIF) {
             button={
                 <button
                     onClick={() => {
-                        setBaselineBlockNumber(lastBlockNumber);
                         setIsWaitingForPriceChangeAckt(false);
                     }}
                 >
@@ -240,6 +192,49 @@ export default function ConfirmSwapModal(props: propsIF) {
                     </Text>
                 </FlexContainer>
             }
+            {isMevProtectionEnabled !== undefined && (
+                <FlexContainer
+                    justifyContent='space-between'
+                    alignItems='center'
+                >
+                    <FlexContainer alignItems='center' gap={8}>
+                        <Text fontSize='body' color='text2'>
+                            MEV-Protection
+                        </Text>
+                        <ExplanationButton
+                            onClick={() =>
+                                openGlobalPopup(
+                                    <FlexContainer
+                                        flexDirection='column'
+                                        alignItems='center'
+                                        gap={8}
+                                    >
+                                        <Text fontSize='body' color='accent1'>
+                                            This can be modified in swap
+                                            settings.
+                                        </Text>
+                                        Fastlane MEV Protection prevents users
+                                        from leaking MEV (maximal extractable
+                                        value) to searchers and validators and
+                                        instead rebates that value back to the
+                                        user, resulting in better pricing on
+                                        swaps.
+                                    </FlexContainer>,
+                                    'MEV protection by Fastlane',
+                                    'right',
+                                )
+                            }
+                            aria-label='Open range width explanation popup.'
+                        >
+                            <AiOutlineInfoCircle color='var(--text2)' />
+                        </ExplanationButton>
+                    </FlexContainer>
+
+                    <Text fontSize='body' color='text2'>
+                        {isMevProtectionEnabled ? 'Enabled' : 'Disabled'}
+                    </Text>
+                </FlexContainer>
+            )}
             <FlexContainer justifyContent='space-between' alignItems='center'>
                 <Text fontSize='body' color='text2'>
                     Effective Conversion Rate

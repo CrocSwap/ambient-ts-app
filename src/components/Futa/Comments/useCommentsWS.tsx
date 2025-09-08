@@ -77,7 +77,7 @@ const useCommentsWS = (
 
     const offlineFetcherMS = 3000;
     const [offlineFetcher, setOfflineFetcher] = useState<NodeJS.Timeout>();
-    const offlineFetcherRef = useRef<NodeJS.Timeout>();
+    const offlineFetcherRef = useRef<NodeJS.Timeout | undefined>(undefined);
     offlineFetcherRef.current = offlineFetcher;
 
     const url = CHAT_BACKEND_URL + '/chat/api/subscribe/';

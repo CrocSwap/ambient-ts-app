@@ -51,7 +51,18 @@
     line-height: var(--body-lh);
     gap: 8px;
     cursor: pointer;
-    color: var(--text1);
+    color: var(--text2);
+}
+
+.account_total {
+    display: flex;
+    flex-direction: row;
+    font-weight: 300;
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+    gap: 8px;
+    cursor: default;
+    color: var(--text2);
 }
 
 .button_bank {
@@ -114,10 +125,11 @@
 
 @media only screen and (min-width: 768px) {
     .user_facing_content {
-        justify-content: space-between;
         width: 100%;
+        display: flex;
+        flex-direction: row;
 
-        max-width: 250px;
+        gap: 16px;
     }
     .portfolio_banner_account {
         width: auto;

@@ -34,8 +34,8 @@ const chainSpecForAppKit: Chain = {
     blockExplorers: {
         default: {
             name: 'Swell Explorer',
-            url: 'https://explorer.swellnetwork.io',
-            apiUrl: 'https://explorer.swellnetwork.io/api',
+            url: 'https://swellchainscan.io/',
+            apiUrl: 'https://api.swellchainscan.io/',
         },
     },
     contracts: {
@@ -64,6 +64,7 @@ const defaultTokenEntries = [
     ['stBTC', '0xf6718b2701D4a6498eF77D7c152b2137Ab28b8A3'],
     ['KING', '0xc2606aade4bdd978a4fa5a6edb3b66657acee6f8'],
     ['USDT0', '0x102d758f688a4c1c5a80b116bd945d4455460282'],
+    ['USDK', '0x0000bAa0b1678229863c0A941C1056b83a1955F5'],
 ] as const;
 
 type SwellTokens = Record<(typeof defaultTokenEntries)[number][0], TokenIF>;
@@ -103,14 +104,14 @@ export const swellMainnet: NetworkIF = {
     chainId: chainIdHex,
     chainSpec: chainSpecFromSDK,
     GCGO_URL: GCGO_SWELL_URL,
-    evmRpcUrl: PRIMARY_RPC_URL,
-    fallbackRpcUrl: FALLBACK_RPC_URL,
+    evmRpcUrls: [PRIMARY_RPC_URL, FALLBACK_RPC_URL],
     chainSpecForAppKit,
     defaultPair: [SWELL_TOKENS.ETH, SWELL_TOKENS.USDe],
     defaultPairFuta: [SWELL_TOKENS.ETH, SWELL_TOKENS.USDe],
     poolIndex: chainSpecFromSDK.poolIndex,
     gridSize: chainSpecFromSDK.gridSize,
     isTestnet: chainSpecFromSDK.isTestNet,
+    fastLaneProtectionEnabled: false,
     blockExplorer: (
         chainSpecForAppKit.blockExplorers?.default.url || ''
     ).replace(/\/?$/, '/'),
@@ -119,6 +120,6 @@ export const swellMainnet: NetworkIF = {
     vaultsEnabled: true,
     tempestApiNetworkName: 'swell',
     topPools,
-    priorityPool: [SWELL_TOKENS['KING'], SWELL_TOKENS['ETH']],
+    // priorityPool: [SWELL_TOKENS['KING'], SWELL_TOKENS['ETH']],
     getGasPriceInGwei,
 };

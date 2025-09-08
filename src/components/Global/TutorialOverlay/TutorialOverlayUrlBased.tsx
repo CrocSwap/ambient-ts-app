@@ -28,7 +28,7 @@ import { DISABLE_ALL_TUTOS } from '../../../ambient-utils/constants';
 interface TutorialOverlayPropsIF {
     replayTutorial: boolean;
     setReplayTutorial: Dispatch<SetStateAction<boolean>>;
-    tutorialBtnRef: React.RefObject<HTMLDivElement>;
+    tutorialBtnRef: React.RefObject<HTMLDivElement | null>;
     checkStepHash?: boolean;
 }
 function TutorialOverlayUrlBased(props: TutorialOverlayPropsIF) {
@@ -39,7 +39,7 @@ function TutorialOverlayUrlBased(props: TutorialOverlayPropsIF) {
     const [selectedTutorial, setSelectedTutorial] = useState<
         TutorialIF | undefined
     >();
-    const selectedTutorialRef = useRef<TutorialIF | undefined>();
+    const selectedTutorialRef = useRef<TutorialIF | undefined>(undefined);
     selectedTutorialRef.current = selectedTutorial;
     const [isTutoBuild, setIsTutoBuild] = useState<boolean>(false);
     const [stepsFiltered, setStepsFiltered] = useState<TutorialStepIF[]>([]);

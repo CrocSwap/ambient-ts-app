@@ -54,7 +54,7 @@ export default function TableInfoTabs() {
     }
     const lengthOfDetailedData = Object.keys(detailedData).length;
 
-    function tabDataDisplay(time: string): JSX.Element {
+    function tabDataDisplay(time: string): React.ReactNode {
         const dataForTime = getDetailedData(time);
         const content = dataForTime ? (
             <GridContainer numCols={lengthOfDetailedData} gap={0}>

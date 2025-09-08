@@ -10,9 +10,10 @@ export const tokenListURIs = {
     scrollCoingecko: 'https://tokens.coingecko.com/scroll/all.json',
     scrollTech:
         'https://raw.githubusercontent.com/scroll-tech/token-list/main/scroll.tokenlist.json',
+    plumeNetwork: 'https://assets.plume.org/plume.tokenlist.json',
     // uniswap: 'https://tokens.uniswap.org',
     // futa: '/futa-token-list.json',
-    baseCoingecko: 'https://tokens.coingecko.com/base/all.json',
+    // baseCoingecko: 'https://tokens.coingecko.com/base/all.json',
 };
 
 export type TokenListURITypes = keyof typeof tokenListURIs;

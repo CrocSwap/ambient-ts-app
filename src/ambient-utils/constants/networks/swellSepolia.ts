@@ -40,7 +40,7 @@ const chainSpecForAppKit: Chain = {
     blockExplorers: {
         default: {
             name: 'Swell Testnet Explorer',
-            url: 'https://swell-testnet-explorer.alt.technology',
+            url: 'https://swell-testnet-explorer.alt.technology/',
         },
     },
 };
@@ -68,8 +68,7 @@ export const swellSepolia: NetworkIF = {
     chainId: chainIdHex,
     chainSpec: chainSpecFromSDK,
     GCGO_URL: GCGO_TESTNET_URL,
-    evmRpcUrl: PRIMARY_RPC_URL,
-    fallbackRpcUrl: FALLBACK_RPC_URL,
+    evmRpcUrls: [PRIMARY_RPC_URL, FALLBACK_RPC_URL],
     chainSpecForAppKit,
     defaultPair: [SWELL_SEPOLIA_TOKENS.ETH, SWELL_SEPOLIA_TOKENS.USDC],
     defaultPairFuta: [SWELL_SEPOLIA_TOKENS.ETH, SWELL_SEPOLIA_TOKENS.USDC],
@@ -83,6 +82,7 @@ export const swellSepolia: NetworkIF = {
     tokenPriceQueryAssetPlatform: undefined,
     vaultsEnabled: false,
     tempestApiNetworkName: '',
+    fastLaneProtectionEnabled: false,
     topPools: [
         new TopPool(
             SWELL_SEPOLIA_TOKENS.ETH,

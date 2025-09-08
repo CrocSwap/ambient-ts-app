@@ -1,3 +1,5 @@
+import { TempestStrategy } from '@crocswap-libs/sdk/dist/vaults/tempest';
+
 export interface AllVaultsServerIF {
     id: string;
     createdAt: number;
@@ -8,7 +10,7 @@ export interface AllVaultsServerIF {
     feeRecipientAddress: string;
     chainId: string;
     address: `0x${string}`;
-    strategy: string;
+    strategy: TempestStrategy;
     token0Address: `0x${string}`;
     token1Address: `0x${string}`;
     token0Decimals: number;

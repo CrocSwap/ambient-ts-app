@@ -1098,10 +1098,14 @@ export default function InitPool() {
     };
 
     const sendTransaction = isMintLiqEnabled
-        ? async () => {
-              sendInit(initialPriceInBaseDenom, sendRangePosition);
-          }
-        : () => {
+        ? !isTxCompletedInit
+            ? async () => {
+                  sendInit(initialPriceInBaseDenom, sendRangePosition);
+              }
+            : async () => {
+                  sendRangePosition();
+              }
+        : async () => {
               sendInit(initialPriceInBaseDenom);
           };
 
@@ -1137,6 +1141,8 @@ export default function InitPool() {
         isTokenAPrimary,
         tokenABalance,
         tokenBBalance,
+        tokenAAllowance,
+        tokenBAllowance,
     };
 
     const minPriceDisplay = isAmbient ? '0' : pinnedMinPriceDisplayTruncated;

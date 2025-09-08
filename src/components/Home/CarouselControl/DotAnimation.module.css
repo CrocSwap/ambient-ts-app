@@ -13,18 +13,35 @@
     gap: 8px;
 }
 
-.dots span {
+.dots .dot {
     cursor: pointer;
     background-color: var(--text3);
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    opacity: 0.5;
+    transition: all 0.3s ease-in-out;
+    display: block;
+}
+
+.dots .dot.activeDot {
+    width: 10px;
+    height: 20px;
+    border-radius: 20%;
+    opacity: 1;
+    transition: all 0.3s ease-in-out;
 }
 
 .show_arrow {
     opacity: 1;
+    transition: opacity 0.3s ease-in-out;
+    cursor: pointer;
 }
 
 .disable_arrow {
     opacity: 0;
     pointer-events: none;
+    transition: opacity 0.3s ease-in-out;
 }
 
 @media (max-width: 500px) {

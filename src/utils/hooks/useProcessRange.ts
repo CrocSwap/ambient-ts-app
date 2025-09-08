@@ -1,13 +1,12 @@
-import { CrocEnv } from '@crocswap-libs/sdk';
 import moment from 'moment';
 import { useContext, useEffect, useMemo, useState } from 'react';
 import {
-    getChainExplorer,
     getFormattedNumber,
     getMoneynessRank,
     getUnicodeCharacter,
     trimString,
 } from '../../ambient-utils/dataLayer';
+import { getBlockExplorerUrl } from '../../ambient-utils/dataLayer/functions/chains';
 import { getPositionHash } from '../../ambient-utils/dataLayer/functions/getPositionHash';
 import { PositionIF } from '../../ambient-utils/types';
 import { useFetchBatch } from '../../App/hooks/useFetchBatch';
@@ -17,11 +16,10 @@ import { UserDataContext } from '../../contexts/UserDataContext';
 
 export const useProcessRange = (
     position: PositionIF,
-    crocEnv: CrocEnv | undefined,
     account = '',
     isAccountView?: boolean,
 ) => {
-    const blockExplorer = getChainExplorer(position.chainId);
+    const blockExplorer = getBlockExplorerUrl(position.chainId);
 
     const { isDenomBase, poolPriceNonDisplay } = useContext(TradeDataContext);
     const { ensName: ensNameConnectedUser } = useContext(UserDataContext);

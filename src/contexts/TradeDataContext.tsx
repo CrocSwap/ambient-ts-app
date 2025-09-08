@@ -9,13 +9,9 @@ import {
     useMemo,
     useState,
 } from 'react';
+import { useLocation } from 'react-router';
 import { getDefaultPairForChain } from '../ambient-utils/constants';
-import {
-    isBtcPair,
-    isETHPair,
-    isStablePair,
-    translateTokenSymbol,
-} from '../ambient-utils/dataLayer';
+import { isStablePair, translateTokenSymbol } from '../ambient-utils/dataLayer';
 import { TokenIF } from '../ambient-utils/types';
 import { AppStateContext } from './AppStateContext';
 import { TokenContext } from './TokenContext';
@@ -23,6 +19,7 @@ import { TokenContext } from './TokenContext';
 export interface TradeDataContextIF {
     tokenA: TokenIF;
     tokenB: TokenIF;
+    contextMatchesParams: boolean;
     baseToken: TokenIF;
     quoteToken: TokenIF;
     areDefaultTokensUpdatedForChain: boolean;
@@ -139,6 +136,33 @@ export const TradeDataContextProvider = (props: { children: ReactNode }) => {
               : dfltTokenB,
     );
 
+    const pathname = useLocation().pathname;
+
+    // hook to sync token addresses in RTK to token addresses in RTK
+    const contextMatchesParams = useMemo(() => {
+        let matching = false;
+        const tokenAAddress = tokenA.address;
+        const tokenBAddress = tokenB.address;
+
+        if (pathname.includes('tokenA') && pathname.includes('tokenB')) {
+            const getAddrFromParams = (token: string) => {
+                const idx = pathname.indexOf(token);
+                const address = pathname.substring(idx + 7, idx + 49);
+                return address;
+            };
+            const addrTokenA = getAddrFromParams('tokenA');
+            const addrTokenB = getAddrFromParams('tokenB');
+            if (
+                addrTokenA.toLowerCase() === tokenAAddress.toLowerCase() &&
+                addrTokenB.toLowerCase() === tokenBAddress.toLowerCase()
+            ) {
+                matching = true;
+            }
+        }
+
+        return matching;
+    }, [pathname, tokenA, tokenB]);
+
     const [blackListedTimeParams, setBlackListedTimeParams] = useState<
         Map<string, Set<number>>
     >(new Map());
@@ -202,6 +226,10 @@ export const TradeDataContextProvider = (props: { children: ReactNode }) => {
 
     const [soloToken, setSoloToken] = useState<TokenIF>(defaultBaseToken);
 
+    useEffect(() => {
+        setSoloToken(defaultBaseToken);
+    }, [defaultBaseToken]);
+
     const [shouldSwapDirectionReverse, setShouldSwapDirectionReverse] =
         useState<boolean>(false);
 
@@ -256,10 +284,7 @@ export const TradeDataContextProvider = (props: { children: ReactNode }) => {
         baseAddress: string,
         quoteAddress: string,
     ) => {
-        const isPoolStable =
-            isStablePair(baseAddress, quoteAddress) ||
-            isETHPair(baseAddress, quoteAddress, chainId) ||
-            isBtcPair(baseAddress, quoteAddress);
+        const isPoolStable = isStablePair(baseAddress, quoteAddress, chainId);
         const defaultWidth = isPoolStable ? 0.5 : 10;
 
         return defaultWidth;
@@ -288,6 +313,7 @@ export const TradeDataContextProvider = (props: { children: ReactNode }) => {
     const tradeDataContext = {
         tokenA,
         tokenB,
+        contextMatchesParams,
         baseToken,
         quoteToken,
         isTokenABase,

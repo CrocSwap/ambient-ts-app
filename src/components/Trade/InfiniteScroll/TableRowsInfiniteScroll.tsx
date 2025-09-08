@@ -122,58 +122,58 @@ function TableRowsInfiniteScroll({
 
     const markRows = false;
     const [manualMode, setManualMode] = useState(false);
-    const manualModeRef = useRef<boolean>();
+    const manualModeRef = useRef<boolean>(undefined);
     manualModeRef.current = manualMode;
 
     const [showManualScrollDown, setShowManualScrollDown] = useState(false);
     const [showManualScrollUp, setShowManualScrollUp] = useState(false);
 
-    const moreDataLoadingRef = useRef<boolean>();
+    const moreDataLoadingRef = useRef<boolean>(undefined);
     moreDataLoadingRef.current = moreDataLoading;
 
-    const componentLockRef = useRef<boolean>();
+    const componentLockRef = useRef<boolean>(undefined);
     componentLockRef.current = componentLock;
 
     const lastRowRef = useRef<HTMLDivElement | null>(null);
     const firstRowRef = useRef<HTMLDivElement | null>(null);
 
     const [lastSeenTxID, setLastSeenTxID] = useState<string>('');
-    const lastSeenTxIDRef = useRef<string>();
+    const lastSeenTxIDRef = useRef<string>(undefined);
     lastSeenTxIDRef.current = lastSeenTxID;
 
     const [firstSeenTxID, setFirstSeenTxID] = useState<string>('');
-    const firstSeenTxIDRef = useRef<string>();
+    const firstSeenTxIDRef = useRef<string>(undefined);
     firstSeenTxIDRef.current = firstSeenTxID;
 
     const [autoScroll, setAutoScroll] = useState(false);
-    const autoScrollRef = useRef<boolean>();
+    const autoScrollRef = useRef<boolean>(undefined);
     autoScrollRef.current = autoScroll;
 
     const [autoScrollDirection, setAutoScrollDirection] = useState(
         ScrollDirection.DOWN,
     );
-    const autoScrollDirectionRef = useRef<ScrollDirection>();
+    const autoScrollDirectionRef = useRef<ScrollDirection>(undefined);
     autoScrollDirectionRef.current = autoScrollDirection;
 
     const [isTableReady, setIsTableReady] = useState(true);
-    const isTableReadyRef = useRef<boolean>();
+    const isTableReadyRef = useRef<boolean>(undefined);
     isTableReadyRef.current = isTableReady;
 
-    const extraPagesAvailableRef = useRef<number>();
+    const extraPagesAvailableRef = useRef<number>(undefined);
     extraPagesAvailableRef.current = extraPagesAvailable;
 
-    const pagesVisibleRef = useRef<[number, number]>();
+    const pagesVisibleRef = useRef<[number, number]>(undefined);
     pagesVisibleRef.current = pagesVisible;
 
-    const moreDataAvailableRef = useRef<boolean>();
+    const moreDataAvailableRef = useRef<boolean>(undefined);
     moreDataAvailableRef.current = moreDataAvailable;
 
     const [shiftLock, setShiftLock] = useState(false);
-    const shiftLockRef = useRef<boolean>();
+    const shiftLockRef = useRef<boolean>(undefined);
     shiftLockRef.current = shiftLock;
 
     const [reqLock, setReqLock] = useState(false);
-    const reqLockRef = useRef<boolean>();
+    const reqLockRef = useRef<boolean>(undefined);
     reqLockRef.current = reqLock;
 
     const [actionHistory, setActionHistory] = useState('');

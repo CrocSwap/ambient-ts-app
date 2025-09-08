@@ -14,6 +14,7 @@ export interface tokenMethodsIF {
     verify: (addr: string) => boolean;
     acknowledge: (tkn: TokenIF) => void;
     tokenUniv: TokenIF[];
+    ackTokens: TokenIF[];
     getTokenByAddress: (addr: string) => TokenIF | undefined;
     getTokensFromList: (uri: string) => TokenIF[];
     getTokensByNameOrSymbol: (
@@ -400,6 +401,7 @@ export const useTokens = (): tokenMethodsIF => {
             verify: verifyToken,
             acknowledge: ackToken,
             tokenUniv: tokenUniv,
+            ackTokens: ackTokens,
             getTokenByAddress,
             getTokensFromList,
             getTokensByNameOrSymbol,

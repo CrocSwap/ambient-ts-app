@@ -1,3 +1,4 @@
+import { toDisplayQty } from '@crocswap-libs/sdk';
 import { useContext, useEffect, useMemo, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { fetchUserRecentChanges } from '../../../ambient-utils/api';
@@ -6,6 +7,7 @@ import {
     filterLimitArray,
     getLimitOrderData,
     getPositionData,
+    sumTotalValueUSD,
 } from '../../../ambient-utils/dataLayer';
 import {
     LimitOrderIF,
@@ -21,6 +23,7 @@ import openOrdersImage from '../../../assets/images/sidebarImages/openOrders.svg
 import rangePositionsImage from '../../../assets/images/sidebarImages/rangePositions.svg';
 import recentTransactionsImage from '../../../assets/images/sidebarImages/recentTransactions.svg';
 import walletImage from '../../../assets/images/sidebarImages/wallet.svg';
+import { TokenBalanceContext } from '../../../contexts';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
@@ -30,6 +33,7 @@ import { GraphDataContext } from '../../../contexts/GraphDataContext';
 import { TokenContext } from '../../../contexts/TokenContext';
 import {
     BlastUserXpDataIF,
+    UserDataContext,
     UserXpDataIF,
 } from '../../../contexts/UserDataContext';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
@@ -69,6 +73,15 @@ export default function PortfolioTabs(props: propsIF) {
     const { activePoolList } = useContext(ChainDataContext);
 
     const {
+        setTotalLiquidityValue,
+        setTotalWalletBalanceValue,
+        setTotalExchangeBalanceValue,
+        userAddress,
+        setTotalVaultsValue,
+        userVaultData,
+    } = useContext(UserDataContext);
+
+    const {
         server: { isEnabled: isServerEnabled },
         isUserIdle,
         activeNetwork: { GCGO_URL, chainId },
@@ -82,6 +95,12 @@ export default function PortfolioTabs(props: propsIF) {
     const { positionsByUser, limitOrdersByUser, transactionsByUser } =
         useContext(GraphDataContext);
 
+    const activePortfolioAddress = useMemo(() => {
+        return connectedAccountActive
+            ? userAddress || ''
+            : resolvedAddress || '';
+    }, [connectedAccountActive, userAddress, resolvedAddress]);
+
     // TODO: can pull into GraphDataContext
     const filterFn = <T extends { chainId: string }>(x: T) =>
         x.chainId === chainId;
@@ -91,15 +110,31 @@ export default function PortfolioTabs(props: propsIF) {
     const _limitsByUser = limitOrdersByUser.limitOrders.filter(filterFn);
 
     const [lookupAccountPositionData, setLookupAccountPositionData] = useState<
-        PositionIF[]
-    >([]);
+        PositionIF[] | undefined
+    >();
     const [lookupAccountLimitOrderData, setLookupAccountLimitOrderData] =
-        useState<LimitOrderIF[]>([]);
+        useState<LimitOrderIF[] | undefined>();
     const [lookupAccountTransactionData, setLookupAccountTransactionData] =
-        useState<TransactionIF[]>([]);
+        useState<TransactionIF[] | undefined>();
 
     const userPositionsCacheEndpoint = GCGO_URL + '/user_positions?';
     const userLimitOrdersCacheEndpoint = GCGO_URL + '/user_limit_orders?';
+
+    useEffect(() => {
+        let totalValue = 0;
+        if (userVaultData) {
+            totalValue = userVaultData.reduce((total: number, vault: any) => {
+                // Parse balanceUsd as a float, default to 0 if empty or invalid
+                const usd = parseFloat(vault.balanceUsd);
+                return total + (isNaN(usd) ? 0 : usd);
+            }, 0);
+        }
+        setTotalVaultsValue({
+            value: totalValue,
+            chainId: userVaultData?.[0]?.chainId || chainId,
+            address: userVaultData?.[0]?.walletAddress || userAddress || '',
+        });
+    }, [JSON.stringify(userVaultData), chainId, userAddress]);
 
     const getLookupUserPositions = async (accountToSearch: string) => {
         fetch(
@@ -296,6 +331,7 @@ export default function PortfolioTabs(props: propsIF) {
                 : lookupAccountPositionData,
         [connectedAccountActive, _positionsByUser, lookupAccountPositionData],
     );
+
     const activeAccountLimitOrderData = useMemo(
         () =>
             connectedAccountActive
@@ -303,6 +339,35 @@ export default function PortfolioTabs(props: propsIF) {
                 : lookupAccountLimitOrderData,
         [connectedAccountActive, _limitsByUser, lookupAccountLimitOrderData],
     );
+
+    useEffect(() => {
+        setTotalLiquidityValue(undefined);
+        setTotalExchangeBalanceValue(undefined);
+        setTotalWalletBalanceValue(undefined);
+    }, [chainId, userAddress]);
+
+    useEffect(() => {
+        setTotalLiquidityValue({
+            value:
+                activeAccountPositionData && activeAccountLimitOrderData
+                    ? sumTotalValueUSD(activeAccountPositionData) +
+                      sumTotalValueUSD(activeAccountLimitOrderData)
+                    : activeAccountPositionData
+                      ? sumTotalValueUSD(activeAccountPositionData)
+                      : activeAccountLimitOrderData
+                        ? sumTotalValueUSD(activeAccountLimitOrderData)
+                        : 0,
+            chainId: chainId,
+            address: connectedAccountActive
+                ? userAddress || ''
+                : resolvedAddress || '',
+        });
+    }, [
+        JSON.stringify(activeAccountPositionData),
+        JSON.stringify(activeAccountLimitOrderData),
+        chainId,
+        connectedAccountActive ? userAddress : resolvedAddress,
+    ]);
 
     const activeAccountTransactionData = useMemo(
         () =>
@@ -329,6 +394,68 @@ export default function PortfolioTabs(props: propsIF) {
                   }),
         [connectedAccountActive, _txsByUser, lookupAccountTransactionData],
     );
+
+    const { tokenBalances } = useContext(TokenBalanceContext);
+
+    const tokensToRender = useMemo(() => {
+        return connectedAccountActive ? tokenBalances : resolvedAddressTokens;
+    }, [connectedAccountActive, tokenBalances, resolvedAddressTokens]);
+
+    useEffect(() => {
+        async function calculateBalances() {
+            if (
+                !tokensToRender ||
+                tokensToRender.length === 0 ||
+                Number(chainId) !== Number(tokensToRender[0]?.chainId)
+            ) {
+                setTotalExchangeBalanceValue(undefined);
+                setTotalWalletBalanceValue(undefined);
+                return;
+            }
+            const results = await Promise.all(
+                tokensToRender.map(async (token) => {
+                    if (!token) {
+                        return { exchange: 0, wallet: 0 };
+                    }
+                    let price = 0;
+                    try {
+                        const priceObj = await cachedFetchTokenPrice(
+                            token.address,
+                            chainId,
+                        );
+                        price = priceObj?.usdPrice ?? 0;
+                    } catch {}
+                    const dexBalanceDisplay = token.dexBalance
+                        ? toDisplayQty(token.dexBalance, token.decimals)
+                        : undefined;
+                    const dexBalanceDisplayNum = dexBalanceDisplay
+                        ? parseFloat(dexBalanceDisplay)
+                        : 0;
+                    const walletBalanceDisplay = token.walletBalance
+                        ? toDisplayQty(token.walletBalance, token.decimals)
+                        : undefined;
+                    const walletBalanceDisplayNum = walletBalanceDisplay
+                        ? parseFloat(walletBalanceDisplay)
+                        : 0;
+                    return {
+                        exchange: price * dexBalanceDisplayNum,
+                        wallet: price * walletBalanceDisplayNum,
+                    };
+                }),
+            );
+            setTotalExchangeBalanceValue({
+                value: results.reduce((sum, v) => sum + v.exchange, 0),
+                chainId: chainId,
+                address: activePortfolioAddress,
+            });
+            setTotalWalletBalanceValue({
+                value: results.reduce((sum, v) => sum + v.wallet, 0),
+                chainId: chainId,
+                address: activePortfolioAddress,
+            });
+        }
+        calculateBalances();
+    }, [JSON.stringify(tokensToRender), activePortfolioAddress]);
 
     // props for <Wallet/> React Element
     const walletProps = {
@@ -467,14 +594,14 @@ export default function PortfolioTabs(props: propsIF) {
     // TODO:    this file is changing state without changing URL, we should
     // TODO:    ... refactor to trigger a nav action and update state responsively
 
-    const renderTabContent = (): JSX.Element | null => {
+    const renderTabContent = (): React.ReactNode | null => {
         const selectedTabData = dataToUse.find(
             (tab) => tab.label === activeTab,
         );
         return selectedTabData ? selectedTabData.content : null;
     };
 
-    const mobileTabs: JSX.Element = (
+    const mobileTabs: React.ReactNode = (
         <div className={styles.mobile_tabs_container}>
             <div className={styles.mobile_tabs_button_container}>
                 {dataToUse

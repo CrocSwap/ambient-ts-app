@@ -1,30 +1,38 @@
-import { motion } from 'framer-motion';
+import { useEffect, useRef, useState } from 'react';
 import Divider from '../Divider/FutaDivider';
 import styles from './ConsoleComponent.module.css';
-export default function ConsoleComponent() {
-    // Animation Variants
-    const containerVariants = {
-        hidden: { height: 0, opacity: 0 },
-        visible: {
-            height: '',
-            opacity: 1,
-            transition: {
-                duration: 0.3,
-                staggerChildren: 0.1,
-                delayChildren: 0.2,
-            },
-        },
-        exit: {
-            height: 0,
-            opacity: 0,
-            transition: { duration: 0.3 },
-        },
-    };
 
-    const containerItemVariants = {
-        hidden: { opacity: 0, y: -20 },
-        visible: { opacity: 1, y: 0 },
-    };
+export default function ConsoleComponent() {
+    const [isVisible, setIsVisible] = useState(false);
+    const contentRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        // Trigger the animation after component mounts
+        setIsVisible(true);
+
+        // Set up intersection observer for scroll animations
+        const observer = new IntersectionObserver(
+            (entries) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add(styles.visible);
+                    }
+                });
+            },
+            { threshold: 0.1 },
+        );
+
+        // Observe all action items
+        const actionItems = contentRef.current?.querySelectorAll(
+            `.${styles.actionItem}`,
+        );
+        actionItems?.forEach((item) => observer.observe(item));
+
+        return () => {
+            actionItems?.forEach((item) => observer.unobserve(item));
+            observer.disconnect();
+        };
+    }, []);
 
     const auctionData = [
         { time: '01:51', action: 'AUCTION CREATED', ticker: 'DOGE' },
@@ -41,19 +49,19 @@ export default function ConsoleComponent() {
         <div className={styles.container}>
             <Divider count={2} />
             <h3>console</h3>
-            <motion.div
-                className={styles.content}
-                initial='hidden'
-                animate='visible'
-                exit='exit'
-                variants={containerVariants}
+            <div
+                ref={contentRef}
+                className={`${styles.content} ${isVisible ? styles.visible : ''}`}
             >
-                {[...auctionData, ...auctionData].map((item) => (
-                    <motion.div
+                {[...auctionData, ...auctionData].map((item, index) => (
+                    <div
                         className={styles.actionItem}
-                        key={JSON.stringify(item)}
-                        {...item}
-                        variants={containerItemVariants}
+                        key={`${item.ticker}-${index}`}
+                        style={
+                            {
+                                '--delay': `${index * 0.1}s`,
+                            } as React.CSSProperties
+                        }
                     >
                         <p>{item.time}</p>
                         <p
@@ -68,9 +76,9 @@ export default function ConsoleComponent() {
                             {item.action}
                         </p>
                         <p>{item.ticker}</p>
-                    </motion.div>
+                    </div>
                 ))}
-            </motion.div>
+            </div>
         </div>
     );
 }

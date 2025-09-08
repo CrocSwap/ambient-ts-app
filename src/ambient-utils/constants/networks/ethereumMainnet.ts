@@ -9,7 +9,7 @@ import { GCGO_ETHEREUM_URL } from '../gcgo';
 import { TopPool } from './TopPool';
 
 const RPC_URLS = {
-    PUBLIC: 'https://eth.llamarpc.com',
+    PUBLIC: 'https://ethereum-rpc.publicnode.com',
     SECONDARY_PUBLIC: 'https://eth-mainnet.public.blastapi.io',
     RESTRICTED: import.meta.env.VITE_MAINNET_RPC_URL,
 };
@@ -35,8 +35,8 @@ const chainSpecForAppKit: Chain = {
     blockExplorers: {
         default: {
             name: 'Etherscan',
-            url: 'https://etherscan.io',
-            apiUrl: 'https://api.etherscan.io/api',
+            url: 'https://etherscan.io/',
+            apiUrl: 'https://api.etherscan.io/api/',
         },
     },
     contracts: {
@@ -98,13 +98,13 @@ export const ethereumMainnet: NetworkIF = {
     chainId: chainIdHex,
     chainSpec: chainSpecFromSDK,
     GCGO_URL: GCGO_ETHEREUM_URL,
-    evmRpcUrl: PRIMARY_RPC_URL,
-    fallbackRpcUrl: FALLBACK_RPC_URL,
+    evmRpcUrls: [PRIMARY_RPC_URL, FALLBACK_RPC_URL],
     chainSpecForAppKit,
     defaultPair: [MAINNET_TOKENS.ETH, MAINNET_TOKENS.USDC],
     poolIndex: chainSpecFromSDK.poolIndex,
     gridSize: chainSpecFromSDK.gridSize,
     isTestnet: chainSpecFromSDK.isTestNet,
+    fastLaneProtectionEnabled: false,
     blockExplorer: (
         chainSpecForAppKit.blockExplorers?.default.url || ''
     ).replace(/\/?$/, '/'),

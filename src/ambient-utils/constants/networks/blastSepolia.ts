@@ -44,8 +44,8 @@ const chainSpecForAppKit: Chain = {
     blockExplorers: {
         default: {
             name: 'Blastscan',
-            url: 'https://sepolia.blastscan.io',
-            apiUrl: 'https://api-sepolia.blastscan.io/api',
+            url: 'https://sepolia.blastscan.io/',
+            apiUrl: 'https://api-sepolia.blastscan.io/api/',
         },
     },
     contracts: {
@@ -78,8 +78,7 @@ export const blastSepolia: NetworkIF = {
     chainId: chainIdHex,
     chainSpec: chainSpecFromSDK,
     GCGO_URL: GCGO_TESTNET_URL,
-    evmRpcUrl: PRIMARY_RPC_URL,
-    fallbackRpcUrl: FALLBACK_RPC_URL,
+    evmRpcUrls: [PRIMARY_RPC_URL, FALLBACK_RPC_URL],
     chainSpecForAppKit,
     defaultPair: [BLAST_SEPOLIA_TOKENS.ETH, BLAST_SEPOLIA_TOKENS.USDB],
     poolIndex: chainSpecFromSDK.poolIndex,
@@ -89,6 +88,7 @@ export const blastSepolia: NetworkIF = {
     tokenPriceQueryAssetPlatform: undefined,
     vaultsEnabled: false,
     tempestApiNetworkName: '',
+    fastLaneProtectionEnabled: false,
     topPools: [
         new TopPool(
             BLAST_SEPOLIA_TOKENS.ETH,

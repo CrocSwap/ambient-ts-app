@@ -52,6 +52,38 @@ export interface UserDataContextIF {
     setUserVaultData: React.Dispatch<
         React.SetStateAction<UserVaultsServerIF[] | undefined>
     >;
+    totalLiquidityValue:
+        | { value: number; chainId: string; address: string }
+        | undefined;
+    setTotalLiquidityValue: React.Dispatch<
+        React.SetStateAction<
+            { value: number; chainId: string; address: string } | undefined
+        >
+    >;
+    totalExchangeBalanceValue:
+        | { value: number; chainId: string; address: string }
+        | undefined;
+    setTotalExchangeBalanceValue: React.Dispatch<
+        React.SetStateAction<
+            { value: number; chainId: string; address: string } | undefined
+        >
+    >;
+    totalWalletBalanceValue:
+        | { value: number; chainId: string; address: string }
+        | undefined;
+    setTotalWalletBalanceValue: React.Dispatch<
+        React.SetStateAction<
+            { value: number; chainId: string; address: string } | undefined
+        >
+    >;
+    totalVaultsValue:
+        | { value: number; chainId: string; address: string }
+        | undefined;
+    setTotalVaultsValue: React.Dispatch<
+        React.SetStateAction<
+            { value: number; chainId: string; address: string } | undefined
+        >
+    >;
 }
 
 export interface UserXpDataIF {
@@ -77,6 +109,21 @@ export const UserDataContextProvider = (props: {
         React.useState<string>('');
     const [secondaryEnsFromContext, setSecondaryEnsInContext] =
         React.useState<string>('');
+
+    const [totalLiquidityValue, setTotalLiquidityValue] = React.useState<
+        { value: number; chainId: string; address: string } | undefined
+    >(undefined);
+    const [totalExchangeBalanceValue, setTotalExchangeBalanceValue] =
+        React.useState<
+            { value: number; chainId: string; address: string } | undefined
+        >(undefined);
+    const [totalWalletBalanceValue, setTotalWalletBalanceValue] =
+        React.useState<
+            { value: number; chainId: string; address: string } | undefined
+        >(undefined);
+    const [totalVaultsValue, setTotalVaultsValue] = React.useState<
+        { value: number; chainId: string; address: string } | undefined
+    >(undefined);
 
     const { address: userAddress, isConnected: isUserConnected } =
         useAppKitAccount();
@@ -191,6 +238,14 @@ export const UserDataContextProvider = (props: {
         updateUserAvatarData,
         userVaultData,
         setUserVaultData,
+        totalLiquidityValue,
+        setTotalLiquidityValue,
+        totalExchangeBalanceValue,
+        setTotalExchangeBalanceValue,
+        totalWalletBalanceValue,
+        setTotalWalletBalanceValue,
+        totalVaultsValue,
+        setTotalVaultsValue,
     };
 
     return (

@@ -1,38 +1,9 @@
-import { motion, Variants } from 'framer-motion';
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { BsCheckCircle } from 'react-icons/bs';
 import { FiCircle } from 'react-icons/fi';
 import styles from './ProfileSettingsSkin.module.css';
 
-// const itemVariants: Variants = {
-//     open: {
-//         opacity: 1,
-//         y: 0,
-//         transition: { type: 'spring', stiffness: 300, damping: 24 },
-//     },
-//     closed: { opacity: 0, y: 20, transition: { duration: 0.2 } },
-// };
-
-const mainVariant: Variants = {
-    open: {
-        clipPath: 'inset(0% 0% 0% 0% round 4px)',
-        transition: {
-            type: 'spring',
-            bounce: 0,
-            duration: 0.7,
-            delayChildren: 0.3,
-            staggerChildren: 0.05,
-        },
-    },
-    closed: {
-        clipPath: 'inset(10% 50% 90% 50% round 4px)',
-        transition: {
-            type: 'spring',
-            bounce: 0,
-            duration: 0.3,
-        },
-    },
-};
+// Animation styles are now handled in CSS
 
 interface ProfileSettingSkinItemPropsIF {
     isSelected: boolean;
@@ -63,28 +34,22 @@ export default function ProfileSettingsSkin() {
     const [selected, setSelected] = useState(skinItems[0]);
 
     const dropdownMenuArrow = (
-        <motion.div
-            variants={{
-                open: { rotate: 180 },
-                closed: { rotate: 0 },
-            }}
-            transition={{ duration: 0.2 }}
-            style={{ originY: 0.55 }}
+        <div
+            className={`${styles.dropdown_arrow} ${isOpen ? styles.rotated : ''}`}
         >
             <svg width='15' height='15' viewBox='0 0 20 20'>
                 <path d='M0 7 L 20 7 L 10 16' />
             </svg>
-        </motion.div>
+        </div>
     );
 
     function SkinItem(props: ProfileSettingSkinItemPropsIF) {
         const { isSelected, onClick, name } = props;
 
         return (
-            <motion.li
-                className={styles.skin_item_container}
+            <li
+                className={`${styles.skin_item_container} ${isSelected ? styles.selected : ''}`}
                 onClick={onClick}
-                // variants={itemVariants}
             >
                 {name}
                 {isSelected ? (
@@ -92,7 +57,7 @@ export default function ProfileSettingsSkin() {
                 ) : (
                     <FiCircle size={24} color='#CDC1FF' />
                 )}
-            </motion.li>
+            </li>
         );
     }
     const handleItemClick = (skin: { name: string; color: string }) => {
@@ -100,25 +65,40 @@ export default function ProfileSettingsSkin() {
         setIsOpen(false);
     };
 
+    const menuRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (
+                menuRef.current &&
+                !menuRef.current.contains(event.target as Node)
+            ) {
+                setIsOpen(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, []);
+
     return (
-        <motion.div
-            initial={false}
-            animate={isOpen ? 'open' : 'closed'}
-            className={styles.menu}
-        >
-            <motion.button
-                whileTap={{ scale: 0.97 }}
-                onClick={() => setIsOpen(!isOpen)}
-                className={styles.main_button}
+        <div className={styles.menu} ref={menuRef}>
+            <button
+                onClick={(e) => {
+                    e.stopPropagation();
+                    setIsOpen(!isOpen);
+                }}
+                className={`${styles.main_button} ${isOpen ? styles.active : ''}`}
             >
                 {selected.name}
                 {dropdownMenuArrow}
-            </motion.button>
+            </button>
 
-            <motion.ul
-                variants={mainVariant}
-                style={{ pointerEvents: isOpen ? 'auto' : 'none' }}
-                className={styles.main_container}
+            <ul
+                className={`${styles.main_container} ${isOpen ? styles.open : ''}`}
+                style={{ display: isOpen ? 'block' : 'none' }}
             >
                 {skinItems.map((skin, idx) => (
                     <SkinItem
@@ -128,7 +108,7 @@ export default function ProfileSettingsSkin() {
                         onClick={() => handleItemClick(skin)}
                     />
                 ))}
-            </motion.ul>
-        </motion.div>
+            </ul>
+        </div>
     );
 }

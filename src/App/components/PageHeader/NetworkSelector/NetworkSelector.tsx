@@ -5,7 +5,11 @@ import { motion } from 'framer-motion';
 import { useContext, useEffect, useState } from 'react';
 import { RiExternalLinkLine } from 'react-icons/ri';
 import { useSearchParams } from 'react-router-dom';
-import { brand, supportedNetworks } from '../../../../ambient-utils/constants';
+import {
+    brand,
+    MEV_PROTECTION_PREF_LS_KEY,
+    supportedNetworks,
+} from '../../../../ambient-utils/constants';
 import { lookupChainId } from '../../../../ambient-utils/dataLayer';
 // import baseLogo from '../../../../assets/images/networks/Base_Network_Logo.svg';
 import { useAppKitAccount, useAppKitNetwork } from '@reown/appkit/react';
@@ -15,9 +19,9 @@ import blastSepoliaLogo from '../../../../assets/images/networks/blast_sepolia_n
 import cantoLogo from '../../../../assets/images/networks/canto.png';
 import ETH from '../../../../assets/images/networks/ethereum_logo.svg';
 import sepoliaLogo from '../../../../assets/images/networks/ethereum_sepolia_no_margin.webp';
+import FOGOLogo from '../../../../assets/images/networks/FOGO.svg';
 import monadLogo from '../../../../assets/images/networks/monad_logo_small.svg';
 import plumeLogo from '../../../../assets/images/networks/plume_mainnet_logo.webp';
-import plumeSepoliaLogo from '../../../../assets/images/networks/plume_sepolia_no_margin.webp';
 import scrollLogo from '../../../../assets/images/networks/scroll_logo_no_margin.webp';
 import scrollSepoliaLogo from '../../../../assets/images/networks/scroll_sepolia_no_margin.webp';
 import swellLogo from '../../../../assets/images/networks/swell_logo_no_margin.webp';
@@ -34,6 +38,7 @@ import {
 } from '../../../../utils/hooks/useLinkGen';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import { ItemEnterAnimation } from '../../../../utils/others/FramerMotionAnimations';
+import { useFastLaneProtection } from '../../../hooks/useFastLaneProtection';
 import styles from './NetworkSelector.module.css';
 
 interface propsIF {
@@ -59,6 +64,7 @@ export default function NetworkSelector(props: propsIF) {
     } = useContext(AppStateContext);
     const { networks, platformName, includeCanto } = useContext(BrandContext);
     const { setCrocEnv } = useContext(CrocEnvContext);
+    const fastLaneProtection = useFastLaneProtection();
     const isFuta = brand === 'futa';
 
     const [isNetworkUpdateInProgress, setIsNetworkUpdateInProgress] =
@@ -97,6 +103,21 @@ export default function NetworkSelector(props: propsIF) {
         setSelectedNetworkDisplayName(selectedNetwork.displayName);
 
         if (isConnected) {
+            // Disable fastlane protection if switching away from accepted chains
+            if (
+                fastLaneProtection.isEnabled &&
+                !fastLaneProtection.isChainAccepted
+            ) {
+                fastLaneProtection.disable();
+            }
+
+            if (
+                fastLaneProtection.isChainAccepted &&
+                localStorage.getItem(MEV_PROTECTION_PREF_LS_KEY) === 'true'
+            ) {
+                fastLaneProtection.enable();
+            }
+
             setCrocEnv(undefined);
             switchNetwork(selectedNetwork.chainSpecForAppKit);
 
@@ -116,23 +137,22 @@ export default function NetworkSelector(props: propsIF) {
         let attemptCount = 0; // Initialize attempt counter
 
         const checkChainId = setInterval(async () => {
-            console.log(
-                `Re-attempting to switch networks (Attempt ${attemptCount + 1}/2)`,
-                {
-                    chainId,
-                    targetChainId,
-                },
-            );
-
-            if (chainId !== targetChainId && attemptCount < 2) {
+            if (chainId !== targetChainId && attemptCount < 3) {
+                console.log(
+                    `Re-attempting to switch networks (Attempt ${attemptCount + 1}/3)`,
+                    {
+                        chainId,
+                        targetChainId,
+                    },
+                );
                 switchNetwork(
                     supportedNetworks[targetChainId].chainSpecForAppKit,
                 );
                 attemptCount++; // Increment attempt counter
             }
 
-            if (chainId === targetChainId || attemptCount >= 2) {
-                clearInterval(checkChainId); // Stop after 2 attempts or successful switch
+            if (chainId === targetChainId || attemptCount >= 3) {
+                clearInterval(checkChainId); // Stop after 3 attempts or successful switch
                 setIsNetworkUpdateInProgress(false);
                 const selectedNetwork = supportedNetworks[chainId];
                 setTargetChainId(chainId);
@@ -312,17 +332,6 @@ export default function NetworkSelector(props: propsIF) {
             condition: chainMap.has('0x784'),
         },
         {
-            id: 'plume_sepolia_network_selector',
-            chainId: '0x18230',
-            name: 'Plume',
-            logo: plumeSepoliaLogo,
-            custom: 2,
-            isExternal: false,
-            testnet: true,
-            link: '',
-            condition: chainMap.has('0x18230'),
-        },
-        {
             id: 'blast_sepolia_network_selector',
             chainId: '0xa0c71fd',
             name: 'Blast',
@@ -343,6 +352,17 @@ export default function NetworkSelector(props: propsIF) {
             testnet: true,
             link: '',
             condition: chainMap.has('0x14a34'),
+        },
+        {
+            id: 'fogo_network_selector',
+            chainId: '',
+            name: 'Fogo',
+            logo: FOGOLogo,
+            custom: 2,
+            isExternal: true,
+            testnet: true,
+            link: 'https://perps.ambient.finance/',
+            condition: true,
         },
     ];
 
@@ -386,18 +406,31 @@ export default function NetworkSelector(props: propsIF) {
                     >
                         {network.name}
                     </Text>
-                    {network.testnet && (
-                        <Text
-                            color={'accent1'}
-                            fontSize={'mini'}
-                            style={{
-                                position: 'absolute', // Position Testnet absolutely
-                                right: '0', // Pin it to the right
-                            }}
-                        >
-                            Testnet
-                        </Text>
-                    )}
+                    {network.testnet ? (
+                        network.name === 'Fogo' ? (
+                            <Text
+                                color={'accent1'}
+                                fontSize={'mini'}
+                                style={{
+                                    position: 'absolute', // Position Testnet absolutely
+                                    right: '20px', // Pin it to the right
+                                }}
+                            >
+                                Perps Testnet
+                            </Text>
+                        ) : (
+                            <Text
+                                color={'accent1'}
+                                fontSize={'mini'}
+                                style={{
+                                    position: 'absolute', // Position Testnet absolutely
+                                    right: '0', // Pin it to the right
+                                }}
+                            >
+                                Testnet
+                            </Text>
+                        )
+                    ) : null}
                     {network.isExternal && (
                         <RiExternalLinkLine
                             size={14}
@@ -424,7 +457,8 @@ export default function NetworkSelector(props: propsIF) {
             <div
                 className={styles.dropdownMenuContainer}
                 style={{
-                    cursor: networks.length > 1 ? 'pointer' : 'default',
+                    cursor: 'pointer',
+                    // cursor: networks.length > 1 ? 'pointer' : 'default',
                     borderRadius: isFuta ? 0 : smallScreen ? '50%' : '0',
                     width: isFuta ? '25px' : smallScreen ? '35px' : 'auto',
                     height: isFuta ? '25px' : '35px',
@@ -439,7 +473,8 @@ export default function NetworkSelector(props: propsIF) {
                             ? selectedNetworkDisplayName
                             : networkSpec.displayName
                     }
-                    expandable={networks.length > 1}
+                    expandable={true}
+                    // expandable={networks.length > 1}
                     logo={
                         networksData.find(
                             (network) => network.chainId === chainId,

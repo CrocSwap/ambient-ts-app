@@ -7,6 +7,25 @@
     /* background-color: blueviolet; */
 }
 
+.swapContainer {
+    opacity: 0;
+    animation: fadeIn 0.4s ease-in-out forwards;
+    width: 100%;
+    max-width: 440px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
 .mobileMainSection {
     display: grid;
     gap: 8px;

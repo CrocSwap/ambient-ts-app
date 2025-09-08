@@ -1,9 +1,3 @@
-#https://stackoverflow.com/questions/58065603/netlify-renders-404-on-page-refresh-using-react-and-react-router 
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
-
 [[headers]]
   for = "/ambient-token-list.json"
   [headers.values]
@@ -40,13 +34,78 @@
     Access-Control-Allow-Origin = "*"
     Cache-Control = "public, max-age=31536000, immutable"
 
-[[edge_functions]]
-  path = "/*"
-  function = "country-block"
 
-[[edge_functions]]
-  path = "/*"
-  function = "country-redirect"
+# Allow blocked countries to access /blocked.html
+[[redirects]]
+  from = "/blocked.html"
+  to = "/blocked.html"
+  status = 200
+  conditions = {Country = [
+    "AF", # Afghanistan
+    "BY", # Belarus
+    "MM", # Burma
+    "CF", # Central Africa Republic
+    "CU", # Cuba
+    "CD", # Democratic Republic of Congo
+    "ET", # Ethiopia
+    "IR", # Iran
+    "IQ", # Iraq
+    "LB", # Lebanon
+    "LY", # Libya
+    "ML", # Mali
+    "NI", # Nicaragua
+    "KP", # North Korea
+    "RU", # Russia
+    "SO", # Somalia
+    "SS", # South Sudan
+    "SD", # Sudan
+    "VE", # Venezuela
+    "YE", # Yemen
+    "ZW"  # Zimbabwe
+  ]}
+
+# Redirect all other users away from /blocked and /blocked.html
+[[redirects]]
+  from = "/blocked*"
+  to = "/"
+  status = 302
+  force = true
+
+# Block all pages for specified countries
+[[redirects]]
+  from = "/*"
+  to = "/blocked.html"
+  status = 302
+  force = true
+  conditions = {Country = [
+    "AF", # Afghanistan
+    "BY", # Belarus
+    "MM", # Burma
+    "CF", # Central Africa Republic
+    "CU", # Cuba
+    "CD", # Democratic Republic of Congo
+    "ET", # Ethiopia
+    "IR", # Iran
+    "IQ", # Iraq
+    "LB", # Lebanon
+    "LY", # Libya
+    "ML", # Mali
+    "NI", # Nicaragua
+    "KP", # North Korea
+    "RU", # Russia
+    "SO", # Somalia
+    "SS", # South Sudan
+    "SD", # Sudan
+    "VE", # Venezuela
+    "YE", # Yemen
+    "ZW"  # Zimbabwe
+  ]}
+
+#https://stackoverflow.com/questions/58065603/netlify-renders-404-on-page-refresh-using-react-and-react-router 
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
 
 [build]
   command = "pnpm run build && cp src/ambient-utils/constants/ambient-token-list.json src/ambient-utils/constants/testnet-token-list.json build/"

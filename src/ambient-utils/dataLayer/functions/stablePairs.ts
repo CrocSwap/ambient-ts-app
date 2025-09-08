@@ -13,33 +13,18 @@ import { SEPOLIA_TOKENS } from '../../constants/networks/ethereumSepolia';
 import { MONAD_TESTNET_TOKENS } from '../../constants/networks/monadTestnet';
 import { PLUME_LEGACY_TOKENS } from '../../constants/networks/plumeLegacy';
 import { PLUME_TOKENS } from '../../constants/networks/plumeMainnet';
-import { PLUME_SEPOLIA_TOKENS } from '../../constants/networks/plumeSepolia';
 import { SCROLL_TOKENS } from '../../constants/networks/scrollMainnet';
 import { SCROLL_SEPOLIA_TOKENS } from '../../constants/networks/scrollSepolia';
 import { SWELL_TOKENS } from '../../constants/networks/swellMainnet';
 import { SWELL_SEPOLIA_TOKENS } from '../../constants/networks/swellSepolia';
 import { TokenIF } from '../../types';
 
-//       any sort of specific guaranteed relation between the tokens.
-export function isStablePair(addr1: string, addr2: string): boolean {
-    return isUsdStableToken(addr1) && isUsdStableToken(addr2);
-}
-
-// @return true if the token represents a USD-based stablecoin
-// NOTE: Decision of whether a token counts as stable or not is arbitrary and just at the
-//       discretion of the app authors
-export function isUsdStableToken(addr: string): boolean {
-    return STABLE_USD_TOKENS.includes(addr.toLowerCase());
-}
-
 export function isUsdcToken(addr: string): boolean {
     return USDC_TOKENS.includes(addr.toLowerCase());
 }
 
-export function isPriorityStakedUSD(addr: string): boolean {
-    return (
-        PLUME_LEGACY_TOKENS.pUSD.address.toLowerCase() === addr.toLowerCase()
-    );
+export function isPriorityUsdEquivalent(addr: string): boolean {
+    return PRIORITY_USD_EQUIVALENT_TOKENS.includes(addr.toLowerCase());
 }
 
 export function isBlastRewardToken(addr: string): boolean {
@@ -64,11 +49,7 @@ export function isETHorStakedEthToken(addr: string, chainId: string): boolean {
     );
 }
 
-export function isWbtcOrStakedBTCToken(addr: string): boolean {
-    return isWbtcToken(addr) || STAKED_BTC_TOKENS.includes(addr.toLowerCase());
-}
-
-export function isETHPair(
+export function isPairEthTokens(
     addr1: string,
     addr2: string,
     chainId: string,
@@ -79,8 +60,35 @@ export function isETHPair(
     );
 }
 
-export function isBtcPair(addr1: string, addr2: string): boolean {
+export function isWbtcOrStakedBTCToken(addr: string): boolean {
+    return isWbtcToken(addr) || STAKED_BTC_TOKENS.includes(addr.toLowerCase());
+}
+
+// @return true if the token represents a USD-based stablecoin
+// NOTE: Decision of whether a token counts as stable or not is arbitrary and just at the
+//       discretion of the app authors
+export function isUsdStableToken(addr: string): boolean {
+    return STABLE_USD_TOKENS.includes(addr.toLowerCase());
+}
+
+export function isPairUsdStableTokens(addr1: string, addr2: string): boolean {
+    return isUsdStableToken(addr1) && isUsdStableToken(addr2);
+}
+
+export function isPairBtcTokens(addr1: string, addr2: string): boolean {
     return isWbtcOrStakedBTCToken(addr1) && isWbtcOrStakedBTCToken(addr2);
+}
+
+export function isStablePair(
+    addr1: string,
+    addr2: string,
+    chainId: string,
+): boolean {
+    return (
+        isPairUsdStableTokens(addr1, addr2) ||
+        isPairEthTokens(addr1, addr2, chainId) ||
+        isPairBtcTokens(addr1, addr2)
+    );
 }
 
 export function isWbtcToken(addr: string): boolean {
@@ -115,7 +123,6 @@ export function remapTokenIfWrappedNative(addr: string): string {
     return addr;
 }
 
-// USDC prioritized in some lists
 export const USDC_TOKENS = [
     MAINNET_TOKENS.USDC,
     BLAST_TOKENS.USDB,
@@ -129,21 +136,13 @@ export const USDC_TOKENS = [
     MONAD_TESTNET_TOKENS.USDC,
 ].map((x) => x.address.toLowerCase());
 
+export const PRIORITY_USD_EQUIVALENT_TOKENS = [PLUME_TOKENS.pUSD].map((x) =>
+    x.address.toLowerCase(),
+);
+
 export const STABLE_USD_TOKENS = [
     MAINNET_TOKENS.DAI,
     MAINNET_TOKENS.USDT,
-    PLUME_LEGACY_TOKENS.NRWA,
-    PLUME_LEGACY_TOKENS.pUSD,
-    PLUME_LEGACY_TOKENS.USDT,
-    PLUME_LEGACY_TOKENS.NTBILL,
-    PLUME_LEGACY_TOKENS.NYIELD,
-    PLUME_LEGACY_TOKENS.nELIXIR,
-    PLUME_TOKENS.pUSD,
-    PLUME_TOKENS.nRWA,
-    PLUME_TOKENS.nTBILL,
-    PLUME_TOKENS.nYIELD,
-    PLUME_TOKENS.nUSDY,
-    PLUME_TOKENS.nELIXIR,
     BLAST_TOKENS.USDPLUS,
     SCROLL_TOKENS.USDT,
     SCROLL_TOKENS.USDQ,
@@ -151,12 +150,19 @@ export const STABLE_USD_TOKENS = [
     SCROLL_TOKENS.axlUSDC,
     SCROLL_TOKENS.USDE,
     SCROLL_TOKENS.SUSDe,
-    PLUME_SEPOLIA_TOKENS.pUSD,
-    PLUME_SEPOLIA_TOKENS.NEV,
     SWELL_SEPOLIA_TOKENS.USDT,
     SWELL_TOKENS.USDe,
     SWELL_TOKENS.USDT0,
+    SWELL_TOKENS.USDK,
     SWELL_TOKENS.SUSDe,
+    PLUME_TOKENS.pUSD,
+    PLUME_TOKENS['USDC.e'],
+    PLUME_TOKENS.USDT,
+    PLUME_TOKENS.nELIXIR,
+    PLUME_TOKENS.nRWA,
+    PLUME_TOKENS.nTBILL,
+    PLUME_TOKENS.nBASIS,
+    PLUME_TOKENS.nCREDIT,
     BASE_SEPOLIA_TOKENS.USDT,
     MONAD_TESTNET_TOKENS.USDT,
 ]
@@ -183,10 +189,13 @@ export const ETH_TOKENS = [
     SWELL_TOKENS.ETH,
     SEPOLIA_TOKENS.ETH,
     SWELL_SEPOLIA_TOKENS.ETH,
-    PLUME_SEPOLIA_TOKENS.ETH,
     SCROLL_SEPOLIA_TOKENS.ETH,
     BLAST_SEPOLIA_TOKENS.ETH,
     BASE_SEPOLIA_TOKENS.ETH,
+    MONAD_TESTNET_TOKENS.ETH,
+    MONAD_TESTNET_TOKENS.WETH,
+    MONAD_TESTNET_TOKENS.WWETH,
+    PLUME_TOKENS.WETH,
 ];
 
 export const STAKED_ETH_TOKENS = [
@@ -215,15 +224,15 @@ export const STAKED_ETH_TOKENS = [
     SWELL_TOKENS.rsETH,
     SWELL_TOKENS.swETH,
     SWELL_TOKENS.rswETH,
-    MONAD_TESTNET_TOKENS.ETH,
-    MONAD_TESTNET_TOKENS.WETH,
-    MONAD_TESTNET_TOKENS.WWETH,
+    PLUME_TOKENS.pETH,
+    MONAD_TESTNET_TOKENS.gigaETH,
 ].map((x) => x.address.toLowerCase());
 
 export const PRIORITY_ETH_EQUIVALENT_TOKENS = [
     PLUME_LEGACY_TOKENS.pETH,
     MONAD_TESTNET_TOKENS.WETH,
     MONAD_TESTNET_TOKENS.ETH,
+    PLUME_TOKENS.pETH,
 ].map((x) => x.address.toLowerCase());
 
 export const USD_EXCLUDED_TOKENS = [

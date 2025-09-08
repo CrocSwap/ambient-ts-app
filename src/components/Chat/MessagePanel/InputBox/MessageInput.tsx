@@ -1,3 +1,4 @@
+import { ReactElement } from 'react';
 import { BsEmojiSmile } from 'react-icons/bs';
 import { Message } from '../../Model/MessageModel';
 
@@ -77,6 +78,7 @@ interface MessageInputProps {
 }
 
 export default function MessageInput(props: MessageInputProps) {
+    const sendBtnRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement | null>(null);
     const [cursorPosition, setCursorPosition] = useState<number | null>(null);
 
@@ -85,6 +87,12 @@ export default function MessageInput(props: MessageInputProps) {
     const { userAddress, isUserConnected } = useContext(UserDataContext);
     const [isPosition, setIsPosition] = useState(false);
     const [tokenForEmojiSearch, setTokenForEmojiSearch] = useState('');
+
+    const resetCustomEmojiPickerStates = () => {
+        setTokenForEmojiSearch('');
+        setCustomEmojiPickerSelectedIndex(0);
+        setFilteredEmojis([]);
+    };
 
     // disabled for now due to es-lint warnings
     // const {
@@ -109,7 +117,7 @@ export default function MessageInput(props: MessageInputProps) {
 
     const isRoomAdmins = roomId === 'Admins';
 
-    const messageRef = useRef<string>();
+    const messageRef = useRef<string>('');
     messageRef.current = message;
 
     useEffect(() => {
@@ -317,7 +325,6 @@ export default function MessageInput(props: MessageInputProps) {
             if (message !== '') {
                 setMessage('');
             }
-
             return;
         }
 
@@ -581,7 +588,7 @@ export default function MessageInput(props: MessageInputProps) {
 
     const customEmojiPickerRef = useRef<HTMLDivElement>(null);
 
-    const [filteredEmojis, setFilteredEmojis] = useState<JSX.Element[]>([]);
+    const [filteredEmojis, setFilteredEmojis] = useState<React.ReactNode[]>([]);
     const [customEmojiPickerSelectedIndex, setCustomEmojiPickerSelectedIndex] =
         useState(0);
     const customEmojiPanelLimit = 20;
@@ -602,6 +609,79 @@ export default function MessageInput(props: MessageInputProps) {
             setTokenForEmojiSearch('');
         }
     }, [message]);
+
+    const filterEmojisForCustomPicker = (word: string) => {
+        const filteredElements: React.ReactNode[] = [];
+        let searchToken = word.split(' ')[0];
+
+        const CUSTOM_EMOJI_BLACKLIST_CHARACTERS = [
+            '@',
+            '#',
+            '$',
+            '%',
+            '^',
+            '&',
+            '*',
+            '(',
+            ')',
+            '=',
+            '+',
+            '[',
+            ']',
+            '{',
+            '}',
+            '|',
+            '\\',
+            ';',
+            "'",
+            '"',
+            ',',
+            '.',
+            '<',
+            '>',
+            '/',
+            '?',
+            '`',
+            '~',
+        ];
+        const CUSTOM_EMOJI_PANEL_LIMIT = 20; // Adjust this as needed
+
+        CUSTOM_EMOJI_BLACKLIST_CHARACTERS.forEach((char) => {
+            searchToken = searchToken.replaceAll(char, '');
+        });
+
+        if (searchToken.length === 0) {
+            setFilteredEmojis([]);
+            return;
+        }
+
+        let foundEmojis = 0;
+        interface EmojiMeta {
+            ariaLabel: string;
+            unifiedChar: string;
+        }
+        const emojiMeta: EmojiMeta[] = []; // This should be populated with your emoji data
+
+        emojiMeta.forEach((meta) => {
+            if (
+                meta.ariaLabel.includes(searchToken) &&
+                foundEmojis < CUSTOM_EMOJI_PANEL_LIMIT
+            ) {
+                foundEmojis++;
+                const emojiEl = getSingleEmoji(
+                    meta.unifiedChar,
+                    () => {
+                        const emoji = getEmojiFromUnifiedCode(meta.unifiedChar);
+                        handleEmojiClick(emoji, true);
+                    },
+                    -1,
+                );
+                filteredElements.push(emojiEl);
+            }
+        });
+
+        setFilteredEmojis([...filteredElements]);
+    };
 
     useEffect(() => {
         filterEmojisForCustomPicker(tokenForEmojiSearch);
@@ -635,54 +715,39 @@ export default function MessageInput(props: MessageInputProps) {
                 }
             }
         });
-        if (customEmojiPickerSelectedIndex < -1) {
-            resetCustomEmojiPickerStates();
-        }
-    }, [customEmojiPickerSelectedIndex, filteredEmojis]);
+    }, [customEmojiPickerSelectedIndex, customEmojiStartShiftIndex]);
 
-    const resetCustomEmojiPickerStates = () => {
-        setCustomEmojiPickerSelectedIndex(0);
-        setFilteredEmojis([]);
-    };
+    // Type for the emoji element in the custom picker
+    interface EmojiElement extends React.ReactElement {
+        props: {
+            children: React.ReactElement<{
+                unified: string;
+                [key: string]: unknown;
+            }>;
+        };
+    }
 
-    const filterEmojisForCustomPicker = (word: string) => {
-        const filteredElements: JSX.Element[] = [];
-        let searchToken = word.split(' ')[0];
-
-        CUSTOM_EMOJI_BLACKLIST_CHARACTERS.forEach((char) => {
-            searchToken = searchToken.replaceAll(char, '');
-        });
-
-        if (searchToken.length == 0) {
-            resetCustomEmojiPickerStates();
-            return;
-        }
-
-        let foundEmojis = 0;
-
-        emojiMeta.forEach((meta) => {
-            if (
-                meta.ariaLabel.includes(searchToken) &&
-                foundEmojis < customEmojiPanelLimit
-            ) {
-                foundEmojis++;
-                const emojiEl = getSingleEmoji(
-                    meta.unifiedChar,
-                    () => {
-                        const emoji = getEmojiFromUnifiedCode(meta.unifiedChar);
-                        handleEmojiClick(emoji, true);
-                    },
-                    -1,
-                );
-                filteredElements.push(emojiEl);
-            }
-        });
-
-        setFilteredEmojis([...filteredElements]);
+    // Type guard to check if an element is a valid emoji element
+    const isEmojiElement = (element: unknown): element is EmojiElement => {
+        return (
+            element !== null &&
+            typeof element === 'object' &&
+            'props' in element &&
+            element.props !== null &&
+            typeof element.props === 'object' &&
+            'children' in element.props &&
+            element.props.children !== null &&
+            typeof element.props.children === 'object' &&
+            'props' in element.props.children &&
+            element.props.children.props !== null &&
+            typeof element.props.children.props === 'object' &&
+            'unified' in element.props.children.props
+        );
     };
 
     const zaAhandleKeyForCustomEmojiPicker = (e: KeyboardEvent) => {
         let shouldSkip = false;
+
         if (e.key === 'ArrowLeft' && customEmojiPickerSelectedIndex >= -1) {
             setCustomEmojiPickerSelectedIndex(
                 customEmojiPickerSelectedIndex - 1,
@@ -699,12 +764,7 @@ export default function MessageInput(props: MessageInputProps) {
         } else if (e.key === 'Enter' || e.key === 'Tab') {
             if (filteredEmojis.length > 0) {
                 const emoji = filteredEmojis[customEmojiPickerSelectedIndex];
-                if (
-                    emoji &&
-                    emoji.props &&
-                    emoji.props.children &&
-                    emoji.props.children.props
-                ) {
+                if (isEmojiElement(emoji)) {
                     const unifiedCode = emoji.props.children.props.unified;
                     const emojiCharacter = getEmojiFromUnifiedCode(unifiedCode);
                     handleEmojiClick(emojiCharacter, true);
@@ -774,7 +834,9 @@ export default function MessageInput(props: MessageInputProps) {
                             className={
                                 !isUserConnected
                                     ? styles.input_text_not_allowed
-                                    : styles.input_text
+                                    : props.isMobile
+                                      ? styles.input_text_mobile
+                                      : styles.input_text
                             }
                             onKeyDown={_handleKeyDown}
                             onInput={handleInputChange}
@@ -783,11 +845,6 @@ export default function MessageInput(props: MessageInputProps) {
                             onClick={handleInputClick}
                             onDoubleClick={handleInputDoubleClick}
                             autoComplete={'off'}
-                            // tabIndex={-1}
-                            // autoFocus={
-                            //     (props.appPage && !props.isMobile) ||
-                            //     props.isReplyButtonPressed
-                            // }
                             ref={inputRef}
                         />
                         {inputLength >= 100 && (
@@ -817,12 +874,26 @@ export default function MessageInput(props: MessageInputProps) {
                         />
                         {}
                         <div
+                            ref={sendBtnRef}
                             className={
                                 isUserConnected
                                     ? styles.send_message_button
                                     : styles.not_LoggedIn_send_message_button
                             }
                             onClick={() => handleSendMessageButton()}
+                            onTouchStart={() =>
+                                sendBtnRef.current?.classList.add(styles.active)
+                            }
+                            onTouchEnd={() =>
+                                sendBtnRef.current?.classList.remove(
+                                    styles.active,
+                                )
+                            }
+                            onTouchCancel={() =>
+                                sendBtnRef.current?.classList.remove(
+                                    styles.active,
+                                )
+                            }
                         >
                             <svg
                                 width='16'

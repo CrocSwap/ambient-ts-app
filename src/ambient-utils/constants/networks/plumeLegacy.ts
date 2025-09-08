@@ -10,7 +10,7 @@ import { TopPool } from './TopPool';
 
 const RPC_URLS = {
     PUBLIC: 'https://rpc.plumenetwork.xyz',
-    SECONDARY_PUBLIC: 'https://phoenix-rpc.plumenetwork.xyz',
+    SECONDARY_PUBLIC: 'https://rpc.plumenetwork.xyz',
     RESTRICTED: import.meta.env.VITE_PLUME_RPC_URL,
     WEBSOCKET: 'wss://rpc.plumenetwork.xyz',
 };
@@ -39,8 +39,8 @@ const chainSpecForAppKit: Chain = {
     blockExplorers: {
         default: {
             name: 'Blockscout',
-            url: 'https://explorer.plumenetwork.xyz',
-            apiUrl: 'https://explorer.plumenetwork.xyz/api',
+            url: 'https://explorer.plumenetwork.xyz/',
+            apiUrl: 'https://explorer.plumenetwork.xyz/api/',
         },
     },
 };
@@ -93,14 +93,14 @@ export const plumeLegacy: NetworkIF = {
     chainId: chainIdHex,
     chainSpec: chainSpecFromSDK,
     GCGO_URL: GCGO_PLUME_URL,
-    evmRpcUrl: PRIMARY_RPC_URL,
-    fallbackRpcUrl: FALLBACK_RPC_URL,
+    evmRpcUrls: [PRIMARY_RPC_URL, FALLBACK_RPC_URL],
     chainSpecForAppKit,
     defaultPair: [PLUME_LEGACY_TOKENS.pETH, PLUME_LEGACY_TOKENS.pUSD],
     defaultPairFuta: [PLUME_LEGACY_TOKENS.pETH, PLUME_LEGACY_TOKENS.pUSD],
     poolIndex: chainSpecFromSDK.poolIndex,
     gridSize: chainSpecFromSDK.gridSize,
     isTestnet: chainSpecFromSDK.isTestNet,
+    fastLaneProtectionEnabled: false,
     blockExplorer: (
         chainSpecForAppKit.blockExplorers?.default.url || ''
     ).replace(/\/?$/, '/'),
@@ -110,4 +110,5 @@ export const plumeLegacy: NetworkIF = {
     tempestApiNetworkName: '',
     topPools,
     getGasPriceInGwei,
+    indexerTimeout: 2000,
 };

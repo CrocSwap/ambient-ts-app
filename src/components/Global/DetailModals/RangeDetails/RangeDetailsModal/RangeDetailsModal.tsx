@@ -79,7 +79,7 @@ function RangeDetailsModal(props: propsIF) {
         baseTokenCharacter,
         quoteTokenCharacter,
         userMatchesConnectedAccount,
-    } = useProcessRange(position, crocEnv, userAddress);
+    } = useProcessRange(position, userAddress);
 
     const [serverPositionId, setServerPositionId] = useState<
         string | undefined

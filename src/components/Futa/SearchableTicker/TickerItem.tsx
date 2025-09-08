@@ -199,7 +199,9 @@ export default function TickerItem(props: propsIF) {
 
     return (
         <Link
-            ref={(el) => (useRefTicker.current[ticker] = el)}
+            ref={(el) => {
+                useRefTicker.current[ticker] = el;
+            }}
             className={className}
             to={'/auctions/v1/' + ticker}
             onClick={handleClick}

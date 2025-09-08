@@ -1,5 +1,4 @@
 import { Dispatch, memo, SetStateAction } from 'react';
-import checkPoolForWETH from '../../../../App/functions/checkPoolForWETH';
 import { PoolIF } from '../../../../ambient-utils/types';
 import useIsPWA from '../../../../utils/hooks/useIsPWA';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
@@ -20,7 +19,7 @@ export type HeaderItem = {
     sortable: boolean;
     pxValue?: number;
     onClick?: () => void;
-    tooltipText?: string | JSX.Element;
+    tooltipText?: string | React.ReactNode;
     classname?: boolean;
 };
 
@@ -174,18 +173,16 @@ function TopPools(props: propsIF) {
                 <div className={styles.borderRight} />
 
                 {sortedPools.pools.length ? (
-                    sortedPools.pools
-                        .filter((pool: PoolIF) => !checkPoolForWETH(pool))
-                        .map((pool: PoolIF, idx: number) => (
-                            <PoolRow
-                                key={idx}
-                                pool={pool}
-                                goToMarket={goToMarket}
-                                isExploreDollarizationEnabled={
-                                    isExploreDollarizationEnabled
-                                }
-                            />
-                        ))
+                    sortedPools.pools.map((pool: PoolIF, idx: number) => (
+                        <PoolRow
+                            key={idx}
+                            pool={pool}
+                            goToMarket={goToMarket}
+                            isExploreDollarizationEnabled={
+                                isExploreDollarizationEnabled
+                            }
+                        />
+                    ))
                 ) : searchQuery ? (
                     <div className={styles.no_results}>
                         No pools match the search query: {searchQuery}

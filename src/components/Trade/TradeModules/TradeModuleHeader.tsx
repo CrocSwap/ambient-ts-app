@@ -6,30 +6,37 @@ import TransactionSettingsModal, {
     TransactionModuleType,
 } from '../../Global/TransactionSettingsModal/TransactionSettingsModal';
 
-import { LuSettings, LuSettings2 } from 'react-icons/lu';
+import { IoSettingsOutline } from 'react-icons/io5';
+import { LuSettings } from 'react-icons/lu';
+import { brand } from '../../../ambient-utils/constants';
 import { dexBalanceMethodsIF } from '../../../App/hooks/useExchangePrefs';
+import { FastLaneProtectionIF } from '../../../App/hooks/useFastLaneProtection';
 import { skipConfirmIF } from '../../../App/hooks/useSkipConfirm';
 import { SlippageMethodsIF } from '../../../App/hooks/useSlippage';
-import { SettingsSvg } from '../../../assets/images/icons/settingsSvg';
 import { AppStateContext } from '../../../contexts';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import { useModal } from '../../Global/Modal/useModal';
 import TradeLinks from './TradeLinks';
 import styles from './TradeModuleHeader.module.css';
-import { IoSettingsOutline } from 'react-icons/io5';
-import { brand } from '../../../ambient-utils/constants';
 interface propsIF {
     slippage: SlippageMethodsIF;
     dexBalSwap?: dexBalanceMethodsIF;
     bypassConfirm: skipConfirmIF;
+    fastLaneProtection?: FastLaneProtectionIF;
     settingsTitle: TransactionModuleType;
     isSwapPage?: boolean;
 }
 
 function TradeModuleHeader(props: propsIF) {
-    const { slippage, dexBalSwap, bypassConfirm, settingsTitle, isSwapPage } =
-        props;
+    const {
+        slippage,
+        dexBalSwap,
+        bypassConfirm,
+        fastLaneProtection,
+        settingsTitle,
+        isSwapPage,
+    } = props;
 
     const [isSettingsModalOpen, openSettingsModal, closeSettingsModal] =
         useModal();
@@ -87,7 +94,7 @@ function TradeModuleHeader(props: propsIF) {
                         {smallScreen ? (
                             <LuSettings size={20} />
                         ) : (
-                            <LuSettings2 size={22} />
+                            <LuSettings size={22} />
                         )}
                     </button>
                 </div>
@@ -97,6 +104,7 @@ function TradeModuleHeader(props: propsIF) {
                         slippage={slippage}
                         dexBalSwap={dexBalSwap}
                         bypassConfirm={bypassConfirm}
+                        fastLaneProtection={fastLaneProtection!}
                         onClose={closeSettingsModal}
                     />
                 )}
@@ -138,7 +146,10 @@ function TradeModuleHeader(props: propsIF) {
                         </h4>
                     )}
 
-                    <IconWithTooltip title='Settings' placement='left'>
+                    <IconWithTooltip
+                        title={settingsTitle + ' Settings'}
+                        placement='left'
+                    >
                         <div
                             onClick={openSettingsModal}
                             id='settings_button'
@@ -156,7 +167,7 @@ function TradeModuleHeader(props: propsIF) {
                                     aria-label='Chart settings button'
                                 />
                             ) : (
-                                <SettingsSvg />
+                                <LuSettings />
                             )}
                         </div>
                     </IconWithTooltip>
@@ -168,6 +179,7 @@ function TradeModuleHeader(props: propsIF) {
                     slippage={slippage}
                     dexBalSwap={dexBalSwap}
                     bypassConfirm={bypassConfirm}
+                    fastLaneProtection={fastLaneProtection!}
                     onClose={closeSettingsModal}
                 />
             )}
