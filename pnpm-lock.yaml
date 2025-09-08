@@ -20,19 +20,19 @@ importers:
         version: 4.0.2(d3-array@3.2.4)
       '@emotion/react':
         specifier: ^11.14.0
-        version: 11.14.0(@types/react@19.1.12)(react@18.3.1)
+        version: 11.14.0(@types/react@18.2.0)(react@18.3.1)
       '@emotion/styled':
         specifier: ^11.14.0
-        version: 11.14.1(@emotion/react@11.14.0(@types/react@19.1.12)(react@18.3.1))(@types/react@19.1.12)(react@18.3.1)
+        version: 11.14.1(@emotion/react@11.14.0(@types/react@18.2.0)(react@18.3.1))(@types/react@18.2.0)(react@18.3.1)
       '@mui/material':
         specifier: ^6.4.3
-        version: 6.5.0(@emotion/react@11.14.0(@types/react@19.1.12)(react@18.3.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.12)(react@18.3.1))(@types/react@19.1.12)(react@18.3.1))(@types/react@19.1.12)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        version: 6.5.0(@emotion/react@11.14.0(@types/react@18.2.0)(react@18.3.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@18.2.0)(react@18.3.1))(@types/react@18.2.0)(react@18.3.1))(@types/react@18.2.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@reown/appkit':
         specifier: ^1.7.9
-        version: 1.8.3(@types/react@19.1.12)(react@18.3.1)(typescript@5.9.2)(zod@3.22.4)
+        version: 1.8.3(@types/react@18.2.0)(react@18.3.1)(typescript@5.9.2)(zod@3.22.4)
       '@reown/appkit-adapter-ethers':
         specifier: ^1.7.9
-        version: 1.8.3(@ethersproject/sha2@5.8.0)(@types/react@19.1.12)(ethers@6.15.0)(react@18.3.1)(typescript@5.9.2)(zod@3.22.4)
+        version: 1.8.3(@ethersproject/sha2@5.8.0)(@types/react@18.2.0)(ethers@6.15.0)(react@18.3.1)(typescript@5.9.2)(zod@3.22.4)
       d3:
         specifier: ^7.4.4
         version: 7.9.0
@@ -105,7 +105,7 @@ importers:
         version: 1.4.0
       '@testing-library/react':
         specifier: ^13.2.0
-        version: 13.4.0(@types/react@19.1.12)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        version: 13.4.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@testing-library/user-event':
         specifier: ^14.5.2
         version: 14.6.1(@testing-library/dom@8.20.1)
@@ -118,12 +118,18 @@ importers:
       '@types/p5':
         specifier: ^1.7.6
         version: 1.7.6
+      '@types/react':
+        specifier: 18.2.0
+        version: 18.2.0
       '@types/react-blockies':
         specifier: ^1.4.4
         version: 1.4.4
       '@types/react-color':
         specifier: ^3.0.12
-        version: 3.0.13(@types/react@19.1.12)
+        version: 3.0.13(@types/react@18.2.0)
+      '@types/react-dom':
+        specifier: 18.2.0
+        version: 18.2.0
       '@vitejs/plugin-react':
         specifier: ^4.4.1
         version: 4.7.0(vite@6.3.6(@types/node@24.3.1)(yaml@2.8.1))
@@ -1134,23 +1140,24 @@ packages:
     peerDependencies:
       '@types/react': '*'
 
-  '@types/react-dom@18.3.7':
-    resolution: {integrity: sha512-MEe3UeoENYVFXzoXEWsvcpg6ZvlrFNlOQ7EOsvhI3CfAXwzPfO8Qwuxd40nepsYKqyyVQnTdEfv68q91yLcKrQ==}
-    peerDependencies:
-      '@types/react': ^18.0.0
+  '@types/react-dom@18.2.0':
+    resolution: {integrity: sha512-8yQrvS6sMpSwIovhPOwfyNf2Wz6v/B62LFSVYQ85+Rq3tLsBIG7rP5geMxaijTUxSkrO6RzN/IRuIAADYQsleA==}
 
   '@types/react-transition-group@4.4.12':
     resolution: {integrity: sha512-8TV6R3h2j7a91c+1DXdJi3Syo69zzIZbz7Lg5tORM5LEJG7X/E6a1V3drRyBRZq7/utz7A+c4OgYLiLcYGHG6w==}
     peerDependencies:
       '@types/react': '*'
 
-  '@types/react@19.1.12':
-    resolution: {integrity: sha512-cMoR+FoAf/Jyq6+Df2/Z41jISvGZZ2eTlnsaJRptmZ76Caldwy1odD4xTr/gNV9VLj0AWgg/nmkevIyUfIIq5w==}
+  '@types/react@18.2.0':
+    resolution: {integrity: sha512-0FLj93y5USLHdnhIhABk83rm8XEGA7kH3cr+YUlvxoUGp1xNt/DINUMvqPxLyOQMzLmZe8i4RTHbvb8MC7NmrA==}
 
   '@types/reactcss@1.2.13':
     resolution: {integrity: sha512-gi3S+aUi6kpkF5vdhUsnkwbiSEIU/BEJyD7kBy2SudWBUuKmJk8AQKE0OVcQQeEy40Azh0lV6uynxlikYIJuwg==}
     peerDependencies:
       '@types/react': '*'
+
+  '@types/scheduler@0.26.0':
+    resolution: {integrity: sha512-WFHp9YUJQ6CKshqoC37iOlHnQSmxNc795UhB26CyBBttrN9svdIrUjl/NjnNmfcwtncN0h/0PPAFWv9ovP8mLA==}
 
   '@types/stylis@4.2.5':
     resolution: {integrity: sha512-1Xve+NMN7FWjY14vLoY5tL3BVEQ/n42YLwaqJIPYhotZ9uBHt87VceMwWQpzmdEt2TNXIorIFG+YeCUUW7RInw==}
@@ -4237,7 +4244,7 @@ snapshots:
 
   '@emotion/memoize@0.9.0': {}
 
-  '@emotion/react@11.14.0(@types/react@19.1.12)(react@18.3.1)':
+  '@emotion/react@11.14.0(@types/react@18.2.0)(react@18.3.1)':
     dependencies:
       '@babel/runtime': 7.28.4
       '@emotion/babel-plugin': 11.13.5
@@ -4249,7 +4256,7 @@ snapshots:
       hoist-non-react-statics: 3.3.2
       react: 18.3.1
     optionalDependencies:
-      '@types/react': 19.1.12
+      '@types/react': 18.2.0
     transitivePeerDependencies:
       - supports-color
 
@@ -4263,18 +4270,18 @@ snapshots:
 
   '@emotion/sheet@1.4.0': {}
 
-  '@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.12)(react@18.3.1))(@types/react@19.1.12)(react@18.3.1)':
+  '@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@18.2.0)(react@18.3.1))(@types/react@18.2.0)(react@18.3.1)':
     dependencies:
       '@babel/runtime': 7.28.4
       '@emotion/babel-plugin': 11.13.5
       '@emotion/is-prop-valid': 1.4.0
-      '@emotion/react': 11.14.0(@types/react@19.1.12)(react@18.3.1)
+      '@emotion/react': 11.14.0(@types/react@18.2.0)(react@18.3.1)
       '@emotion/serialize': 1.3.3
       '@emotion/use-insertion-effect-with-fallbacks': 1.2.0(react@18.3.1)
       '@emotion/utils': 1.4.2
       react: 18.3.1
     optionalDependencies:
-      '@types/react': 19.1.12
+      '@types/react': 18.2.0
     transitivePeerDependencies:
       - supports-color
 
@@ -4429,9 +4436,9 @@ snapshots:
 
   '@lit-labs/ssr-dom-shim@1.4.0': {}
 
-  '@lit/react@1.0.8(@types/react@19.1.12)':
+  '@lit/react@1.0.8(@types/react@18.2.0)':
     dependencies:
-      '@types/react': 19.1.12
+      '@types/react': 18.2.0
     optional: true
 
   '@lit/reactive-element@2.1.1':
@@ -4442,15 +4449,15 @@ snapshots:
 
   '@mui/core-downloads-tracker@6.5.0': {}
 
-  '@mui/material@6.5.0(@emotion/react@11.14.0(@types/react@19.1.12)(react@18.3.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.12)(react@18.3.1))(@types/react@19.1.12)(react@18.3.1))(@types/react@19.1.12)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+  '@mui/material@6.5.0(@emotion/react@11.14.0(@types/react@18.2.0)(react@18.3.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@18.2.0)(react@18.3.1))(@types/react@18.2.0)(react@18.3.1))(@types/react@18.2.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
       '@babel/runtime': 7.28.4
       '@mui/core-downloads-tracker': 6.5.0
-      '@mui/system': 6.5.0(@emotion/react@11.14.0(@types/react@19.1.12)(react@18.3.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.12)(react@18.3.1))(@types/react@19.1.12)(react@18.3.1))(@types/react@19.1.12)(react@18.3.1)
-      '@mui/types': 7.2.24(@types/react@19.1.12)
-      '@mui/utils': 6.4.9(@types/react@19.1.12)(react@18.3.1)
+      '@mui/system': 6.5.0(@emotion/react@11.14.0(@types/react@18.2.0)(react@18.3.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@18.2.0)(react@18.3.1))(@types/react@18.2.0)(react@18.3.1))(@types/react@18.2.0)(react@18.3.1)
+      '@mui/types': 7.2.24(@types/react@18.2.0)
+      '@mui/utils': 6.4.9(@types/react@18.2.0)(react@18.3.1)
       '@popperjs/core': 2.11.8
-      '@types/react-transition-group': 4.4.12(@types/react@19.1.12)
+      '@types/react-transition-group': 4.4.12(@types/react@18.2.0)
       clsx: 2.1.1
       csstype: 3.1.3
       prop-types: 15.8.1
@@ -4459,20 +4466,20 @@ snapshots:
       react-is: 19.1.1
       react-transition-group: 4.4.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
     optionalDependencies:
-      '@emotion/react': 11.14.0(@types/react@19.1.12)(react@18.3.1)
-      '@emotion/styled': 11.14.1(@emotion/react@11.14.0(@types/react@19.1.12)(react@18.3.1))(@types/react@19.1.12)(react@18.3.1)
-      '@types/react': 19.1.12
+      '@emotion/react': 11.14.0(@types/react@18.2.0)(react@18.3.1)
+      '@emotion/styled': 11.14.1(@emotion/react@11.14.0(@types/react@18.2.0)(react@18.3.1))(@types/react@18.2.0)(react@18.3.1)
+      '@types/react': 18.2.0
 
-  '@mui/private-theming@6.4.9(@types/react@19.1.12)(react@18.3.1)':
+  '@mui/private-theming@6.4.9(@types/react@18.2.0)(react@18.3.1)':
     dependencies:
       '@babel/runtime': 7.28.4
-      '@mui/utils': 6.4.9(@types/react@19.1.12)(react@18.3.1)
+      '@mui/utils': 6.4.9(@types/react@18.2.0)(react@18.3.1)
       prop-types: 15.8.1
       react: 18.3.1
     optionalDependencies:
-      '@types/react': 19.1.12
+      '@types/react': 18.2.0
 
-  '@mui/styled-engine@6.5.0(@emotion/react@11.14.0(@types/react@19.1.12)(react@18.3.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.12)(react@18.3.1))(@types/react@19.1.12)(react@18.3.1))(react@18.3.1)':
+  '@mui/styled-engine@6.5.0(@emotion/react@11.14.0(@types/react@18.2.0)(react@18.3.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@18.2.0)(react@18.3.1))(@types/react@18.2.0)(react@18.3.1))(react@18.3.1)':
     dependencies:
       '@babel/runtime': 7.28.4
       '@emotion/cache': 11.14.0
@@ -4482,40 +4489,40 @@ snapshots:
       prop-types: 15.8.1
       react: 18.3.1
     optionalDependencies:
-      '@emotion/react': 11.14.0(@types/react@19.1.12)(react@18.3.1)
-      '@emotion/styled': 11.14.1(@emotion/react@11.14.0(@types/react@19.1.12)(react@18.3.1))(@types/react@19.1.12)(react@18.3.1)
+      '@emotion/react': 11.14.0(@types/react@18.2.0)(react@18.3.1)
+      '@emotion/styled': 11.14.1(@emotion/react@11.14.0(@types/react@18.2.0)(react@18.3.1))(@types/react@18.2.0)(react@18.3.1)
 
-  '@mui/system@6.5.0(@emotion/react@11.14.0(@types/react@19.1.12)(react@18.3.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.12)(react@18.3.1))(@types/react@19.1.12)(react@18.3.1))(@types/react@19.1.12)(react@18.3.1)':
+  '@mui/system@6.5.0(@emotion/react@11.14.0(@types/react@18.2.0)(react@18.3.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@18.2.0)(react@18.3.1))(@types/react@18.2.0)(react@18.3.1))(@types/react@18.2.0)(react@18.3.1)':
     dependencies:
       '@babel/runtime': 7.28.4
-      '@mui/private-theming': 6.4.9(@types/react@19.1.12)(react@18.3.1)
-      '@mui/styled-engine': 6.5.0(@emotion/react@11.14.0(@types/react@19.1.12)(react@18.3.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.12)(react@18.3.1))(@types/react@19.1.12)(react@18.3.1))(react@18.3.1)
-      '@mui/types': 7.2.24(@types/react@19.1.12)
-      '@mui/utils': 6.4.9(@types/react@19.1.12)(react@18.3.1)
+      '@mui/private-theming': 6.4.9(@types/react@18.2.0)(react@18.3.1)
+      '@mui/styled-engine': 6.5.0(@emotion/react@11.14.0(@types/react@18.2.0)(react@18.3.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@18.2.0)(react@18.3.1))(@types/react@18.2.0)(react@18.3.1))(react@18.3.1)
+      '@mui/types': 7.2.24(@types/react@18.2.0)
+      '@mui/utils': 6.4.9(@types/react@18.2.0)(react@18.3.1)
       clsx: 2.1.1
       csstype: 3.1.3
       prop-types: 15.8.1
       react: 18.3.1
     optionalDependencies:
-      '@emotion/react': 11.14.0(@types/react@19.1.12)(react@18.3.1)
-      '@emotion/styled': 11.14.1(@emotion/react@11.14.0(@types/react@19.1.12)(react@18.3.1))(@types/react@19.1.12)(react@18.3.1)
-      '@types/react': 19.1.12
+      '@emotion/react': 11.14.0(@types/react@18.2.0)(react@18.3.1)
+      '@emotion/styled': 11.14.1(@emotion/react@11.14.0(@types/react@18.2.0)(react@18.3.1))(@types/react@18.2.0)(react@18.3.1)
+      '@types/react': 18.2.0
 
-  '@mui/types@7.2.24(@types/react@19.1.12)':
+  '@mui/types@7.2.24(@types/react@18.2.0)':
     optionalDependencies:
-      '@types/react': 19.1.12
+      '@types/react': 18.2.0
 
-  '@mui/utils@6.4.9(@types/react@19.1.12)(react@18.3.1)':
+  '@mui/utils@6.4.9(@types/react@18.2.0)(react@18.3.1)':
     dependencies:
       '@babel/runtime': 7.28.4
-      '@mui/types': 7.2.24(@types/react@19.1.12)
+      '@mui/types': 7.2.24(@types/react@18.2.0)
       '@types/prop-types': 15.7.15
       clsx: 2.1.1
       prop-types: 15.8.1
       react: 18.3.1
       react-is: 19.1.1
     optionalDependencies:
-      '@types/react': 19.1.12
+      '@types/react': 18.2.0
 
   '@napi-rs/wasm-runtime@0.2.12':
     dependencies:
@@ -4544,19 +4551,19 @@ snapshots:
 
   '@remix-run/router@1.23.0': {}
 
-  '@reown/appkit-adapter-ethers@1.8.3(@ethersproject/sha2@5.8.0)(@types/react@19.1.12)(ethers@6.15.0)(react@18.3.1)(typescript@5.9.2)(zod@3.22.4)':
+  '@reown/appkit-adapter-ethers@1.8.3(@ethersproject/sha2@5.8.0)(@types/react@18.2.0)(ethers@6.15.0)(react@18.3.1)(typescript@5.9.2)(zod@3.22.4)':
     dependencies:
       '@ethersproject/sha2': 5.8.0
-      '@reown/appkit': 1.8.3(@types/react@19.1.12)(react@18.3.1)(typescript@5.9.2)(zod@3.22.4)
+      '@reown/appkit': 1.8.3(@types/react@18.2.0)(react@18.3.1)(typescript@5.9.2)(zod@3.22.4)
       '@reown/appkit-common': 1.8.3(typescript@5.9.2)(zod@3.22.4)
-      '@reown/appkit-controllers': 1.8.3(@types/react@19.1.12)(react@18.3.1)(typescript@5.9.2)(zod@3.22.4)
+      '@reown/appkit-controllers': 1.8.3(@types/react@18.2.0)(react@18.3.1)(typescript@5.9.2)(zod@3.22.4)
       '@reown/appkit-polyfills': 1.8.3
-      '@reown/appkit-scaffold-ui': 1.8.3(@types/react@19.1.12)(react@18.3.1)(typescript@5.9.2)(valtio@2.1.7(@types/react@19.1.12)(react@18.3.1))(zod@3.22.4)
-      '@reown/appkit-utils': 1.8.3(@types/react@19.1.12)(react@18.3.1)(typescript@5.9.2)(valtio@2.1.7(@types/react@19.1.12)(react@18.3.1))(zod@3.22.4)
+      '@reown/appkit-scaffold-ui': 1.8.3(@types/react@18.2.0)(react@18.3.1)(typescript@5.9.2)(valtio@2.1.7(@types/react@18.2.0)(react@18.3.1))(zod@3.22.4)
+      '@reown/appkit-utils': 1.8.3(@types/react@18.2.0)(react@18.3.1)(typescript@5.9.2)(valtio@2.1.7(@types/react@18.2.0)(react@18.3.1))(zod@3.22.4)
       '@reown/appkit-wallet': 1.8.3(typescript@5.9.2)
       '@walletconnect/universal-provider': 2.21.7(typescript@5.9.2)(zod@3.22.4)
       ethers: 6.15.0
-      valtio: 2.1.7(@types/react@19.1.12)(react@18.3.1)
+      valtio: 2.1.7(@types/react@18.2.0)(react@18.3.1)
     optionalDependencies:
       '@coinbase/wallet-sdk': 4.3.0
       '@safe-global/safe-apps-provider': 0.18.6(typescript@5.9.2)(zod@3.22.4)
@@ -4600,12 +4607,12 @@ snapshots:
       - utf-8-validate
       - zod
 
-  '@reown/appkit-controllers@1.8.3(@types/react@19.1.12)(react@18.3.1)(typescript@5.9.2)(zod@3.22.4)':
+  '@reown/appkit-controllers@1.8.3(@types/react@18.2.0)(react@18.3.1)(typescript@5.9.2)(zod@3.22.4)':
     dependencies:
       '@reown/appkit-common': 1.8.3(typescript@5.9.2)(zod@3.22.4)
       '@reown/appkit-wallet': 1.8.3(typescript@5.9.2)
       '@walletconnect/universal-provider': 2.21.7(typescript@5.9.2)(zod@3.22.4)
-      valtio: 2.1.7(@types/react@19.1.12)(react@18.3.1)
+      valtio: 2.1.7(@types/react@18.2.0)(react@18.3.1)
       viem: 2.37.4(typescript@5.9.2)(zod@3.22.4)
     transitivePeerDependencies:
       - '@azure/app-configuration'
@@ -4635,14 +4642,14 @@ snapshots:
       - utf-8-validate
       - zod
 
-  '@reown/appkit-pay@1.8.3(@types/react@19.1.12)(react@18.3.1)(typescript@5.9.2)(zod@3.22.4)':
+  '@reown/appkit-pay@1.8.3(@types/react@18.2.0)(react@18.3.1)(typescript@5.9.2)(zod@3.22.4)':
     dependencies:
       '@reown/appkit-common': 1.8.3(typescript@5.9.2)(zod@3.22.4)
-      '@reown/appkit-controllers': 1.8.3(@types/react@19.1.12)(react@18.3.1)(typescript@5.9.2)(zod@3.22.4)
-      '@reown/appkit-ui': 1.8.3(@types/react@19.1.12)(react@18.3.1)(typescript@5.9.2)(zod@3.22.4)
-      '@reown/appkit-utils': 1.8.3(@types/react@19.1.12)(react@18.3.1)(typescript@5.9.2)(valtio@2.1.7(@types/react@19.1.12)(react@18.3.1))(zod@3.22.4)
+      '@reown/appkit-controllers': 1.8.3(@types/react@18.2.0)(react@18.3.1)(typescript@5.9.2)(zod@3.22.4)
+      '@reown/appkit-ui': 1.8.3(@types/react@18.2.0)(react@18.3.1)(typescript@5.9.2)(zod@3.22.4)
+      '@reown/appkit-utils': 1.8.3(@types/react@18.2.0)(react@18.3.1)(typescript@5.9.2)(valtio@2.1.7(@types/react@18.2.0)(react@18.3.1))(zod@3.22.4)
       lit: 3.3.0
-      valtio: 2.1.7(@types/react@19.1.12)(react@18.3.1)
+      valtio: 2.1.7(@types/react@18.2.0)(react@18.3.1)
     transitivePeerDependencies:
       - '@azure/app-configuration'
       - '@azure/cosmos'
@@ -4675,12 +4682,12 @@ snapshots:
     dependencies:
       buffer: 6.0.3
 
-  '@reown/appkit-scaffold-ui@1.8.3(@types/react@19.1.12)(react@18.3.1)(typescript@5.9.2)(valtio@2.1.7(@types/react@19.1.12)(react@18.3.1))(zod@3.22.4)':
+  '@reown/appkit-scaffold-ui@1.8.3(@types/react@18.2.0)(react@18.3.1)(typescript@5.9.2)(valtio@2.1.7(@types/react@18.2.0)(react@18.3.1))(zod@3.22.4)':
     dependencies:
       '@reown/appkit-common': 1.8.3(typescript@5.9.2)(zod@3.22.4)
-      '@reown/appkit-controllers': 1.8.3(@types/react@19.1.12)(react@18.3.1)(typescript@5.9.2)(zod@3.22.4)
-      '@reown/appkit-ui': 1.8.3(@types/react@19.1.12)(react@18.3.1)(typescript@5.9.2)(zod@3.22.4)
-      '@reown/appkit-utils': 1.8.3(@types/react@19.1.12)(react@18.3.1)(typescript@5.9.2)(valtio@2.1.7(@types/react@19.1.12)(react@18.3.1))(zod@3.22.4)
+      '@reown/appkit-controllers': 1.8.3(@types/react@18.2.0)(react@18.3.1)(typescript@5.9.2)(zod@3.22.4)
+      '@reown/appkit-ui': 1.8.3(@types/react@18.2.0)(react@18.3.1)(typescript@5.9.2)(zod@3.22.4)
+      '@reown/appkit-utils': 1.8.3(@types/react@18.2.0)(react@18.3.1)(typescript@5.9.2)(valtio@2.1.7(@types/react@18.2.0)(react@18.3.1))(zod@3.22.4)
       '@reown/appkit-wallet': 1.8.3(typescript@5.9.2)
       lit: 3.3.0
     transitivePeerDependencies:
@@ -4712,11 +4719,11 @@ snapshots:
       - valtio
       - zod
 
-  '@reown/appkit-ui@1.8.3(@types/react@19.1.12)(react@18.3.1)(typescript@5.9.2)(zod@3.22.4)':
+  '@reown/appkit-ui@1.8.3(@types/react@18.2.0)(react@18.3.1)(typescript@5.9.2)(zod@3.22.4)':
     dependencies:
       '@phosphor-icons/webcomponents': 2.1.5
       '@reown/appkit-common': 1.8.3(typescript@5.9.2)(zod@3.22.4)
-      '@reown/appkit-controllers': 1.8.3(@types/react@19.1.12)(react@18.3.1)(typescript@5.9.2)(zod@3.22.4)
+      '@reown/appkit-controllers': 1.8.3(@types/react@18.2.0)(react@18.3.1)(typescript@5.9.2)(zod@3.22.4)
       '@reown/appkit-wallet': 1.8.3(typescript@5.9.2)
       lit: 3.3.0
       qrcode: 1.5.3
@@ -4748,16 +4755,16 @@ snapshots:
       - utf-8-validate
       - zod
 
-  '@reown/appkit-utils@1.8.3(@types/react@19.1.12)(react@18.3.1)(typescript@5.9.2)(valtio@2.1.7(@types/react@19.1.12)(react@18.3.1))(zod@3.22.4)':
+  '@reown/appkit-utils@1.8.3(@types/react@18.2.0)(react@18.3.1)(typescript@5.9.2)(valtio@2.1.7(@types/react@18.2.0)(react@18.3.1))(zod@3.22.4)':
     dependencies:
       '@reown/appkit-common': 1.8.3(typescript@5.9.2)(zod@3.22.4)
-      '@reown/appkit-controllers': 1.8.3(@types/react@19.1.12)(react@18.3.1)(typescript@5.9.2)(zod@3.22.4)
+      '@reown/appkit-controllers': 1.8.3(@types/react@18.2.0)(react@18.3.1)(typescript@5.9.2)(zod@3.22.4)
       '@reown/appkit-polyfills': 1.8.3
       '@reown/appkit-wallet': 1.8.3(typescript@5.9.2)
       '@wallet-standard/wallet': 1.1.0
       '@walletconnect/logger': 2.1.2
       '@walletconnect/universal-provider': 2.21.7(typescript@5.9.2)(zod@3.22.4)
-      valtio: 2.1.7(@types/react@19.1.12)(react@18.3.1)
+      valtio: 2.1.7(@types/react@18.2.0)(react@18.3.1)
       viem: 2.37.4(typescript@5.9.2)(zod@3.22.4)
     transitivePeerDependencies:
       - '@azure/app-configuration'
@@ -4798,23 +4805,23 @@ snapshots:
       - typescript
       - utf-8-validate
 
-  '@reown/appkit@1.8.3(@types/react@19.1.12)(react@18.3.1)(typescript@5.9.2)(zod@3.22.4)':
+  '@reown/appkit@1.8.3(@types/react@18.2.0)(react@18.3.1)(typescript@5.9.2)(zod@3.22.4)':
     dependencies:
       '@reown/appkit-common': 1.8.3(typescript@5.9.2)(zod@3.22.4)
-      '@reown/appkit-controllers': 1.8.3(@types/react@19.1.12)(react@18.3.1)(typescript@5.9.2)(zod@3.22.4)
-      '@reown/appkit-pay': 1.8.3(@types/react@19.1.12)(react@18.3.1)(typescript@5.9.2)(zod@3.22.4)
+      '@reown/appkit-controllers': 1.8.3(@types/react@18.2.0)(react@18.3.1)(typescript@5.9.2)(zod@3.22.4)
+      '@reown/appkit-pay': 1.8.3(@types/react@18.2.0)(react@18.3.1)(typescript@5.9.2)(zod@3.22.4)
       '@reown/appkit-polyfills': 1.8.3
-      '@reown/appkit-scaffold-ui': 1.8.3(@types/react@19.1.12)(react@18.3.1)(typescript@5.9.2)(valtio@2.1.7(@types/react@19.1.12)(react@18.3.1))(zod@3.22.4)
-      '@reown/appkit-ui': 1.8.3(@types/react@19.1.12)(react@18.3.1)(typescript@5.9.2)(zod@3.22.4)
-      '@reown/appkit-utils': 1.8.3(@types/react@19.1.12)(react@18.3.1)(typescript@5.9.2)(valtio@2.1.7(@types/react@19.1.12)(react@18.3.1))(zod@3.22.4)
+      '@reown/appkit-scaffold-ui': 1.8.3(@types/react@18.2.0)(react@18.3.1)(typescript@5.9.2)(valtio@2.1.7(@types/react@18.2.0)(react@18.3.1))(zod@3.22.4)
+      '@reown/appkit-ui': 1.8.3(@types/react@18.2.0)(react@18.3.1)(typescript@5.9.2)(zod@3.22.4)
+      '@reown/appkit-utils': 1.8.3(@types/react@18.2.0)(react@18.3.1)(typescript@5.9.2)(valtio@2.1.7(@types/react@18.2.0)(react@18.3.1))(zod@3.22.4)
       '@reown/appkit-wallet': 1.8.3(typescript@5.9.2)
       '@walletconnect/universal-provider': 2.21.7(typescript@5.9.2)(zod@3.22.4)
       bs58: 6.0.0
       semver: 7.7.2
-      valtio: 2.1.7(@types/react@19.1.12)(react@18.3.1)
+      valtio: 2.1.7(@types/react@18.2.0)(react@18.3.1)
       viem: 2.37.4(typescript@5.9.2)(zod@3.22.4)
     optionalDependencies:
-      '@lit/react': 1.0.8(@types/react@19.1.12)
+      '@lit/react': 1.0.8(@types/react@18.2.0)
     transitivePeerDependencies:
       - '@azure/app-configuration'
       - '@azure/cosmos'
@@ -4959,15 +4966,13 @@ snapshots:
       lz-string: 1.5.0
       pretty-format: 27.5.1
 
-  '@testing-library/react@13.4.0(@types/react@19.1.12)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+  '@testing-library/react@13.4.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
       '@babel/runtime': 7.28.4
       '@testing-library/dom': 8.20.1
-      '@types/react-dom': 18.3.7(@types/react@19.1.12)
+      '@types/react-dom': 18.2.0
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
-    transitivePeerDependencies:
-      - '@types/react'
 
   '@testing-library/user-event@14.6.1(@testing-library/dom@8.20.1)':
     dependencies:
@@ -5150,28 +5155,32 @@ snapshots:
 
   '@types/react-blockies@1.4.4':
     dependencies:
-      '@types/react': 19.1.12
+      '@types/react': 18.2.0
 
-  '@types/react-color@3.0.13(@types/react@19.1.12)':
+  '@types/react-color@3.0.13(@types/react@18.2.0)':
     dependencies:
-      '@types/react': 19.1.12
-      '@types/reactcss': 1.2.13(@types/react@19.1.12)
+      '@types/react': 18.2.0
+      '@types/reactcss': 1.2.13(@types/react@18.2.0)
 
-  '@types/react-dom@18.3.7(@types/react@19.1.12)':
+  '@types/react-dom@18.2.0':
     dependencies:
-      '@types/react': 19.1.12
+      '@types/react': 18.2.0
 
-  '@types/react-transition-group@4.4.12(@types/react@19.1.12)':
+  '@types/react-transition-group@4.4.12(@types/react@18.2.0)':
     dependencies:
-      '@types/react': 19.1.12
+      '@types/react': 18.2.0
 
-  '@types/react@19.1.12':
+  '@types/react@18.2.0':
     dependencies:
+      '@types/prop-types': 15.7.15
+      '@types/scheduler': 0.26.0
       csstype: 3.1.3
 
-  '@types/reactcss@1.2.13(@types/react@19.1.12)':
+  '@types/reactcss@1.2.13(@types/react@18.2.0)':
     dependencies:
-      '@types/react': 19.1.12
+      '@types/react': 18.2.0
+
+  '@types/scheduler@0.26.0': {}
 
   '@types/stylis@4.2.5': {}
 
@@ -8112,11 +8121,11 @@ snapshots:
 
   v8-compile-cache@2.4.0: {}
 
-  valtio@2.1.7(@types/react@19.1.12)(react@18.3.1):
+  valtio@2.1.7(@types/react@18.2.0)(react@18.3.1):
     dependencies:
       proxy-compare: 3.0.1
     optionalDependencies:
-      '@types/react': 19.1.12
+      '@types/react': 18.2.0
       react: 18.3.1
 
   viem@2.31.0(typescript@5.9.2)(zod@3.22.4):
