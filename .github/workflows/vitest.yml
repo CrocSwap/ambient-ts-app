@@ -23,16 +23,14 @@ jobs:
 
         steps:
             - uses: actions/checkout@v4
-            - name: Setup pnpm
-              uses: pnpm/action-setup@v2
-              with:
-                  version: 8
-            - name: Use Node.js ${{ matrix.node-version }}
+            - name: Setup Node.js
               uses: actions/setup-node@v3
               with:
                   node-version: ${{ matrix.node-version }}
                   cache: 'pnpm'
+            - name: Install pnpm
+              run: npm install -g pnpm@8
             - name: Install dependencies
-              run: pnpm install --no-workspace-root
-            - name: run tests
+              run: pnpm install --frozen-lockfile
+            - name: Run tests
               run: pnpm test
