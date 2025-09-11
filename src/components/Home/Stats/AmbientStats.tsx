@@ -1,5 +1,5 @@
 import { useContext } from 'react';
-import { Fade } from 'react-reveal';
+import { motion } from 'framer-motion';
 import { ChainDataContext } from '../../../contexts';
 import {
     HomeContent,
@@ -65,7 +65,12 @@ export default function Stats() {
     const statsTitle = 'Ambient Finance Stats';
 
     const mobileWrapper = (
-        <Fade up>
+        <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+        >
             <HomeTitle aria-label={statsTitle} tabIndex={0}>
                 {statsTitle}
             </HomeTitle>
@@ -74,7 +79,7 @@ export default function Stats() {
                     <StatCard key={idx} title={card.title} value={card.value} />
                 ))}
             </HomeContent>
-        </Fade>
+        </motion.div>
     );
     const isHeightSmall = useMediaQuery('(max-height: 800px)');
 
