@@ -1,6 +1,5 @@
 import { sortBaseQuoteTokens } from '@crocswap-libs/sdk';
 import { useContext, useEffect, useMemo, useRef, useState } from 'react';
-import { useLocation } from 'react-router';
 import {
     expandLiquidityData,
     fetchPoolLiquidity,
@@ -89,7 +88,7 @@ export function usePoolMetadata() {
         cachedTokenDetails,
     } = useContext(CachedDataContext);
 
-    const pathname = useLocation().pathname;
+    const pathname = window.location.pathname;
 
     const isMobile = useMediaQuery('(max-width: 500px)');
 

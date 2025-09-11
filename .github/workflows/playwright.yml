@@ -13,7 +13,7 @@ jobs:
         steps:
             - uses: actions/checkout@v4
             - name: Install dependencies
-              run: yarn
+              run: pnpm
             - name: Install Playwright Browsers
               run: npx playwright install --with-deps
             - name: Waiting for 200 from the Netlify Preview
@@ -23,7 +23,7 @@ jobs:
                   site_name: 'ambient-finance'
                   max_timeout: 360 # 6 Minutes, depends on your build pipeline duration
             - name: Run Playwright tests
-              run: yarn playwright test
+              run: pnpm playwright test
               env:
                   # This might depend on your test-runner/language binding
                   PLAYWRIGHT_TEST_BASE_URL: ${{ steps.waitFor200.outputs.url }}
