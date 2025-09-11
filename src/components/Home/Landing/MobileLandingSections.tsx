@@ -1,6 +1,5 @@
 import styles from './BackgroundImages.module.css';
 
-import { Fade } from 'react-reveal';
 import liquidityImage from '../../../assets/images/home/liquidity.png';
 import orderImage from '../../../assets/images/home/orders.png';
 import Footer from '../../Footer/Footer';
@@ -155,21 +154,19 @@ export default function MobileLandingSections() {
             scrollSnapAlign='center'
         >
             <MobileBg1 className={styles.home2} />
-            <Fade up>
-                <h1 tabIndex={0}>Zero-to-One Decentralized Trading Protocol</h1>
-                <Text
-                    tabIndex={0}
-                    color='text2'
-                    style={{ fontSize: '20px', lineHeight: '30px' }}
-                >
-                    Faster, Easier, and Cheaper
-                </Text>
-                <Text color='text2' fontWeight='100' tabIndex={0}>
-                    Ambient runs the entire DEX inside a single smart contract,
-                    allowing for low-fee transactions, greater liquidity
-                    rewards, and a fairer trading experience.
-                </Text>
-            </Fade>
+            <h1 tabIndex={0}>Zero-to-One Decentralized Trading Protocol</h1>
+            <Text
+                tabIndex={0}
+                color='text2'
+                style={{ fontSize: '20px', lineHeight: '30px' }}
+            >
+                Faster, Easier, and Cheaper
+            </Text>
+            <Text color='text2' fontWeight='100' tabIndex={0}>
+                Ambient runs the entire DEX inside a single smart contract,
+                allowing for low-fee transactions, greater liquidity rewards,
+                and a fairer trading experience.
+            </Text>
         </MobileCard>
     );
 
@@ -181,25 +178,20 @@ export default function MobileLandingSections() {
             scrollSnapAlign='center'
         >
             <MobileBg2 className={styles.home2} />
-            <Fade up>
-                <img
-                    src={liquidityImage}
-                    alt='concentrated and ambient liquidity'
-                    width='260px'
-                />
-                <Text
-                    tabIndex={0}
-                    style={{ fontSize: '20px', lineHeight: '30px' }}
-                >
-                    Deep, Diversified Liquidity
-                </Text>
-                <Text color='text2' fontWeight='100' tabIndex={0}>
-                    Ambient is built for diversified, sustainable liquidity that
-                    fixes the broken LP economics of AMMs. It is also the only
-                    DEX to support concentrated (‘V3’), ambient (‘V2’) and
-                    knock-out liquidity in the same liquidity pool.
-                </Text>
-            </Fade>
+            <img
+                src={liquidityImage}
+                alt='concentrated and ambient liquidity'
+                width='260px'
+            />
+            <Text tabIndex={0} style={{ fontSize: '20px', lineHeight: '30px' }}>
+                Deep, Diversified Liquidity
+            </Text>
+            <Text color='text2' fontWeight='100' tabIndex={0}>
+                Ambient is built for diversified, sustainable liquidity that
+                fixes the broken LP economics of AMMs. It is also the only DEX
+                to support concentrated (‘V3’), ambient (‘V2’) and knock-out
+                liquidity in the same liquidity pool.
+            </Text>
         </MobileCard>
     );
 
@@ -211,29 +203,20 @@ export default function MobileLandingSections() {
             scrollSnapAlign='center'
         >
             <MobileBg3 className={styles.home3} />
-            <Fade up>
-                <img
-                    src={orderImage}
-                    alt='range and limit orders'
-                    width='200px'
-                />
+            <img src={orderImage} alt='range and limit orders' width='200px' />
 
-                <Text
-                    style={{ fontSize: '20px', lineHeight: '30px' }}
-                    tabIndex={0}
-                >
-                    Bridge the Gap Between Trading and LP’ing
-                </Text>
-                <Text tabIndex={0} color='text2' fontWeight='100'>
-                    Make your LP position a trading position – and vice versa –
-                    using our range and limit orders.
-                </Text>
-                <Text tabIndex={0} color='text2' fontWeight='100'>
-                    Ambient combines liquidity in a single pool, allowing for
-                    greater rewards for liquidity providers, and less impact for
-                    traders.
-                </Text>
-            </Fade>
+            <Text style={{ fontSize: '20px', lineHeight: '30px' }} tabIndex={0}>
+                Bridge the Gap Between Trading and LP’ing
+            </Text>
+            <Text tabIndex={0} color='text2' fontWeight='100'>
+                Make your LP position a trading position – and vice versa –
+                using our range and limit orders.
+            </Text>
+            <Text tabIndex={0} color='text2' fontWeight='100'>
+                Ambient combines liquidity in a single pool, allowing for
+                greater rewards for liquidity providers, and less impact for
+                traders.
+            </Text>
         </MobileCard>
     );
 
@@ -245,20 +228,15 @@ export default function MobileLandingSections() {
             scrollSnapAlign='center'
         >
             <MobileBg4 className={styles.home4} />
-            <Fade up>
-                <Text
-                    style={{ fontSize: '20px', lineHeight: '30px' }}
-                    tabIndex={0}
-                >
-                    Better than CEX
-                </Text>
-                <Text tabIndex={0} color='text2' fontWeight='100'>
-                    Built for traders and market makers of all kinds, Ambient
-                    introduces novel DeFi-native features and an array of
-                    quality-of-life improvements allowing for a best-in-class
-                    user experience.
-                </Text>
-            </Fade>
+            <Text style={{ fontSize: '20px', lineHeight: '30px' }} tabIndex={0}>
+                Better than CEX
+            </Text>
+            <Text tabIndex={0} color='text2' fontWeight='100'>
+                Built for traders and market makers of all kinds, Ambient
+                introduces novel DeFi-native features and an array of
+                quality-of-life improvements allowing for a best-in-class user
+                experience.
+            </Text>
         </MobileCard>
     );
 
@@ -270,17 +248,15 @@ export default function MobileLandingSections() {
             scrollSnapAlign='center'
             style={{ paddingTop: '56px' }}
         >
-            <Fade up>
-                <Text
-                    color='text1'
-                    fontWeight='400'
-                    fontSize='header1'
-                    align='center'
-                >
-                    Investors
-                </Text>
-                <Investors />
-            </Fade>
+            <Text
+                color='text1'
+                fontWeight='400'
+                fontSize='header1'
+                align='center'
+            >
+                Investors
+            </Text>
+            <Investors />
         </MobileCard>
     );
 
@@ -294,9 +270,7 @@ export default function MobileLandingSections() {
             id='footer'
         >
             <div className={styles.bg_footer} />
-            <Fade up>
-                <Footer />
-            </Fade>
+            <Footer />
         </MobileCard>
     );
 
