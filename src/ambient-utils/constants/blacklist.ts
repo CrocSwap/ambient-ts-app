@@ -365,6 +365,11 @@ export const hiddenTokens = [
         chainId: 1,
     },
     {
+        // non-Monad MON on Mainnet
+        address: '0xc555d625828c4527d477e595ff1dd5801b4a600e',
+        chainId: 1,
+    },
+    {
         // old pUSD on Plume Mainnet
         address: '0x360822f796975cEccD8095c10720c57567b4199f',
         chainId: 98865,
