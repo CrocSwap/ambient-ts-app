@@ -9,7 +9,6 @@ import {
     useMemo,
     useState,
 } from 'react';
-import { useLocation } from 'react-router';
 import { getDefaultPairForChain } from '../ambient-utils/constants';
 import { isStablePair, translateTokenSymbol } from '../ambient-utils/dataLayer';
 import { TokenIF } from '../ambient-utils/types';
@@ -136,7 +135,7 @@ export const TradeDataContextProvider = (props: { children: ReactNode }) => {
               : dfltTokenB,
     );
 
-    const pathname = useLocation().pathname;
+    const pathname = location.pathname;
 
     // hook to sync token addresses in RTK to token addresses in RTK
     const contextMatchesParams = useMemo(() => {

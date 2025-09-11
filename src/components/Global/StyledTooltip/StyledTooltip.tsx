@@ -1,5 +1,5 @@
 import { Tooltip, tooltipClasses, TooltipProps } from '@mui/material';
-import { styled } from '@mui/system';
+import { styled } from '@mui/material/styles';
 
 const createStyledTooltip = (
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

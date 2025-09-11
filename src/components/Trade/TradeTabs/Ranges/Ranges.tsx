@@ -87,7 +87,7 @@ function Ranges(props: propsIF) {
 
     const baseTokenSymbol = baseToken.symbol;
     const quoteTokenSymbol = quoteToken.symbol;
-    const path = useLocation().pathname;
+    const path = location.pathname;
 
     if (!path.includes('reposition')) {
         setCurrentRangeInReposition('');

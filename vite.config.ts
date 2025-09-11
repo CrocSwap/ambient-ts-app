@@ -2,16 +2,11 @@ import react from '@vitejs/plugin-react';
 import { execSync } from 'child_process';
 import { visualizer } from 'rollup-plugin-visualizer';
 import { defineConfig } from 'vite';
-import checker from 'vite-plugin-checker';
 
 export default defineConfig({
     base: '/',
     plugins: [
         react(),
-        checker({
-            // e.g. use TypeScript check
-            typescript: true,
-        }),
         {
             name: 'html-transform',
             transformIndexHtml(html) {
