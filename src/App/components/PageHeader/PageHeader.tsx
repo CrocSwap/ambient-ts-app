@@ -1,4 +1,11 @@
-import { memo, useContext, useEffect, useRef, useState } from 'react';
+import {
+    memo,
+    useContext,
+    useEffect,
+    useLayoutEffect,
+    useRef,
+    useState,
+} from 'react';
 import { AiOutlineQuestionCircle } from 'react-icons/ai';
 import { Link, useLocation } from 'react-router-dom';
 import {
@@ -107,6 +114,59 @@ const PageHeader = function () {
     // ----------------------------NAVIGATION FUNCTIONALITY-------------------------------------
 
     const location = useLocation();
+
+    const underlineRef = useRef<HTMLSpanElement>(null);
+    const navRef = useRef<HTMLElement>(null);
+
+    function measureAndSet(link: HTMLElement | null) {
+        const nav = navRef.current;
+        const bar = underlineRef.current;
+        if (!nav || !bar || !link) return;
+
+        const cs = getComputedStyle(nav);
+        if (cs.display === 'none' || nav.offsetWidth === 0) return;
+
+        nav.style.setProperty('--x', `${link.offsetLeft}px`);
+        nav.style.setProperty('--w', `${link.offsetWidth}px`);
+    }
+
+    useLayoutEffect(() => {
+        const nav = navRef.current;
+        if (!nav) return;
+
+        const active = nav.querySelector(
+            `.${styles.activeNavigationLink}`,
+        ) as HTMLElement | null;
+        measureAndSet(active);
+
+        const ro = new ResizeObserver(() => {
+            const a = nav.querySelector(
+                `.${styles.activeNavigationLink}`,
+            ) as HTMLElement | null;
+            requestAnimationFrame(() => measureAndSet(a));
+        });
+        ro.observe(nav);
+        window.addEventListener('resize', () => {
+            const a = nav.querySelector(
+                `.${styles.activeNavigationLink}`,
+            ) as HTMLElement | null;
+            requestAnimationFrame(() => measureAndSet(a));
+        });
+
+        if (document.fonts?.ready) {
+            document.fonts.ready.then(() => {
+                const a = nav.querySelector(
+                    `.${styles.activeNavigationLink}`,
+                ) as HTMLElement | null;
+                measureAndSet(a);
+            });
+        }
+
+        return () => {
+            ro.disconnect();
+            window.removeEventListener('resize', () => {});
+        };
+    }, [location.pathname]);
 
     const { tokenA, tokenB, baseToken, quoteToken, isDenomBase } =
         useContext(TradeDataContext);
@@ -337,7 +397,7 @@ const PageHeader = function () {
     }
 
     const routeDisplay = (
-        <nav className={styles.primaryNavigation} id='primary_navigation'>
+        <nav className={styles.primaryNavigation} ref={navRef}>
             {linkData.map((link, idx) =>
                 link.shouldDisplay ? (
                     <Link
@@ -357,10 +417,13 @@ const PageHeader = function () {
                         key={idx}
                     >
                         {link.title}
-                        <span className={styles.underline} />
                     </Link>
                 ) : null,
             )}
+            <span
+                className={styles.underlineIndicator}
+                ref={underlineRef}
+            ></span>
         </nav>
     );
     // ----------------------------END OF NAVIGATION FUNCTIONALITY-------------------------------------

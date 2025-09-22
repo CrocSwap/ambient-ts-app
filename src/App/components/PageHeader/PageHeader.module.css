@@ -11,7 +11,6 @@
     top: 3rem;
     display: flex;
     flex-direction: column;
-    background: red;
 }
 .primaryHeader {
     width: 100%;
@@ -24,11 +23,12 @@
     padding: 0 1rem;
 }
 .primaryNavigation {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 2rem;
+  position: relative; 
+  display: flex;
+  align-items: center;
+  gap: 2rem;
 }
+
 .navigationLink {
     text-decoration: none;
     position: relative;
@@ -47,6 +47,21 @@
 .navigationLink:focus-visible {
     color: var(--text1);
 }
+.underlineIndicator {
+  position: absolute;
+  left: 0;
+  bottom: -1px;
+  height: 2px;
+  background: var(--text1);
+  border-radius: 2px;
+  width: var(--w, 0px);
+  transform: translate3d(var(--x, 0px), 0, 0); 
+  transition:
+    transform 160ms cubic-bezier(.2,.8,.2,1),
+    width     160ms cubic-bezier(.2,.8,.2,1);
+  will-change: transform, width;
+  pointer-events: none;
+}
 
 .navigationLink:focus-visible {
     border: var(--grey-light-border);
@@ -57,7 +72,6 @@
     opacity: 1;
 }
 
-/* Separate class for the active state */
 .activeNavigationLink {
     color: var(--text1);
 }
@@ -66,24 +80,6 @@
     border: var(--grey-light-border);
 }
 
-.underline {
-    position: absolute;
-    bottom: -1px;
-    left: 0;
-    right: 0;
-    height: 1px;
-    background: var(--text1);
-    transform: scaleX(0);
-    transform-origin: left;
-    transition: transform 0.3s ease, opacity 0.2s ease;
-    opacity: 0;
-}
-
-.navigationLink.activeNavigationLink .underline {
-    transform: scaleX(1);
-    opacity: 1;
-    box-shadow: var(--glow-light-box-shadow);
-}
 
 .tradeNowDiv {
     width: 380px;
@@ -136,6 +132,7 @@
         font-size: calc(var(--header2-size) + 0.5rem);
         line-height: calc(var(--header2-lh) + 0.5rem);
     }
+     .underlineIndicator { display: none; }
 }
 
 @media only screen and (min-width: 800px) {
