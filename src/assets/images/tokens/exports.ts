@@ -69,6 +69,7 @@ import USDE from './USDe-Black.svg';
 import USDK from './USDK.png';
 import USDQ from './USDQ.svg';
 import USDT from './USDT.svg';
+import SHMON from './SHMON.png';
 import USDT0 from './USDT0.svg';
 import WBTC from './WBTC.webp';
 import WEETH from './WEETH.svg';
@@ -80,6 +81,7 @@ import YES from './YES.png';
 import YIELD from './YIELD.jpg';
 import YOLO from './YOLO.png';
 import ZCAT from './ZCAT.webp';
+import BEAN from './BEAN.png';
 
 export {
     $PACM,
@@ -164,4 +166,6 @@ export {
     YIELD,
     YOLO,
     ZCAT,
+    SHMON,
+    BEAN,
 };
