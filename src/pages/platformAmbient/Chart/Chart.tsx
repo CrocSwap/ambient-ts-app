@@ -364,6 +364,12 @@ export default function Chart(props: propsIF) {
         ((event: KeyboardEvent) => void) | null
     >(null);
 
+    // Ref to cache D3 selection for render optimization
+    const d3GroupNodeRef = useRef<any>(null);
+
+    // Ref to track pending render frame for throttling
+    const renderFrameRef = useRef<number | null>(null);
+
     const location = useLocation();
 
     const simpleRangeWidth = rangeSimpleRangeWidth;
@@ -1295,11 +1301,30 @@ export default function Chart(props: propsIF) {
         }
     }, [debouncedGetNewCandleDataRight]);
 
-    const render = useCallback(() => {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const nd = d3.select('#d3fc_group').node() as any;
-        if (nd) nd.requestRedraw();
+    // Immediate render without throttling (for critical updates)
+    const renderImmediate = useCallback(() => {
+        // Use cached node reference to avoid repeated DOM queries
+        if (!d3GroupNodeRef.current) {
+            d3GroupNodeRef.current = d3.select('#d3fc_group').node() as any;
+        }
+
+        if (d3GroupNodeRef.current) {
+            d3GroupNodeRef.current.requestRedraw();
+        }
     }, []);
+
+    // Throttled render using requestAnimationFrame to avoid excessive redraws
+    const render = useCallback(() => {
+        // Cancel any pending render frame
+        if (renderFrameRef.current !== null) {
+            return; // Already scheduled
+        }
+
+        renderFrameRef.current = requestAnimationFrame(() => {
+            renderImmediate();
+            renderFrameRef.current = null;
+        });
+    }, [renderImmediate]);
 
     // controls the distance of the mouse to the range lines, if close, activates the dragRange event
     const canUserDragRange = useMemo<boolean>(() => {
@@ -1342,6 +1367,7 @@ export default function Chart(props: propsIF) {
         location.pathname,
         advancedMode,
         simpleRangeWidth,
+        scaleData,
     ]);
 
     // controls the distance of the mouse to the limit line, if close, activates the dragLimit event
@@ -1374,6 +1400,7 @@ export default function Chart(props: propsIF) {
         chartMousemoveEvent,
         mainCanvasBoundingClientRect,
         location.pathname,
+        scaleData,
     ]);
 
     const canUserDragDrawnShape = useMemo<boolean>(() => {
@@ -1387,7 +1414,12 @@ export default function Chart(props: propsIF) {
         }
 
         return false;
-    }, [hoveredDrawnShape, chartMousemoveEvent, mainCanvasBoundingClientRect]);
+    }, [
+        hoveredDrawnShape,
+        chartMousemoveEvent,
+        mainCanvasBoundingClientRect,
+        scaleData,
+    ]);
 
     function updateDrawnShapeHistoryonLocalStorage() {
         const storedData = localStorage.getItem(LS_KEY_CHART_ANNOTATIONS);
@@ -7112,6 +7144,16 @@ export default function Chart(props: propsIF) {
             });
         }
     }, [reset]);
+
+    // Cleanup pending render frame on unmount
+    useEffect(() => {
+        return () => {
+            if (renderFrameRef.current !== null) {
+                cancelAnimationFrame(renderFrameRef.current);
+                renderFrameRef.current = null;
+            }
+        };
+    }, []);
 
     return (
         <div
