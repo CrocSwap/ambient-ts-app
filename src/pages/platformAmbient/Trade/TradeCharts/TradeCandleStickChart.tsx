@@ -163,9 +163,7 @@ function TradeCandleStickChart(props: propsIF) {
 
     const [chartResetStatus, setChartResetStatus] = useState<{
         isResetChart: boolean;
-    }>({
-        isResetChart: false,
-    });
+    }>({ isResetChart: false });
     const {
         tokenA,
         tokenB,
@@ -178,10 +176,7 @@ function TradeCandleStickChart(props: propsIF) {
         useContext(GraphDataContext);
 
     const tokenPair = useMemo(
-        () => ({
-            dataTokenA: tokenA,
-            dataTokenB: tokenB,
-        }),
+        () => ({ dataTokenA: tokenA, dataTokenB: tokenB }),
         [tokenB.address, tokenB.chainId, tokenA.address, tokenA.chainId],
     );
 
@@ -245,9 +240,7 @@ function TradeCandleStickChart(props: propsIF) {
 
     useEffect(() => {
         setSelectedDrawnShape(undefined);
-        setChartResetStatus({
-            isResetChart: false,
-        });
+        setChartResetStatus({ isResetChart: false });
         setFetchCountForEnoughData(0);
     }, [period, baseTokenAddress + quoteTokenAddress]);
 
@@ -300,10 +293,7 @@ function TradeCandleStickChart(props: propsIF) {
                             gapLeft > 500
                         ) {
                             setCandleDomains((prev: CandleDomainIF) => {
-                                return {
-                                    ...prev,
-                                    isResetRequest: true,
-                                };
+                                return { ...prev, isResetRequest: true };
                             });
 
                             await resetXScale(scaleData.xScale);
@@ -1387,9 +1377,7 @@ function TradeCandleStickChart(props: propsIF) {
                                 size={100}
                                 bg='var(--dark2)'
                                 centered
-                                style={{
-                                    alignItems: 'end',
-                                }}
+                                style={{ alignItems: 'end' }}
                             />
                         </div>
                         <div
@@ -1403,8 +1391,8 @@ function TradeCandleStickChart(props: propsIF) {
                         </div>
                     </>
                 )}
-                {isOpenChart && !isUserIdle60min && (
-                    <>
+                {isOpenChart && (
+                    /* !isUserIdle60min && */ <>
                         <ChartTooltip
                             currentData={currentData}
                             showTooltip={showTooltip}
@@ -1450,8 +1438,8 @@ function TradeCandleStickChart(props: propsIF) {
                         />
                     </>
                 )}
-
-                {!!isOpenChart && isUserIdle60min && skeletonChart}
+                {/*                 {!!isOpenChart  && isUserIdle60min  && skeletonChart}
+                 */}{' '}
             </div>
         </>
     );
