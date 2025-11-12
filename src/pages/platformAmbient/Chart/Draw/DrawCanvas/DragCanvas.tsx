@@ -412,11 +412,19 @@ export default function DragCanvas(props: DragCanvasProps) {
             .select(d3DragCanvas.current)
             .select('canvas')
             .node() as HTMLCanvasElement;
-        canvas.addEventListener('pointerup', (event: PointerEvent) => {
+
+        const pointerUpHandler = (event: PointerEvent) => {
             if (event.pointerType === 'touch') {
                 setIsDragActive(false);
             }
-        });
+        };
+
+        canvas.addEventListener('pointerup', pointerUpHandler);
+
+        // Cleanup function to remove event listener
+        return () => {
+            canvas.removeEventListener('pointerup', pointerUpHandler);
+        };
     }, []);
 
     // mousemove

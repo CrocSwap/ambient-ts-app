@@ -592,6 +592,7 @@ function DrawCanvas(props: DrawCanvasProps) {
 
         return () => {
             canvas.removeEventListener('pointerup', pointerUpHandler);
+            document.removeEventListener('keydown', cancelDrawEvent);
         };
     }, [activeDrawingType, JSON.stringify(drawSettings)]);
 

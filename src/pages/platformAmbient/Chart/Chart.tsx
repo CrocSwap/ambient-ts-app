@@ -351,6 +351,19 @@ export default function Chart(props: propsIF) {
     const d3CanvasMarketLine = useRef<HTMLCanvasElement | null>(null);
     const d3CanvasMain = useRef<HTMLDivElement | null>(null);
 
+    // Ref to store wheelTimeout for cleanup
+    const wheelTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+    // Ref to store cancelDragEvent handler for cleanup (range)
+    const cancelDragEventRef = useRef<((event: KeyboardEvent) => void) | null>(
+        null,
+    );
+
+    // Ref to store cancelDragEvent handler for cleanup (limit)
+    const cancelLimitDragEventRef = useRef<
+        ((event: KeyboardEvent) => void) | null
+    >(null);
+
     const location = useLocation();
 
     const simpleRangeWidth = rangeSimpleRangeWidth;
@@ -1640,13 +1653,11 @@ export default function Chart(props: propsIF) {
             const lastCandleDate = lastCandleData?.time * 1000;
             const firstCandleDate = firstCandleData?.time * 1000;
 
-            let wheelTimeout: NodeJS.Timeout | null = null; // Declare wheelTimeout
-
             if (lastCandleDate && firstCandleDate) {
                 d3.select(d3CanvasMain.current).on(
                     'wheel',
                     function (event) {
-                        if (wheelTimeout === null) {
+                        if (wheelTimeoutRef.current === null) {
                             setIsChartZoom(true);
                             setCursorStyleTrigger(true);
                         }
@@ -1663,13 +1674,13 @@ export default function Chart(props: propsIF) {
                             changeScale(true);
                         }
 
-                        if (wheelTimeout) {
-                            clearTimeout(wheelTimeout);
+                        if (wheelTimeoutRef.current) {
+                            clearTimeout(wheelTimeoutRef.current);
                         }
 
                         setPrevLastCandleTime(lastCandleData.time);
                         // check wheel end
-                        wheelTimeout = setTimeout(() => {
+                        wheelTimeoutRef.current = setTimeout(() => {
                             setShouldResetBuffer(false);
                             setIsChartZoom(false);
                             setCursorStyleTrigger(false);
@@ -1986,6 +1997,21 @@ export default function Chart(props: propsIF) {
                 setMainZoom(() => zoom);
             }
         }
+
+        // Cleanup function to remove event listeners and clear timeouts
+        return () => {
+            if (wheelTimeoutRef.current) {
+                clearTimeout(wheelTimeoutRef.current);
+                wheelTimeoutRef.current = null;
+            }
+
+            // Remove D3 event listeners
+            d3.select(d3CanvasMain.current).on('wheel', null);
+
+            // Remove zoom behavior
+            const selection = d3.select(d3CanvasMain.current);
+            selection.on('.zoom', null);
+        };
     }, [
         firstCandleData,
         lastCandleData,
@@ -2363,9 +2389,18 @@ export default function Chart(props: propsIF) {
                     cancelDrag = true;
                     event.preventDefault();
                     event.stopPropagation();
-                    document.removeEventListener('keydown', cancelDragEvent);
+                    if (cancelDragEventRef.current) {
+                        document.removeEventListener(
+                            'keydown',
+                            cancelDragEventRef.current,
+                        );
+                        cancelDragEventRef.current = null;
+                    }
                 }
             };
+
+            // Store the handler in ref for cleanup
+            cancelDragEventRef.current = cancelDragEvent;
 
             const canvas = d3
                 .select(d3CanvasMain.current)
@@ -2747,6 +2782,17 @@ export default function Chart(props: propsIF) {
                 return dragRange;
             });
         }
+
+        // Cleanup function to remove event listener
+        return () => {
+            if (cancelDragEventRef.current) {
+                document.removeEventListener(
+                    'keydown',
+                    cancelDragEventRef.current,
+                );
+                cancelDragEventRef.current = null;
+            }
+        };
     }, [
         poolPriceDisplay,
         location,
@@ -2814,9 +2860,19 @@ export default function Chart(props: propsIF) {
                 cancelDrag = true;
                 event.preventDefault();
                 event.stopPropagation();
-                document.removeEventListener('keydown', cancelDragEvent);
+                if (cancelLimitDragEventRef.current) {
+                    document.removeEventListener(
+                        'keydown',
+                        cancelLimitDragEventRef.current,
+                    );
+                    cancelLimitDragEventRef.current = null;
+                }
             }
         };
+
+        // Store the handler in ref for cleanup
+        cancelLimitDragEventRef.current = cancelDragEvent;
+
         const dragLimit = d3
             .drag<d3.DraggedElementBaseType, unknown, d3.SubjectPosition>()
             .filter((event) => filterDragEvent(event, rectCanvas.left))
@@ -2930,6 +2986,17 @@ export default function Chart(props: propsIF) {
         setDragLimit(() => {
             return dragLimit;
         });
+
+        // Cleanup function to remove event listener
+        return () => {
+            if (cancelLimitDragEventRef.current) {
+                document.removeEventListener(
+                    'keydown',
+                    cancelLimitDragEventRef.current,
+                );
+                cancelLimitDragEventRef.current = null;
+            }
+        };
     }, [
         poolPriceDisplay,
         location,
@@ -4378,8 +4445,9 @@ export default function Chart(props: propsIF) {
                                         }
 
                                         if (ctx) {
-                                            (ctx.fillStyle = textColor),
-                                                (ctx.font = '12px Lexend Deca');
+                                            ((ctx.fillStyle = textColor),
+                                                (ctx.font =
+                                                    '12px Lexend Deca'));
                                             ctx.textAlign =
                                                 alignment as CanvasTextAlign;
                                             ctx.textBaseline = textBaseline;
@@ -5101,6 +5169,12 @@ export default function Chart(props: propsIF) {
                 }
             },
         );
+
+        // Cleanup function to remove event listeners
+        return () => {
+            d3.select(d3CanvasMain.current).on('mouseleave', null);
+            d3.select(d3CanvasMain.current).on('touchend', null);
+        };
     }, [isChartZoom]);
 
     // mouseenter
@@ -5114,6 +5188,11 @@ export default function Chart(props: propsIF) {
                 mouseEnterCanvas();
             }
         });
+
+        // Cleanup function to remove event listener
+        return () => {
+            d3.select(d3CanvasMain.current).on('mouseenter', null);
+        };
     }, [isChartZoom]);
 
     /**
@@ -5271,6 +5350,13 @@ export default function Chart(props: propsIF) {
                 },
             );
         }
+
+        // Cleanup function to remove event listeners
+        return () => {
+            d3.select(d3CanvasMain.current).on('click', null);
+            d3.select(d3CanvasMain.current).on('contextmenu', null);
+            d3.select(d3Container.current).on('mouseleave', null);
+        };
     }, [
         denomInBase,
         selectedDate,
