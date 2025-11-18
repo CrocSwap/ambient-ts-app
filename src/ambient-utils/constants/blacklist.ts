@@ -424,6 +424,26 @@ export const hiddenTokens = [
         address: '0x02cdb5ccc97d5dc7ed2747831b516669eb635706',
         chainId: 98866,
     },
+    {
+        // fake WPLUME on Plume
+        address: '0xAeDd65F2168ecC1f8aBC609f0D09CA364fe7DcDC',
+        chainId: 98866,
+    },
+    {
+        // fake PLC on Plume
+        address: '0x81e68577aD6A499b422f52908fA88B1F0769e9B5',
+        chainId: 98866,
+    },
+    {
+        // fake PLC on Plume
+        address: '0x9786198803BA261D4C06344E6698b76E2DB6Ad1c',
+        chainId: 98866,
+    },
+    {
+        // fake aUSD on Plume
+        address: '0xf07f47f3c160c2f3b2190fc81be38a61337250d6',
+        chainId: 98866,
+    },
 ];
 
 const embargoedTokens = [
