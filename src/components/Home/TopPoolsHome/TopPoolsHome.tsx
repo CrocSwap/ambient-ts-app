@@ -110,11 +110,11 @@ export default function TopPoolsHome(props: TopPoolsPropsIF) {
         ) {
             // Trigger fade-out effect
             setIsFading(true);
-            // After fade-out duration (1s), update pool data and fade back in
+            // After fade-out duration (300ms), update pool data and fade back in
             setTimeout(() => {
                 setVisibleTopPoolData(slicedPoolData);
                 setIsFading(false);
-            }, 1000); // Match the fade-out duration
+            }, 300); // Match the fade-out duration
         } else {
             setVisibleTopPoolData(slicedPoolData);
         }

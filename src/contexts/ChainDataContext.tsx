@@ -180,13 +180,32 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
         AllVaultsServerIF[] | null | undefined
     >(null);
 
-    const [totalTvlString, setTotalTvlString] = useState<string | undefined>();
+    // Load cached stats from localStorage for instant display
+    const cachedStats = useMemo(() => {
+        try {
+            const cached = localStorage.getItem('ambient_dex_stats');
+            if (cached) {
+                const parsed = JSON.parse(cached);
+                // Only use cache if less than 5 minutes old
+                if (Date.now() - parsed.timestamp < 5 * 60 * 1000) {
+                    return parsed;
+                }
+            }
+        } catch {
+            // Ignore parse errors
+        }
+        return null;
+    }, []);
+
+    const [totalTvlString, setTotalTvlString] = useState<string | undefined>(
+        cachedStats?.tvl,
+    );
     const [totalVolumeString, setTotalVolumeString] = useState<
         string | undefined
-    >();
-    const [totalFeesString, setTotalFeesString] = useState<
-        string | undefined
-    >();
+    >(cachedStats?.volume);
+    const [totalFeesString, setTotalFeesString] = useState<string | undefined>(
+        cachedStats?.fees,
+    );
 
     // array of network IDs for supported L2 networks
     const L1_NETWORKS: string[] = [
@@ -876,245 +895,136 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
         [plumeProvider !== undefined],
     );
 
+    // Helper to update stats and cache them
+    const updateStats = useCallback(
+        (tvl: number, volume: number, fees: number) => {
+            const tvlStr = getFormattedNumber({
+                value: tvl,
+                prefix: '$',
+                isTvl: true,
+                mantissa: 1,
+            });
+            const volumeStr = getFormattedNumber({
+                value: volume,
+                prefix: '$',
+                mantissa: 1,
+            });
+            const feesStr = getFormattedNumber({
+                value: fees,
+                prefix: '$',
+                mantissa: 1,
+            });
+
+            setTotalTvlString(tvlStr);
+            setTotalVolumeString(volumeStr);
+            setTotalFeesString(feesStr);
+
+            // Cache to localStorage
+            try {
+                localStorage.setItem(
+                    'ambient_dex_stats',
+                    JSON.stringify({
+                        tvl: tvlStr,
+                        volume: volumeStr,
+                        fees: feesStr,
+                        timestamp: Date.now(),
+                    }),
+                );
+            } catch {
+                // Ignore storage errors
+            }
+        },
+        [],
+    );
+
     useEffect(() => {
-        if (
-            showDexStats &&
-            mainnetCrocEnv !== undefined &&
-            scrollCrocEnv !== undefined &&
-            swellCrocEnv !== undefined &&
-            blastCrocEnv !== undefined &&
-            plumeCrocEnv !== undefined
-        ) {
-            let tvlTotalUsd = 0,
-                volumeTotalUsd = 0,
-                feesTotalUsd = 0;
+        if (!showDexStats) return;
 
-            const numChainsToAggregate = 5;
-            let resultsReceived = 0;
+        // Track running totals
+        let tvlTotalUsd = 0;
+        let volumeTotalUsd = 0;
+        let feesTotalUsd = 0;
+        let resultsReceived = 0;
+        const numChainsToAggregate = 5;
 
+        const handleChainStats = (
+            dexStats:
+                | {
+                      tvlTotalUsd: number;
+                      volumeTotalUsd: number;
+                      feesTotalUsd: number;
+                  }
+                | undefined,
+        ) => {
+            if (!dexStats) return;
+
+            tvlTotalUsd += dexStats.tvlTotalUsd;
+            volumeTotalUsd += dexStats.volumeTotalUsd;
+            feesTotalUsd += dexStats.feesTotalUsd;
+            resultsReceived += 1;
+
+            // Only update stats when all chains have completed
+            // to ensure we show accurate totals (not partial sums)
+            if (resultsReceived === numChainsToAggregate) {
+                updateStats(tvlTotalUsd, volumeTotalUsd, feesTotalUsd);
+            }
+        };
+
+        // Fetch all chains in parallel
+        const chainConfigs = [
+            {
+                chainId: '0x1',
+                env: mainnetCrocEnv,
+                url: GCGO_ETHEREUM_URL,
+                tokenCount: 10,
+            },
+            {
+                chainId: '0x82750',
+                env: scrollCrocEnv,
+                url: GCGO_SCROLL_URL,
+                tokenCount: 20,
+            },
+            {
+                chainId: '0x783',
+                env: swellCrocEnv,
+                url: GCGO_SWELL_URL,
+                tokenCount: 10,
+            },
+            {
+                chainId: '0x13e31',
+                env: blastCrocEnv,
+                url: GCGO_BLAST_URL,
+                tokenCount: 10,
+            },
+            {
+                chainId: '0x18232',
+                env: plumeCrocEnv,
+                url: GCGO_PLUME_URL,
+                tokenCount: 10,
+            },
+        ];
+
+        chainConfigs.forEach(({ chainId: cId, env, url, tokenCount }) => {
+            if (!env) return;
             getChainStats(
                 'cumulative',
-                '0x1',
-                mainnetCrocEnv,
-                GCGO_ETHEREUM_URL,
+                cId,
+                env,
+                url,
                 cachedFetchTokenPrice,
-                10,
+                tokenCount,
                 activePoolList,
                 AMBIENT_TOKEN_LIST,
-            ).then((dexStats) => {
-                if (!dexStats) {
-                    return;
-                }
-                tvlTotalUsd += dexStats.tvlTotalUsd;
-                volumeTotalUsd += dexStats.volumeTotalUsd;
-                feesTotalUsd += dexStats.feesTotalUsd;
-
-                resultsReceived += 1;
-
-                if (resultsReceived === numChainsToAggregate) {
-                    setTotalTvlString(
-                        getFormattedNumber({
-                            value: tvlTotalUsd,
-                            prefix: '$',
-                            isTvl: true,
-                            mantissa: 1,
-                        }),
-                    );
-                    setTotalVolumeString(
-                        getFormattedNumber({
-                            value: volumeTotalUsd,
-                            prefix: '$',
-                            mantissa: 1,
-                        }),
-                    );
-                    setTotalFeesString(
-                        getFormattedNumber({
-                            value: feesTotalUsd,
-                            prefix: '$',
-                            mantissa: 1,
-                        }),
-                    );
-                }
-            });
-
-            getChainStats(
-                'cumulative',
-                '0x82750',
-                scrollCrocEnv,
-                GCGO_SCROLL_URL,
-                cachedFetchTokenPrice,
-                20,
-                activePoolList,
-                AMBIENT_TOKEN_LIST,
-            ).then((dexStats) => {
-                if (!dexStats) {
-                    return;
-                }
-                tvlTotalUsd += dexStats.tvlTotalUsd;
-                volumeTotalUsd += dexStats.volumeTotalUsd;
-                feesTotalUsd += dexStats.feesTotalUsd;
-                resultsReceived += 1;
-
-                if (resultsReceived === numChainsToAggregate) {
-                    setTotalTvlString(
-                        getFormattedNumber({
-                            value: tvlTotalUsd,
-                            prefix: '$',
-                            isTvl: true,
-                            mantissa: 1,
-                        }),
-                    );
-                    setTotalVolumeString(
-                        getFormattedNumber({
-                            value: volumeTotalUsd,
-                            prefix: '$',
-                            mantissa: 1,
-                        }),
-                    );
-                    setTotalFeesString(
-                        getFormattedNumber({
-                            value: feesTotalUsd,
-                            prefix: '$',
-                            mantissa: 1,
-                        }),
-                    );
-                }
-            });
-
-            getChainStats(
-                'cumulative',
-                '0x783',
-                swellCrocEnv,
-                GCGO_SWELL_URL,
-                cachedFetchTokenPrice,
-                10,
-                activePoolList,
-                AMBIENT_TOKEN_LIST,
-            ).then((dexStats) => {
-                if (!dexStats) {
-                    return;
-                }
-                tvlTotalUsd += dexStats.tvlTotalUsd;
-                volumeTotalUsd += dexStats.volumeTotalUsd;
-                feesTotalUsd += dexStats.feesTotalUsd;
-                resultsReceived += 1;
-                if (resultsReceived === numChainsToAggregate) {
-                    setTotalTvlString(
-                        getFormattedNumber({
-                            value: tvlTotalUsd,
-                            prefix: '$',
-                            isTvl: true,
-                            mantissa: 1,
-                        }),
-                    );
-                    setTotalVolumeString(
-                        getFormattedNumber({
-                            value: volumeTotalUsd,
-                            prefix: '$',
-                            mantissa: 1,
-                        }),
-                    );
-                    setTotalFeesString(
-                        getFormattedNumber({
-                            value: feesTotalUsd,
-                            prefix: '$',
-                            mantissa: 1,
-                        }),
-                    );
-                }
-            });
-
-            getChainStats(
-                'cumulative',
-                '0x13e31',
-                blastCrocEnv,
-                GCGO_BLAST_URL,
-                cachedFetchTokenPrice,
-                10,
-                activePoolList,
-                AMBIENT_TOKEN_LIST,
-            ).then((dexStats) => {
-                if (!dexStats) {
-                    return;
-                }
-                tvlTotalUsd += dexStats.tvlTotalUsd;
-                volumeTotalUsd += dexStats.volumeTotalUsd;
-                feesTotalUsd += dexStats.feesTotalUsd;
-                resultsReceived += 1;
-                if (resultsReceived === numChainsToAggregate) {
-                    setTotalTvlString(
-                        getFormattedNumber({
-                            value: tvlTotalUsd,
-                            prefix: '$',
-                            isTvl: true,
-                            mantissa: 1,
-                        }),
-                    );
-                    setTotalVolumeString(
-                        getFormattedNumber({
-                            value: volumeTotalUsd,
-                            prefix: '$',
-                            mantissa: 1,
-                        }),
-                    );
-                    setTotalFeesString(
-                        getFormattedNumber({
-                            value: feesTotalUsd,
-                            prefix: '$',
-                            mantissa: 1,
-                        }),
-                    );
-                }
-            });
-
-            getChainStats(
-                'cumulative',
-                '0x18232',
-                plumeCrocEnv,
-                GCGO_PLUME_URL,
-                cachedFetchTokenPrice,
-                10,
-                activePoolList,
-                AMBIENT_TOKEN_LIST,
-            ).then((dexStats) => {
-                if (!dexStats) {
-                    return;
-                }
-                tvlTotalUsd += dexStats.tvlTotalUsd;
-                volumeTotalUsd += dexStats.volumeTotalUsd;
-                feesTotalUsd += dexStats.feesTotalUsd;
-                resultsReceived += 1;
-                if (resultsReceived === numChainsToAggregate) {
-                    setTotalTvlString(
-                        getFormattedNumber({
-                            value: tvlTotalUsd,
-                            prefix: '$',
-                            isTvl: true,
-                            mantissa: 1,
-                        }),
-                    );
-                    setTotalVolumeString(
-                        getFormattedNumber({
-                            value: volumeTotalUsd,
-                            prefix: '$',
-                            mantissa: 1,
-                        }),
-                    );
-                    setTotalFeesString(
-                        getFormattedNumber({
-                            value: feesTotalUsd,
-                            prefix: '$',
-                            mantissa: 1,
-                        }),
-                    );
-                }
-            });
-        }
+            ).then(handleChainStats);
+        });
     }, [
         showDexStats,
-        mainnetCrocEnv !== undefined &&
-            scrollCrocEnv !== undefined &&
-            blastCrocEnv !== undefined,
+        mainnetCrocEnv !== undefined,
+        scrollCrocEnv !== undefined,
+        swellCrocEnv !== undefined,
+        blastCrocEnv !== undefined,
+        plumeCrocEnv !== undefined,
+        updateStats,
     ]);
 
     const chainDataContext = {
