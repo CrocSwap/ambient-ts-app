@@ -1,6 +1,5 @@
 // Allowed links
 export const CROCODILE_LABS_LINKS = [
-    'https://twitter.com/',
     'https://docs.ambient.finance/',
     'https://ambient.finance/',
     'https://x.com/',
