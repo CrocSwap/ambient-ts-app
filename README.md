@@ -77,7 +77,7 @@ Code changes are viewable on GitHub [Link](https://github.com/CrocSwap/ambient-t
 
 ### Social Media
 
-- [Twitter](https://x.com/ambient_finance 'Ambient Finance on Twitter')
+- [X/Twitter](https://x.com/ambient_finance 'Ambient Finance on 𝕏 (Twitter)')
 - [Discord](https://discord.com/invite/ambient-finance 'Ambient Finance on Discord')
 - [Medium](https://crocswap.medium.com/ 'Crocodile Labs on Medium')
 
