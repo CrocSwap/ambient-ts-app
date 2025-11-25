@@ -1,6 +1,5 @@
 import { memo, useContext, useEffect, useRef } from 'react';
-import { AiFillTwitterCircle } from 'react-icons/ai';
-import { BsMedium } from 'react-icons/bs';
+import { BsMedium, BsTwitterX } from 'react-icons/bs';
 import { FaDiscord, FaQuestion } from 'react-icons/fa';
 import { IoDocumentTextSharp } from 'react-icons/io5';
 import { RiSpyFill } from 'react-icons/ri';
@@ -10,7 +9,7 @@ import {
     DISCORD_LINK,
     DOCS_LINK,
     MEDIUM_LINK,
-    TWITTER_LINK,
+    X_LINK,
 } from '../../../../ambient-utils/constants';
 import { openInNewTab } from '../../../../ambient-utils/dataLayer';
 import { LogoutButton } from '../../../../components/Global/LogoutButton/LogoutButton';
@@ -67,9 +66,9 @@ function NavbarDropdownMenu(props: propsIF) {
             text: 'Docs',
         },
         {
-            icon: <AiFillTwitterCircle size={20} />,
-            resource: TWITTER_LINK,
-            text: 'Twitter',
+            icon: <BsTwitterX size={20} />,
+            resource: X_LINK,
+            text: '𝕏 (Twitter)',
         },
         {
             icon: <FaDiscord size={20} />,

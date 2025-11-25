@@ -21,8 +21,7 @@ import { Link } from 'react-router-dom';
 import UserLevelDisplay from '../../../../components/Global/LevelsCard/UserLevelDisplay';
 import { LogoutButton } from '../../../../components/Global/LogoutButton/LogoutButton';
 
-import { AiFillTwitterCircle } from 'react-icons/ai';
-import { BsCurrencyExchange, BsMedium } from 'react-icons/bs';
+import { BsCurrencyExchange, BsMedium, BsTwitterX } from 'react-icons/bs';
 import { FaDiscord, FaQuestion } from 'react-icons/fa';
 import { IoIosSettings } from 'react-icons/io';
 import { IoDocumentTextSharp } from 'react-icons/io5';
@@ -33,7 +32,7 @@ import {
     DISCORD_LINK,
     DOCS_LINK,
     MEDIUM_LINK,
-    TWITTER_LINK,
+    X_LINK,
 } from '../../../../ambient-utils/constants';
 import ExchangeBalance from '../../../../components/Portfolio/ExchangeBalance/ExchangeBalance';
 import { useTermsAgreed } from '../../../hooks/useTermsAgreed';
@@ -146,9 +145,9 @@ export default function MobileDropdown() {
             text: 'Docs',
         },
         {
-            icon: <AiFillTwitterCircle size={20} />,
-            resource: TWITTER_LINK,
-            text: 'Twitter',
+            icon: <BsTwitterX size={20} />,
+            resource: X_LINK,
+            text: '𝕏 (Twitter)',
         },
         {
             icon: <FaDiscord size={20} />,

@@ -12,7 +12,7 @@ import {
     GITHUB_LINK,
     IS_LOCAL_ENV,
     MEDIUM_LINK,
-    TWITTER_LINK,
+    X_LINK,
 } from '../../ambient-utils/constants';
 import { useTermsAgreed } from '../../App/hooks/useTermsAgreed';
 import useMediaQuery from '../../utils/hooks/useMediaQuery';
@@ -72,7 +72,7 @@ export default function Footer() {
                 </>
             ),
             content: 'Keep up with the latest on twitter',
-            link: TWITTER_LINK,
+            link: X_LINK,
         },
         {
             title: (
