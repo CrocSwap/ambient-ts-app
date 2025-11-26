@@ -99,7 +99,7 @@ export const SHOULD_NON_CANDLE_SUBSCRIPTIONS_RECONNECT = true;
 // External links
 export const DOCS_LINK = 'https://docs.ambient.finance/';
 export const GITHUB_LINK = 'https://github.com/CrocSwap';
-export const TWITTER_LINK = 'https://x.com/ambient_finance';
+export const X_LINK = 'https://x.com/ambient_finance';
 export const DISCORD_LINK = 'https://discord.gg/ambient-finance';
 export const MEDIUM_LINK = 'https://crocswap.medium.com/';
 export const CORPORATE_LINK = 'https://www.crocswap.com/';
@@ -174,7 +174,7 @@ export const WALLETCONNECT_PROJECT_ID = import.meta.env
     : '37e833557d495d07825c0c6815ac9d93';
 
 export const CROCODILE_LABS_LINKS = [
-    'https://twitter.com/',
+    'https://x.com/',
     'https://docs.ambient.finance/',
     'https://ambient.finance/',
 ];

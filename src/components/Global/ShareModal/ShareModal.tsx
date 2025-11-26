@@ -1,5 +1,5 @@
 import { ChangeEvent, useContext, useState } from 'react';
-import { AiFillTwitterCircle } from 'react-icons/ai';
+import { BsTwitterX } from 'react-icons/bs';
 import { FaDiscord, FaFacebook, FaTelegram } from 'react-icons/fa';
 import { FiCopy } from 'react-icons/fi';
 import { useLocation } from 'react-router-dom';
@@ -57,9 +57,9 @@ export default function ShareModal({ onClose }: propsIF) {
 
     const socialLinksData = [
         {
-            name: 'Twitter',
-            icon: <AiFillTwitterCircle size={50} />,
-            link: `https://twitter.com/intent/tweet?url=${encodeURIComponent(
+            name: '𝕏 (Twitter)',
+            icon: <BsTwitterX size={50} />,
+            link: `https://x.com/intent/tweet?url=${encodeURIComponent(
                 linkToShare,
             )}`,
         },

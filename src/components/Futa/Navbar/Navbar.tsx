@@ -8,7 +8,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
     DISCORD_LINK,
     DOCS_LINK,
-    TWITTER_LINK,
+    X_LINK,
 } from '../../../ambient-utils/constants';
 import {
     chainNumToString,
@@ -183,7 +183,7 @@ export default function Navbar() {
     // Data
     const dropdownData = [
         { label: 'docs', link: DOCS_LINK },
-        { label: 'twitter', link: TWITTER_LINK },
+        { label: 'twitter', link: X_LINK },
         { label: 'discord', link: DISCORD_LINK },
         { label: 'legal & privacy', link: '/privacy' },
         { label: 'terms of service', link: '/terms' },
