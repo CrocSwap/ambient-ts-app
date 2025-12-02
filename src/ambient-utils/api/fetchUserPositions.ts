@@ -23,12 +23,13 @@ import {
     RecordType,
     TokenIF,
 } from '../types';
+import { GcgoFetcher } from '../../utils/gcgoFetcher';
 // TODOJG move to types
 interface RecordRequestIF {
     recordType: RecordType;
     user: string;
     chainId: string;
-    gcUrl?: string;
+    gcgo: GcgoFetcher;
     tokenUniv?: TokenIF[];
     crocEnv?: CrocEnv;
     provider?: Provider;
@@ -43,21 +44,21 @@ const fetchUserPositions = async ({
     recordType,
     user,
     chainId,
-    gcUrl,
+    gcgo,
 }: {
     recordType: RecordType;
     user: string;
     chainId: string;
-    gcUrl?: string;
-}): Promise<Response> => {
+    gcgo: GcgoFetcher;
+}): Promise<any> => {
     let selectedEndpoint;
     if (recordType == RecordType.LimitOrder) {
-        selectedEndpoint = gcUrl + '/user_limit_orders?';
+        selectedEndpoint = '/user_limit_orders?';
     } else {
         // default to 'user_positions'
-        selectedEndpoint = gcUrl + '/user_positions?';
+        selectedEndpoint = '/user_positions?';
     }
-    const res = await fetch(
+    const res = await gcgo.fetch(
         selectedEndpoint +
             new URLSearchParams({
                 user: user.toLowerCase(),
@@ -154,7 +155,7 @@ const fetchDecorated = async ({
     recordType,
     user,
     chainId,
-    gcUrl,
+    gcgo,
     tokenUniv,
     crocEnv,
     provider,
@@ -164,13 +165,12 @@ const fetchDecorated = async ({
     cachedQuerySpotPrice,
     cachedTokenDetails,
 }: RecordRequestIF): Promise<PositionIF[] | LimitOrderIF[]> => {
-    const response = await fetchUserPositions({
+    const userPositions = await fetchUserPositions({
         recordType,
         user,
         chainId,
-        gcUrl,
+        gcgo,
     });
-    const json = await response?.json();
     // Compromise between reusing RecordRequestIF and ensuring that these variables are safely assigned.
     const fieldsToCheck = {
         tokenUniv,
@@ -186,7 +186,6 @@ const fetchDecorated = async ({
         }
     }
 
-    const userPositions = json?.data;
     if (userPositions && crocEnv) {
         const updatedPositions = await decorateUserPositions({
             recordType: recordType,
@@ -210,7 +209,7 @@ const fetchSimpleDecorated = async ({
     recordType,
     user,
     chainId,
-    gcUrl,
+    gcgo,
     provider,
     tokenUniv,
     crocEnv,
@@ -234,7 +233,7 @@ const fetchSimpleDecorated = async ({
 
         // Session Information:
         chainId: chainId,
-        gcUrl: gcUrl,
+        gcgo: gcgo,
         provider: provider,
         tokenUniv: tokenUniv,
         crocEnv: crocEnv,

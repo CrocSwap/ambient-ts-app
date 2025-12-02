@@ -5,8 +5,9 @@ import { Provider } from 'ethers';
 import { findTokenByAddress } from '../../dataLayer/functions/findTokenByAddress';
 import { TokenIF } from '../../types';
 import { NetworkIF } from '../../types/NetworkIF';
-import { GCGO_SCROLL_URL } from '../gcgo';
+import { GCGO_SCROLL_URLS } from '../gcgo';
 import { TopPool } from './TopPool';
+import { GcgoFetcher } from '../../../utils/gcgoFetcher';
 
 const RPC_URLS = {
     PUBLIC: 'https://rpc.scroll.io',
@@ -101,7 +102,8 @@ const getGasPriceInGwei = async (provider?: Provider) => {
 export const scrollMainnet: NetworkIF = {
     chainId: chainIdHex,
     chainSpec: chainSpecFromSDK,
-    GCGO_URL: GCGO_SCROLL_URL,
+    gcgo: new GcgoFetcher(GCGO_SCROLL_URLS, Number(chainIdHex)),
+    GCGO_URLS: GCGO_SCROLL_URLS,
     evmRpcUrls: [PRIMARY_RPC_URL, FALLBACK_RPC_URL],
     chainSpecForAppKit,
     defaultPair: [SCROLL_TOKENS.ETH, SCROLL_TOKENS.USDC],

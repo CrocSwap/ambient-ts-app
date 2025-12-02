@@ -8,12 +8,13 @@ import {
     CandlesByPoolAndDurationIF,
 } from '../types/candleData';
 import { TokenPriceFn } from './fetchTokenPrice';
+import { GcgoFetcher } from '../../utils/gcgoFetcher';
 
 export async function fetchCandleSeriesHybrid(
     isFetchEnabled: boolean,
     chainId: string,
     poolIndex: number,
-    GCGO_URL: string,
+    gcgo: GcgoFetcher,
     period: number,
     baseToken: TokenIF,
     quoteToken: TokenIF,
@@ -33,7 +34,7 @@ export async function fetchCandleSeriesHybrid(
         isFetchEnabled,
         chainId,
         poolIndex,
-        GCGO_URL,
+        gcgo,
         period,
         baseTokenAddress,
         quoteTokenAddress,
@@ -67,7 +68,7 @@ export async function fetchCandleSeriesCroc(
     isFetchEnabled: boolean,
     chainId: string,
     poolIndex: number,
-    GCGO_URL: string,
+    gcgo: GcgoFetcher,
     period: number,
     baseTokenAddress: string,
     quoteTokenAddress: string,
@@ -84,7 +85,7 @@ export async function fetchCandleSeriesCroc(
         return undefined;
     }
 
-    const candleSeriesEndpoint = GCGO_URL + '/pool_candles';
+    const candleSeriesEndpoint = '/pool_candles';
 
     let startTime = 0;
     if (endTime != 0) {
@@ -102,13 +103,9 @@ export async function fetchCandleSeriesCroc(
         chainId: chainId.toLowerCase(),
     });
 
-    return fetch(candleSeriesEndpoint + '?' + reqOptions)
-        .then((response) => response?.json())
-        .then(async (json) => {
-            if (!json?.data) {
-                return undefined;
-            }
-            const payload = json?.data as CandleDataServerIF[];
+    return gcgo
+        .fetch(candleSeriesEndpoint + '?' + reqOptions)
+        .then(async (payload: CandleDataServerIF[]) => {
             const candles = expandPoolStatsCandle(
                 payload,
                 baseTokenAddress,

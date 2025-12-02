@@ -58,7 +58,7 @@ function RangeActionModal(props: propsIF) {
     const posHash = getPositionHash(position);
 
     const {
-        activeNetwork: { GCGO_URL, chainId, poolIndex },
+        activeNetwork: { gcgo, chainId, poolIndex },
     } = useContext(AppStateContext);
     const { userAddress } = useContext(UserDataContext);
     const { crocEnv, provider } = useContext(CrocEnvContext);
@@ -125,7 +125,7 @@ function RangeActionModal(props: propsIF) {
         (feeLiqBaseDecimalCorrected || 0) + (feeLiqQuoteDecimalCorrected || 0) >
         0;
 
-    const positionStatsCacheEndpoint = GCGO_URL + '/position_stats?';
+    const positionStatsCacheEndpoint = '/position_stats?';
 
     const [removalGasPriceinDollars, setRemovalGasPriceinDollars] = useState<
         string | undefined
@@ -199,7 +199,7 @@ function RangeActionModal(props: propsIF) {
             position.positionType
         ) {
             (async () => {
-                fetch(
+                gcgo.fetch(
                     positionStatsCacheEndpoint +
                         new URLSearchParams({
                             chainId: position.chainId.toLowerCase(),
@@ -216,8 +216,6 @@ function RangeActionModal(props: propsIF) {
                             positionType: position.positionType,
                         }),
                 )
-                    .then((response) => response.json())
-                    .then((json) => json?.data)
                     .then(async (data: PositionServerIF) => {
                         if (data && crocEnv && provider) {
                             // temporarily skip ENS fetch

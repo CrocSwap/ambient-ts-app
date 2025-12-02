@@ -60,7 +60,7 @@ function Ranges(props: propsIF) {
     const { setCurrentRangeInReposition } = useContext(RangeContext);
 
     const {
-        activeNetwork: { poolIndex, GCGO_URL, chainId, isTestnet },
+        activeNetwork: { poolIndex, gcgo, chainId, isTestnet },
     } = useContext(AppStateContext);
 
     const { tokens } = useContext(TokenContext);
@@ -163,15 +163,14 @@ function Ranges(props: propsIF) {
             !baseToken ||
             !quoteToken ||
             !poolIndex ||
-            !GCGO_URL ||
+            !gcgo ||
             !crocEnv
         )
             return;
         // retrieve user_pool_positions
-        const userPoolPositionsCacheEndpoint =
-            GCGO_URL + '/user_pool_positions?';
+        const userPoolPositionsCacheEndpoint = '/user_pool_positions?';
         const forceOnchainLiqUpdate = !isTestnet;
-        fetch(
+        gcgo.fetch(
             userPoolPositionsCacheEndpoint +
                 new URLSearchParams({
                     user: userAddress.toLowerCase(),
@@ -181,10 +180,7 @@ function Ranges(props: propsIF) {
                     chainId: chainId.toLowerCase(),
                 }),
         )
-            .then((response) => response.json())
-            .then((json) => {
-                const userPoolPositions = json.data;
-
+            .then((userPoolPositions: PositionServerIF[]) => {
                 if (userPoolPositions) {
                     Promise.all(
                         userPoolPositions.map((position: PositionServerIF) => {

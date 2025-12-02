@@ -58,7 +58,7 @@ function Orders(props: propsIF) {
     } = useContext(SidebarContext);
 
     const {
-        activeNetwork: { poolIndex, GCGO_URL, chainId },
+        activeNetwork: { poolIndex, gcgo, chainId },
     } = useContext(AppStateContext);
 
     const { analyticsPoolList } = useContext(ChainDataContext);
@@ -121,14 +121,13 @@ function Orders(props: propsIF) {
             !baseToken ||
             !quoteToken ||
             !poolIndex ||
-            !GCGO_URL ||
+            !gcgo ||
             !crocEnv
         )
             return;
         // retrieve user_pool_limit_orders
-        const userPoolLimitOrdersCacheEndpoint =
-            GCGO_URL + '/user_pool_limit_orders?';
-        fetch(
+        const userPoolLimitOrdersCacheEndpoint = '/user_pool_limit_orders?';
+        gcgo.fetch(
             userPoolLimitOrdersCacheEndpoint +
                 new URLSearchParams({
                     user: userAddress.toLowerCase(),
@@ -138,9 +137,7 @@ function Orders(props: propsIF) {
                     chainId: chainId.toLowerCase(),
                 }),
         )
-            .then((response) => response?.json())
-            .then((json) => {
-                const userPoolLimitOrderStates = json?.data;
+            .then((userPoolLimitOrderStates: LimitOrderServerIF[]) => {
                 if (userPoolLimitOrderStates) {
                     Promise.all(
                         userPoolLimitOrderStates.map(

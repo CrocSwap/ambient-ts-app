@@ -117,29 +117,27 @@ export default function OrderDetailsModal(props: propsIF) {
     const isFillStarted = isLimitOrderPartiallyFilled || isOrderFilled;
 
     useEffect(() => {
-        const positionStatsCacheEndpoint =
-            activeNetwork.GCGO_URL + '/limit_stats?';
+        const positionStatsCacheEndpoint = '/limit_stats?';
 
         const poolIndex = lookupChain(chainId).poolIndex;
         if (positionType && crocEnv && provider) {
-            fetch(
-                positionStatsCacheEndpoint +
-                    new URLSearchParams({
-                        user: user.toLowerCase(),
-                        bidTick: bidTick.toString(),
-                        askTick: askTick.toString(),
-                        isBid: isBid ? 'true' : 'false',
-                        base: baseTokenAddress.toLowerCase(),
-                        quote: quoteTokenAddress.toLowerCase(),
-                        poolIdx: poolIndex.toString(),
-                        chainId: chainId.toLowerCase(),
-                        pivotTime: pivotTime.toString(),
-                        positionType: positionType,
-                    }),
-            )
-                .then((response) => response?.json())
-                .then((json) => {
-                    const positionPayload = json?.data as LimitOrderServerIF;
+            activeNetwork.gcgo
+                .fetch(
+                    positionStatsCacheEndpoint +
+                        new URLSearchParams({
+                            user: user.toLowerCase(),
+                            bidTick: bidTick.toString(),
+                            askTick: askTick.toString(),
+                            isBid: isBid ? 'true' : 'false',
+                            base: baseTokenAddress.toLowerCase(),
+                            quote: quoteTokenAddress.toLowerCase(),
+                            poolIdx: poolIndex.toString(),
+                            chainId: chainId.toLowerCase(),
+                            pivotTime: pivotTime.toString(),
+                            positionType: positionType,
+                        }),
+                )
+                .then((positionPayload: LimitOrderServerIF) => {
                     return getLimitOrderData(
                         positionPayload,
                         tokens.tokenUniv,

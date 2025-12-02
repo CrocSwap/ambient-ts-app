@@ -5,8 +5,9 @@ import { Provider } from 'ethers';
 import { findTokenByAddress } from '../../dataLayer/functions/findTokenByAddress';
 import { TokenIF } from '../../types';
 import { NetworkIF } from '../../types/NetworkIF';
-import { GCGO_PLUME_URL } from '../gcgo';
+import { GCGO_PLUME_URLS } from '../gcgo';
 import { TopPool } from './TopPool';
+import { GcgoFetcher } from '../../../utils/gcgoFetcher';
 
 const RPC_URLS = {
     PUBLIC: 'https://rpc.plume.org',
@@ -92,7 +93,8 @@ const getGasPriceInGwei = async (provider?: Provider) => {
 export const plumeMainnet: NetworkIF = {
     chainId: chainIdHex,
     chainSpec: chainSpecFromSDK,
-    GCGO_URL: GCGO_PLUME_URL,
+    gcgo: new GcgoFetcher(GCGO_PLUME_URLS, Number(chainIdHex)),
+    GCGO_URLS: GCGO_PLUME_URLS,
     evmRpcUrls: [PRIMARY_RPC_URL, FALLBACK_RPC_URL],
     chainSpecForAppKit,
     defaultPair: [PLUME_TOKENS.PLUME, PLUME_TOKENS.pUSD],

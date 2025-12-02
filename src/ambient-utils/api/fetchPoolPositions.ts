@@ -4,6 +4,7 @@ import { getPositionData, SpotPriceFn } from '../dataLayer/functions';
 import { PoolIF, PositionServerIF, TokenIF } from '../types';
 import { FetchContractDetailsFn } from './fetchContractDetails';
 import { TokenPriceFn } from './fetchTokenPrice';
+import { GcgoFetcher } from '../../utils/gcgoFetcher';
 
 interface argsIF {
     tokenList: TokenIF[];
@@ -17,7 +18,7 @@ interface argsIF {
     time?: number;
     timeBefore?: number;
     crocEnv: CrocEnv;
-    GCGO_URL: string;
+    gcgo: GcgoFetcher;
     provider: Provider;
     analyticsPoolList?: PoolIF[] | undefined;
     cachedFetchTokenPrice: TokenPriceFn;
@@ -35,7 +36,7 @@ export const fetchPoolPositions = (args: argsIF) => {
         n,
         timeBefore,
         crocEnv,
-        GCGO_URL,
+        gcgo,
         provider,
         analyticsPoolList,
         cachedFetchTokenPrice,
@@ -43,32 +44,30 @@ export const fetchPoolPositions = (args: argsIF) => {
         cachedTokenDetails,
     } = args;
 
-    const poolPositionStatesCacheEndpoint = GCGO_URL + '/pool_positions?';
+    const poolPositionStatesCacheEndpoint = '/pool_positions?';
 
-    const poolLimitOrders = fetch(
-        timeBefore
-            ? poolPositionStatesCacheEndpoint +
-                  new URLSearchParams({
-                      base: base.toLowerCase(),
-                      quote: quote.toLowerCase(),
-                      poolIdx: poolIdx.toString(),
-                      chainId: chainId.toLowerCase(),
-                      n: n ? n.toString() : '',
-                      timeBefore: timeBefore.toString(),
-                  })
-            : poolPositionStatesCacheEndpoint +
-                  new URLSearchParams({
-                      base: base.toLowerCase(),
-                      quote: quote.toLowerCase(),
-                      poolIdx: poolIdx.toString(),
-                      chainId: chainId.toLowerCase(),
-                      n: n ? n.toString() : '',
-                  }),
-    )
-        .then((response) => response?.json())
-        .then((json) => {
-            const poolPositionStates = json?.data;
-
+    const poolLimitOrders = gcgo
+        .fetch(
+            timeBefore
+                ? poolPositionStatesCacheEndpoint +
+                      new URLSearchParams({
+                          base: base.toLowerCase(),
+                          quote: quote.toLowerCase(),
+                          poolIdx: poolIdx.toString(),
+                          chainId: chainId.toLowerCase(),
+                          n: n ? n.toString() : '',
+                          timeBefore: timeBefore.toString(),
+                      })
+                : poolPositionStatesCacheEndpoint +
+                      new URLSearchParams({
+                          base: base.toLowerCase(),
+                          quote: quote.toLowerCase(),
+                          poolIdx: poolIdx.toString(),
+                          chainId: chainId.toLowerCase(),
+                          n: n ? n.toString() : '',
+                      }),
+        )
+        .then((poolPositionStates: PositionServerIF[]) => {
             if (!poolPositionStates) {
                 return [];
             }

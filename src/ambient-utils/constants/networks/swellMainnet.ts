@@ -5,8 +5,9 @@ import { Provider } from 'ethers';
 import { findTokenByAddress } from '../../dataLayer/functions/findTokenByAddress';
 import { TokenIF } from '../../types';
 import { NetworkIF } from '../../types/NetworkIF';
-import { GCGO_SWELL_URL } from '../gcgo';
+import { GCGO_SWELL_URLS } from '../gcgo';
 import { TopPool } from './TopPool';
+import { GcgoFetcher } from '../../../utils/gcgoFetcher';
 
 const RPC_URLS = {
     PUBLIC: 'https://swell-mainnet.alt.technology',
@@ -103,7 +104,8 @@ const getGasPriceInGwei = async (provider?: Provider) => {
 export const swellMainnet: NetworkIF = {
     chainId: chainIdHex,
     chainSpec: chainSpecFromSDK,
-    GCGO_URL: GCGO_SWELL_URL,
+    gcgo: new GcgoFetcher(GCGO_SWELL_URLS, Number(chainIdHex)),
+    GCGO_URLS: GCGO_SWELL_URLS,
     evmRpcUrls: [PRIMARY_RPC_URL, FALLBACK_RPC_URL],
     chainSpecForAppKit,
     defaultPair: [SWELL_TOKENS.ETH, SWELL_TOKENS.USDe],

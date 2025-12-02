@@ -21,6 +21,7 @@ import { tokenMethodsIF } from '../../../App/hooks/useTokens';
 import { AppStateContext } from '../../../contexts';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
 import { BatchedJsonRpcProvider } from '../../../utils/batchedProvider';
+import { GcgoFetcher } from '../../../utils/gcgoFetcher';
 
 interface dexDataGeneric {
     raw: number;
@@ -46,7 +47,7 @@ export interface useTokenStatsIF {
 export const useTokenStats = (
     chainId: string,
     crocEnv: CrocEnv | undefined,
-    backupEndpoint: string,
+    gcgo: GcgoFetcher,
     cachedFetchTokenPrice: TokenPriceFn,
     cachedTokenDetails: FetchContractDetailsFn,
     tokenMethods: tokenMethodsIF,
@@ -98,7 +99,7 @@ export const useTokenStats = (
                     'expanded',
                     chainId,
                     crocEnv,
-                    backupEndpoint,
+                    gcgo,
                     cachedFetchTokenPrice,
                     20,
                     activePoolList,

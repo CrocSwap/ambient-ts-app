@@ -51,7 +51,7 @@ export default function TransactionDetailsGraph(
         middlePriceDisplayDenomByMoneyness,
     } = props;
     const {
-        activeNetwork: { GCGO_URL, chainId, poolIndex },
+        activeNetwork: { gcgo, chainId, poolIndex },
     } = useContext(AppStateContext);
     const { crocEnv } = useContext(CrocEnvContext);
     const { cachedFetchTokenPrice, cachedQuerySpotPrice } =
@@ -255,7 +255,7 @@ export default function TransactionDetailsGraph(
                         fetchEnabled,
                         chainId,
                         poolIndex,
-                        GCGO_URL,
+                        gcgo,
                         tempPeriod,
                         baseTokenAddress,
                         quoteTokenAddress,

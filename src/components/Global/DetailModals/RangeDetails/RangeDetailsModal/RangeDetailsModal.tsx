@@ -86,7 +86,7 @@ function RangeDetailsModal(props: propsIF) {
     >();
 
     const {
-        activeNetwork: { GCGO_URL, chainId, poolIndex },
+        activeNetwork: { gcgo, chainId, poolIndex },
         snackbar: { open: openSnackbar },
     } = useContext(AppStateContext);
     const { cachedQuerySpotPrice, cachedFetchTokenPrice, cachedTokenDetails } =
@@ -361,12 +361,12 @@ function RangeDetailsModal(props: propsIF) {
     };
 
     useEffect(() => {
-        const positionStatsCacheEndpoint = GCGO_URL + '/position_stats?';
+        const positionStatsCacheEndpoint = '/position_stats?';
 
         updateLiq();
 
         if (position.positionType) {
-            fetch(
+            gcgo.fetch(
                 positionStatsCacheEndpoint +
                     new URLSearchParams({
                         user: user.toLowerCase(),
@@ -379,15 +379,13 @@ function RangeDetailsModal(props: propsIF) {
                         positionType: position.positionType,
                     }),
             )
-                .then((response) => response?.json())
-                .then(async (json) => {
-                    if (!crocEnv || !provider || !json?.data) {
+                .then(async (positionPayload: PositionServerIF) => {
+                    if (!crocEnv || !provider || !positionPayload) {
                         return;
                     }
-                    setServerPositionId(json?.data?.positionId);
+                    setServerPositionId(positionPayload.positionId);
                     // temporarily skip ENS fetch
                     const forceOnchainLiqUpdate = userMatchesConnectedAccount;
-                    const positionPayload = json?.data as PositionServerIF;
                     const positionStats = await getPositionData(
                         positionPayload,
                         tokens.tokenUniv,

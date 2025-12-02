@@ -4,6 +4,7 @@ import { getLimitOrderData, SpotPriceFn } from '../dataLayer/functions';
 import { LimitOrderServerIF, PoolIF, TokenIF } from '../types';
 import { FetchContractDetailsFn } from './fetchContractDetails';
 import { TokenPriceFn } from './fetchTokenPrice';
+import { GcgoFetcher } from '../../utils/gcgoFetcher';
 
 interface argsIF {
     tokenList: TokenIF[];
@@ -17,7 +18,7 @@ interface argsIF {
     time?: number;
     timeBefore?: number;
     crocEnv: CrocEnv;
-    GCGO_URL: string;
+    gcgo: GcgoFetcher;
     provider: Provider;
     activePoolList: PoolIF[] | undefined;
     cachedFetchTokenPrice: TokenPriceFn;
@@ -35,7 +36,7 @@ export const fetchPoolLimitOrders = (args: argsIF) => {
         n,
         timeBefore,
         crocEnv,
-        GCGO_URL,
+        gcgo,
         provider,
         activePoolList,
         cachedFetchTokenPrice,
@@ -43,32 +44,30 @@ export const fetchPoolLimitOrders = (args: argsIF) => {
         cachedTokenDetails,
     } = args;
 
-    const poolLimitOrderStatesCacheEndpoint = GCGO_URL + '/pool_limit_orders?';
+    const poolLimitOrderStatesCacheEndpoint = '/pool_limit_orders?';
 
-    const poolLimitOrders = fetch(
-        timeBefore
-            ? poolLimitOrderStatesCacheEndpoint +
-                  new URLSearchParams({
-                      base: base.toLowerCase(),
-                      quote: quote.toLowerCase(),
-                      poolIdx: poolIdx.toString(),
-                      chainId: chainId.toLowerCase(),
-                      n: n ? n.toString() : '',
-                      timeBefore: timeBefore.toString(),
-                  })
-            : poolLimitOrderStatesCacheEndpoint +
-                  new URLSearchParams({
-                      base: base.toLowerCase(),
-                      quote: quote.toLowerCase(),
-                      poolIdx: poolIdx.toString(),
-                      chainId: chainId.toLowerCase(),
-                      n: n ? n.toString() : '',
-                  }),
-    )
-        .then((response) => response?.json())
-        .then((json) => {
-            const poolLimitOrderStates = json?.data;
-
+    const poolLimitOrders = gcgo
+        .fetch(
+            timeBefore
+                ? poolLimitOrderStatesCacheEndpoint +
+                      new URLSearchParams({
+                          base: base.toLowerCase(),
+                          quote: quote.toLowerCase(),
+                          poolIdx: poolIdx.toString(),
+                          chainId: chainId.toLowerCase(),
+                          n: n ? n.toString() : '',
+                          timeBefore: timeBefore.toString(),
+                      })
+                : poolLimitOrderStatesCacheEndpoint +
+                      new URLSearchParams({
+                          base: base.toLowerCase(),
+                          quote: quote.toLowerCase(),
+                          poolIdx: poolIdx.toString(),
+                          chainId: chainId.toLowerCase(),
+                          n: n ? n.toString() : '',
+                      }),
+        )
+        .then((poolLimitOrderStates: LimitOrderServerIF[]) => {
             if (!poolLimitOrders) {
                 return [];
             }

@@ -5,10 +5,11 @@ import { Provider } from 'ethers';
 import { findTokenByAddress } from '../../dataLayer/functions/findTokenByAddress';
 import { TokenIF } from '../../types';
 import { NetworkIF } from '../../types/NetworkIF';
-import { GCGO_TESTNET_URL } from '../gcgo';
+import { GCGO_TESTNET_URLS } from '../gcgo';
 import { TopPool } from './TopPool';
+import { GcgoFetcher } from '../../../utils/gcgoFetcher';
 
-const PUBLIC_RPC_URL = 'hhttps://eth-sepolia.public.blastapi.io';
+const PUBLIC_RPC_URL = 'https://eth-sepolia.public.blastapi.io';
 const SECONDARY_PUBLIC_RPC_URL = 'https://1rpc.io/sepolia';
 
 const RESTRICTED_RPC_URL =
@@ -75,7 +76,8 @@ export const SEPOLIA_TOKENS: SepoliaTokens = Object.fromEntries(
 export const ethereumSepolia: NetworkIF = {
     chainId: chainIdHex,
     chainSpec: chainSpecFromSDK,
-    GCGO_URL: GCGO_TESTNET_URL,
+    gcgo: new GcgoFetcher(GCGO_TESTNET_URLS, Number(chainIdHex)),
+    GCGO_URLS: GCGO_TESTNET_URLS,
     evmRpcUrls: [PRIMARY_RPC_URL, FALLBACK_RPC_URL],
     chainSpecForAppKit,
     defaultPair: [SEPOLIA_TOKENS.ETH, SEPOLIA_TOKENS.USDC],

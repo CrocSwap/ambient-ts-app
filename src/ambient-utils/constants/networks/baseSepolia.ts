@@ -4,9 +4,10 @@ import { Chain } from '@reown/appkit/networks';
 import { Provider } from 'ethers';
 import { TokenIF } from '../../types';
 import { NetworkIF } from '../../types/NetworkIF';
-import { GCGO_TESTNET_URL } from '../gcgo';
+import { GCGO_TESTNET_URLS } from '../gcgo';
 import testnetTokenList from '../testnet-token-list.json';
 import { TopPool } from './TopPool';
+import { GcgoFetcher } from '../../../utils/gcgoFetcher';
 
 const PUBLIC_RPC_URL = 'https://sepolia.base.org';
 const SECONDARY_PUBLIC_RPC_URL = 'https://base-sepolia.drpc.org';
@@ -82,7 +83,8 @@ export const BASE_SEPOLIA_TOKENS: BaseSepoliaTokens = Object.fromEntries(
 export const baseSepolia: NetworkIF = {
     chainId: chainIdHex,
     chainSpec: chainSpecFromSDK,
-    GCGO_URL: GCGO_TESTNET_URL,
+    gcgo: new GcgoFetcher(GCGO_TESTNET_URLS, Number(chainIdHex)),
+    GCGO_URLS: GCGO_TESTNET_URLS,
     evmRpcUrls: [PRIMARY_RPC_URL, FALLBACK_RPC_URL],
     chainSpecForAppKit,
     defaultPair: [BASE_SEPOLIA_TOKENS.ETH, BASE_SEPOLIA_TOKENS.USDC],

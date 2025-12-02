@@ -5,8 +5,9 @@ import { Provider } from 'ethers';
 import { findTokenByAddress } from '../../dataLayer/functions/findTokenByAddress';
 import { TokenIF } from '../../types';
 import { NetworkIF } from '../../types/NetworkIF';
-import { GCGO_BLAST_URL } from '../gcgo';
+import { GCGO_BLAST_URLS } from '../gcgo';
 import { TopPool } from './TopPool';
+import { GcgoFetcher } from '../../../utils/gcgoFetcher';
 
 const RPC_URLS = {
     PUBLIC: 'https://rpc.blast.io',
@@ -92,7 +93,8 @@ export const blastMainnet: NetworkIF = {
     poolIndex: chainSpecFromSDK.poolIndex,
     gridSize: chainSpecFromSDK.gridSize,
     isTestnet: chainSpecFromSDK.isTestNet,
-    GCGO_URL: GCGO_BLAST_URL,
+    gcgo: new GcgoFetcher(GCGO_BLAST_URLS, Number(chainIdHex)),
+    GCGO_URLS: GCGO_BLAST_URLS,
     evmRpcUrls: [PRIMARY_RPC_URL, FALLBACK_RPC_URL],
     chainSpecForAppKit: chainSpecForAppKit,
     defaultPair: [BLAST_TOKENS.ETH, BLAST_TOKENS.USDB],

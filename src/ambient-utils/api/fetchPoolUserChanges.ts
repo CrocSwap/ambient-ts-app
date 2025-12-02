@@ -4,6 +4,7 @@ import { getTransactionData, SpotPriceFn } from '../dataLayer/functions';
 import { PoolIF, TokenIF, TransactionServerIF } from '../types';
 import { FetchContractDetailsFn } from './fetchContractDetails';
 import { TokenPriceFn } from './fetchTokenPrice';
+import { GcgoFetcher } from '../../utils/gcgoFetcher';
 
 interface argsIF {
     tokenList: TokenIF[];
@@ -18,7 +19,7 @@ interface argsIF {
     time?: number;
     timeBefore?: number;
     crocEnv: CrocEnv;
-    GCGO_URL: string;
+    gcgo: GcgoFetcher;
     provider: Provider;
     activePoolList: PoolIF[] | undefined;
 
@@ -40,7 +41,7 @@ export const fetchPoolUserChanges = (args: argsIF) => {
         time,
         timeBefore,
         crocEnv,
-        GCGO_URL,
+        gcgo,
         provider,
         activePoolList,
         cachedFetchTokenPrice,
@@ -48,48 +49,46 @@ export const fetchPoolUserChanges = (args: argsIF) => {
         cachedTokenDetails,
     } = args;
 
-    const poolRecentChangesCacheEndpoint = GCGO_URL + '/user_pool_txs?';
+    const poolRecentChangesCacheEndpoint = '/user_pool_txs?';
 
-    const poolChanges = fetch(
-        period && time
-            ? poolRecentChangesCacheEndpoint +
-                  new URLSearchParams({
-                      base: base.toLowerCase(),
-                      quote: quote.toLowerCase(),
-                      poolIdx: poolIdx.toString(),
-                      chainId: chainId.toLowerCase(),
-                      user: user.toLowerCase(),
-                      n: n ? n.toString() : '',
-                      period: period.toString(),
-                      time: time.toString(),
-                  })
-            : timeBefore
-              ? poolRecentChangesCacheEndpoint +
-                new URLSearchParams({
-                    base: base.toLowerCase(),
-                    quote: quote.toLowerCase(),
-                    poolIdx: poolIdx.toString(),
-                    chainId: chainId.toLowerCase(),
-                    user: user.toLowerCase(),
-                    n: n ? n.toString() : '',
-                    timeBefore: timeBefore.toString(),
-                })
-              : poolRecentChangesCacheEndpoint +
-                new URLSearchParams({
-                    base: base.toLowerCase(),
-                    quote: quote.toLowerCase(),
-                    poolIdx: poolIdx.toString(),
-                    chainId: chainId.toLowerCase(),
-                    user: user.toLowerCase(),
-                    n: n ? n.toString() : '',
-                    // positive integer	(Optional.) If n and page are provided, query returns a page of results with at most n entries.
-                    // page: page ? page.toString() : '', // nonnegative integer	(Optional.) If n and page are provided, query returns the page-th page of results. Page numbers are 0-indexed.
-                }),
-    )
-        .then((response) => response?.json())
-        .then((json) => {
-            const poolTransactions = json?.data;
-
+    const poolChanges = gcgo
+        .fetch(
+            period && time
+                ? poolRecentChangesCacheEndpoint +
+                      new URLSearchParams({
+                          base: base.toLowerCase(),
+                          quote: quote.toLowerCase(),
+                          poolIdx: poolIdx.toString(),
+                          chainId: chainId.toLowerCase(),
+                          user: user.toLowerCase(),
+                          n: n ? n.toString() : '',
+                          period: period.toString(),
+                          time: time.toString(),
+                      })
+                : timeBefore
+                  ? poolRecentChangesCacheEndpoint +
+                    new URLSearchParams({
+                        base: base.toLowerCase(),
+                        quote: quote.toLowerCase(),
+                        poolIdx: poolIdx.toString(),
+                        chainId: chainId.toLowerCase(),
+                        user: user.toLowerCase(),
+                        n: n ? n.toString() : '',
+                        timeBefore: timeBefore.toString(),
+                    })
+                  : poolRecentChangesCacheEndpoint +
+                    new URLSearchParams({
+                        base: base.toLowerCase(),
+                        quote: quote.toLowerCase(),
+                        poolIdx: poolIdx.toString(),
+                        chainId: chainId.toLowerCase(),
+                        user: user.toLowerCase(),
+                        n: n ? n.toString() : '',
+                        // positive integer	(Optional.) If n and page are provided, query returns a page of results with at most n entries.
+                        // page: page ? page.toString() : '', // nonnegative integer	(Optional.) If n and page are provided, query returns the page-th page of results. Page numbers are 0-indexed.
+                    }),
+        )
+        .then((poolTransactions: TransactionServerIF[]) => {
             if (!poolTransactions) {
                 return [];
             }
