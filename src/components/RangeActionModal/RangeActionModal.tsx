@@ -125,8 +125,6 @@ function RangeActionModal(props: propsIF) {
         (feeLiqBaseDecimalCorrected || 0) + (feeLiqQuoteDecimalCorrected || 0) >
         0;
 
-    const positionStatsCacheEndpoint = '/position_stats?';
-
     const [removalGasPriceinDollars, setRemovalGasPriceinDollars] = useState<
         string | undefined
     >();
@@ -199,23 +197,15 @@ function RangeActionModal(props: propsIF) {
             position.positionType
         ) {
             (async () => {
-                gcgo.fetch(
-                    positionStatsCacheEndpoint +
-                        new URLSearchParams({
-                            chainId: position.chainId.toLowerCase(),
-                            user: position.user.toLowerCase(),
-                            base: position.base.toLowerCase(),
-                            quote: position.quote.toLowerCase(),
-                            poolIdx: position.poolIdx.toString(),
-                            bidTick: position.bidTick
-                                ? position.bidTick.toString()
-                                : '0',
-                            askTick: position.askTick
-                                ? position.askTick.toString()
-                                : '0',
-                            positionType: position.positionType,
-                        }),
-                )
+                gcgo.positionStats({
+                    chainId: position.chainId,
+                    user: position.user,
+                    base: position.base,
+                    quote: position.quote,
+                    poolIdx: position.poolIdx,
+                    bidTick: position.bidTick ? position.bidTick : 0,
+                    askTick: position.askTick ? position.askTick : 0,
+                })
                     .then(async (data: PositionServerIF) => {
                         if (data && crocEnv && provider) {
                             // temporarily skip ENS fetch

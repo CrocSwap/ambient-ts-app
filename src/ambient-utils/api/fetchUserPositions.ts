@@ -23,13 +23,13 @@ import {
     RecordType,
     TokenIF,
 } from '../types';
-import { GcgoFetcher } from '../../utils/gcgoFetcher';
+import { GcgoProvider } from '../../utils/gcgoProvider';
 // TODOJG move to types
 interface RecordRequestIF {
     recordType: RecordType;
     user: string;
     chainId: string;
-    gcgo: GcgoFetcher;
+    gcgo: GcgoProvider;
     tokenUniv?: TokenIF[];
     crocEnv?: CrocEnv;
     provider?: Provider;
@@ -49,23 +49,22 @@ const fetchUserPositions = async ({
     recordType: RecordType;
     user: string;
     chainId: string;
-    gcgo: GcgoFetcher;
-}): Promise<any> => {
-    let selectedEndpoint;
+    gcgo: GcgoProvider;
+}): Promise<PositionServerIF[] | LimitOrderServerIF[]> => {
     if (recordType == RecordType.LimitOrder) {
-        selectedEndpoint = '/user_limit_orders?';
+        return gcgo.userLimitOrders({
+            user: user,
+            chainId: chainId,
+            count: 200,
+        });
     } else {
         // default to 'user_positions'
-        selectedEndpoint = '/user_positions?';
+        return gcgo.userPositions({
+            user: user,
+            chainId: chainId,
+            count: 200,
+        });
     }
-    const res = await gcgo.fetch(
-        selectedEndpoint +
-            new URLSearchParams({
-                user: user.toLowerCase(),
-                chainId: chainId.toLowerCase(),
-            }),
-    );
-    return res;
 };
 
 const decorateUserPositions = async ({
@@ -82,7 +81,7 @@ const decorateUserPositions = async ({
     cachedTokenDetails,
 }: {
     recordType: RecordType;
-    userPositions: PositionIF[] | LimitOrderIF[];
+    userPositions: PositionServerIF[] | LimitOrderServerIF[];
     tokenUniv: TokenIF[];
     crocEnv: CrocEnv;
     provider: Provider;

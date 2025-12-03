@@ -7,7 +7,7 @@ import { TokenIF } from '../../types';
 import { NetworkIF } from '../../types/NetworkIF';
 import { GCGO_ETHEREUM_URLS } from '../gcgo';
 import { TopPool } from './TopPool';
-import { GcgoFetcher } from '../../../utils/gcgoFetcher';
+import { GcgoProvider } from '../../../utils/gcgoProvider';
 
 const RPC_URLS = {
     PUBLIC: 'https://ethereum-rpc.publicnode.com',
@@ -98,7 +98,7 @@ const getGasPriceInGwei = async (provider?: Provider) => {
 export const ethereumMainnet: NetworkIF = {
     chainId: chainIdHex,
     chainSpec: chainSpecFromSDK,
-    gcgo: new GcgoFetcher(GCGO_ETHEREUM_URLS, Number(chainIdHex)),
+    gcgo: new GcgoProvider(GCGO_ETHEREUM_URLS, Number(chainIdHex)),
     GCGO_URLS: GCGO_ETHEREUM_URLS,
     evmRpcUrls: [PRIMARY_RPC_URL, FALLBACK_RPC_URL],
     chainSpecForAppKit,

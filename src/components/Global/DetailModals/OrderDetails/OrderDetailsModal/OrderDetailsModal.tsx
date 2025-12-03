@@ -122,21 +122,17 @@ export default function OrderDetailsModal(props: propsIF) {
         const poolIndex = lookupChain(chainId).poolIndex;
         if (positionType && crocEnv && provider) {
             activeNetwork.gcgo
-                .fetch(
-                    positionStatsCacheEndpoint +
-                        new URLSearchParams({
-                            user: user.toLowerCase(),
-                            bidTick: bidTick.toString(),
-                            askTick: askTick.toString(),
-                            isBid: isBid ? 'true' : 'false',
-                            base: baseTokenAddress.toLowerCase(),
-                            quote: quoteTokenAddress.toLowerCase(),
-                            poolIdx: poolIndex.toString(),
-                            chainId: chainId.toLowerCase(),
-                            pivotTime: pivotTime.toString(),
-                            positionType: positionType,
-                        }),
-                )
+                .limitStats({
+                    user: user,
+                    bidTick: bidTick,
+                    askTick: askTick,
+                    isBid: isBid,
+                    base: baseTokenAddress,
+                    quote: quoteTokenAddress,
+                    poolIdx: poolIndex,
+                    chainId: chainId,
+                    pivotTime: pivotTime,
+                })
                 .then((positionPayload: LimitOrderServerIF) => {
                     return getLimitOrderData(
                         positionPayload,

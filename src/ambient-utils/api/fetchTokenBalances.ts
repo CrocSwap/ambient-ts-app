@@ -8,7 +8,7 @@ import {
     fetchDepositBalances,
     IDexTokenBalances,
 } from './fetchDepositBalances';
-import { GcgoFetcher } from '../../utils/gcgoFetcher';
+import { GcgoProvider } from '../../utils/gcgoProvider';
 
 export interface IDepositedTokenBalance {
     token: string;
@@ -30,7 +30,7 @@ export interface IDexBalanceQueryProps {
     address: string;
     chain: string;
     crocEnv: CrocEnv | undefined;
-    gcgo: GcgoFetcher;
+    gcgo: GcgoProvider;
     _refreshTime: number;
 }
 

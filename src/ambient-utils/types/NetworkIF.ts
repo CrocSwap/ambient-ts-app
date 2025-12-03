@@ -4,7 +4,7 @@ import { Chain } from '@reown/appkit/networks';
 import { Provider, Signer } from 'ethers';
 import { TopPool } from '../constants/networks/TopPool';
 import { TokenIF } from './token/TokenIF';
-import { GcgoFetcher } from '../../utils/gcgoFetcher';
+import { GcgoProvider } from '../../utils/gcgoProvider';
 
 export interface ChainSpecForWeb3Modal {
     chainId: number;
@@ -16,7 +16,7 @@ export interface ChainSpecForWeb3Modal {
 
 export interface NetworkIF {
     chainId: string;
-    gcgo: GcgoFetcher;
+    gcgo: GcgoProvider;
     GCGO_URLS: string[];
     chainSpecForAppKit: Chain;
     evmRpcUrls: string[];

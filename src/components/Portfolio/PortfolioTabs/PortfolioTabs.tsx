@@ -117,9 +117,6 @@ export default function PortfolioTabs(props: propsIF) {
     const [lookupAccountTransactionData, setLookupAccountTransactionData] =
         useState<TransactionIF[] | undefined>();
 
-    const userPositionsCacheEndpoint = '/user_positions?';
-    const userLimitOrdersCacheEndpoint = '/user_limit_orders?';
-
     useEffect(() => {
         let totalValue = 0;
         if (userVaultData) {
@@ -137,13 +134,11 @@ export default function PortfolioTabs(props: propsIF) {
     }, [JSON.stringify(userVaultData), chainId, userAddress]);
 
     const getLookupUserPositions = async (accountToSearch: string) => {
-        gcgo.fetch(
-            userPositionsCacheEndpoint +
-                new URLSearchParams({
-                    user: accountToSearch.toLowerCase(),
-                    chainId: chainId.toLowerCase(),
-                }),
-        ).then((userPositions: PositionServerIF[]) => {
+        gcgo.userPositions({
+            user: accountToSearch,
+            chainId: chainId,
+            count: 200,
+        }).then((userPositions: PositionServerIF[]) => {
             // temporarily skip ENS fetch
             if (userPositions && crocEnv && provider) {
                 Promise.all(
@@ -177,13 +172,11 @@ export default function PortfolioTabs(props: propsIF) {
     };
 
     const getLookupUserLimitOrders = async (accountToSearch: string) => {
-        gcgo.fetch(
-            userLimitOrdersCacheEndpoint +
-                new URLSearchParams({
-                    user: accountToSearch.toLowerCase(),
-                    chainId: chainId.toLowerCase(),
-                }),
-        ).then((userLimitOrderStates: LimitOrderServerIF[]) => {
+        gcgo.userLimitOrders({
+            user: accountToSearch,
+            chainId: chainId,
+            count: 200,
+        }).then((userLimitOrderStates: LimitOrderServerIF[]) => {
             if (userLimitOrderStates && crocEnv && provider) {
                 Promise.all(
                     userLimitOrderStates.map(

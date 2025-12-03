@@ -59,21 +59,15 @@ function TransactionDetailsModal(props: propsIF) {
     useEffect(() => {
         if (tx.entityType !== 'liqchange') return;
 
-        const positionStatsCacheEndpoint = '/position_stats?';
-
-        gcgo.fetch(
-            positionStatsCacheEndpoint +
-                new URLSearchParams({
-                    user: tx.user.toLowerCase(),
-                    bidTick: tx.bidTick.toString(),
-                    askTick: tx.askTick.toString(),
-                    base: tx.base.toLowerCase(),
-                    quote: tx.quote.toLowerCase(),
-                    poolIdx: tx.poolIdx.toString(),
-                    chainId: chainId.toLowerCase(),
-                    positionType: tx.positionType,
-                }),
-        )
+        gcgo.positionStats({
+            user: tx.user,
+            bidTick: tx.bidTick,
+            askTick: tx.askTick,
+            base: tx.base,
+            quote: tx.quote,
+            poolIdx: tx.poolIdx,
+            chainId: chainId,
+        })
             .then(async (positionPayload: PositionServerIF) => {
                 if (!crocEnv || !provider || !positionPayload) {
                     return;

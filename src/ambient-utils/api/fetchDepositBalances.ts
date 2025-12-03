@@ -1,11 +1,11 @@
 import { CrocEnv } from '@crocswap-libs/sdk';
 import { TokenIF } from '../types';
 import { FetchContractDetailsFn } from './fetchContractDetails';
-import { GcgoFetcher } from '../../utils/gcgoFetcher';
+import { GcgoProvider } from '../../utils/gcgoProvider';
 
 interface IFetchDepositBalancesProps {
     user: string;
-    gcgo: GcgoFetcher;
+    gcgo: GcgoProvider;
     chainId: string;
     crocEnv: CrocEnv;
 }
@@ -62,16 +62,11 @@ export async function fetchDepositBalances(
 ): Promise<IDexTokenBalances[] | undefined> {
     const { chainId, user, gcgo } = props;
 
-    const depositBalancesCacheEndpoint = '/user_balance_tokens?';
-
     return gcgo
-        .fetch(
-            depositBalancesCacheEndpoint +
-                new URLSearchParams({
-                    chainId: chainId.toLowerCase(),
-                    user: user.toLowerCase(),
-                }),
-        )
+        .userBalanceTokens({
+            chainId: chainId,
+            user: user,
+        })
         .then((data) => {
             const tokens = data.tokens as string[];
             return Promise.all(

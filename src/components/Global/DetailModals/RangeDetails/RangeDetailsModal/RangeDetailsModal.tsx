@@ -361,24 +361,18 @@ function RangeDetailsModal(props: propsIF) {
     };
 
     useEffect(() => {
-        const positionStatsCacheEndpoint = '/position_stats?';
-
         updateLiq();
 
         if (position.positionType) {
-            gcgo.fetch(
-                positionStatsCacheEndpoint +
-                    new URLSearchParams({
-                        user: user.toLowerCase(),
-                        bidTick: bidTick.toString(),
-                        askTick: askTick.toString(),
-                        base: baseTokenAddress.toLowerCase(),
-                        quote: quoteTokenAddress.toLowerCase(),
-                        poolIdx: poolIndex.toString(),
-                        chainId: chainId.toLowerCase(),
-                        positionType: position.positionType,
-                    }),
-            )
+            gcgo.positionStats({
+                user: user,
+                bidTick: bidTick,
+                askTick: askTick,
+                base: baseTokenAddress,
+                quote: quoteTokenAddress,
+                poolIdx: poolIndex,
+                chainId: chainId,
+            })
                 .then(async (positionPayload: PositionServerIF) => {
                     if (!crocEnv || !provider || !positionPayload) {
                         return;

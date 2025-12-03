@@ -7,7 +7,7 @@ import { TokenIF } from '../../types';
 import { NetworkIF } from '../../types/NetworkIF';
 import { GCGO_BLAST_URLS } from '../gcgo';
 import { TopPool } from './TopPool';
-import { GcgoFetcher } from '../../../utils/gcgoFetcher';
+import { GcgoProvider } from '../../../utils/gcgoProvider';
 
 const RPC_URLS = {
     PUBLIC: 'https://rpc.blast.io',
@@ -93,7 +93,7 @@ export const blastMainnet: NetworkIF = {
     poolIndex: chainSpecFromSDK.poolIndex,
     gridSize: chainSpecFromSDK.gridSize,
     isTestnet: chainSpecFromSDK.isTestNet,
-    gcgo: new GcgoFetcher(GCGO_BLAST_URLS, Number(chainIdHex)),
+    gcgo: new GcgoProvider(GCGO_BLAST_URLS, Number(chainIdHex)),
     GCGO_URLS: GCGO_BLAST_URLS,
     evmRpcUrls: [PRIMARY_RPC_URL, FALLBACK_RPC_URL],
     chainSpecForAppKit: chainSpecForAppKit,

@@ -4,7 +4,7 @@ import { getPositionData, SpotPriceFn } from '../dataLayer/functions';
 import { PoolIF, PositionServerIF, TokenIF } from '../types';
 import { FetchContractDetailsFn } from './fetchContractDetails';
 import { TokenPriceFn } from './fetchTokenPrice';
-import { GcgoFetcher } from '../../utils/gcgoFetcher';
+import { GcgoProvider } from '../../utils/gcgoProvider';
 
 interface argsIF {
     tokenList: TokenIF[];
@@ -12,13 +12,13 @@ interface argsIF {
     quote: string;
     poolIdx: number;
     chainId: string;
-    n?: number;
+    n: number;
     page?: number;
     period?: number;
     time?: number;
     timeBefore?: number;
     crocEnv: CrocEnv;
-    gcgo: GcgoFetcher;
+    gcgo: GcgoProvider;
     provider: Provider;
     analyticsPoolList?: PoolIF[] | undefined;
     cachedFetchTokenPrice: TokenPriceFn;
@@ -44,29 +44,15 @@ export const fetchPoolPositions = (args: argsIF) => {
         cachedTokenDetails,
     } = args;
 
-    const poolPositionStatesCacheEndpoint = '/pool_positions?';
-
     const poolLimitOrders = gcgo
-        .fetch(
-            timeBefore
-                ? poolPositionStatesCacheEndpoint +
-                      new URLSearchParams({
-                          base: base.toLowerCase(),
-                          quote: quote.toLowerCase(),
-                          poolIdx: poolIdx.toString(),
-                          chainId: chainId.toLowerCase(),
-                          n: n ? n.toString() : '',
-                          timeBefore: timeBefore.toString(),
-                      })
-                : poolPositionStatesCacheEndpoint +
-                      new URLSearchParams({
-                          base: base.toLowerCase(),
-                          quote: quote.toLowerCase(),
-                          poolIdx: poolIdx.toString(),
-                          chainId: chainId.toLowerCase(),
-                          n: n ? n.toString() : '',
-                      }),
-        )
+        .poolPositions({
+            base: base,
+            quote: quote,
+            poolIdx: poolIdx,
+            chainId: chainId,
+            count: n,
+            timeBefore: timeBefore,
+        })
         .then((poolPositionStates: PositionServerIF[]) => {
             if (!poolPositionStates) {
                 return [];

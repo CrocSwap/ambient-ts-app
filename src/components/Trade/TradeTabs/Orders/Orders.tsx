@@ -126,17 +126,14 @@ function Orders(props: propsIF) {
         )
             return;
         // retrieve user_pool_limit_orders
-        const userPoolLimitOrdersCacheEndpoint = '/user_pool_limit_orders?';
-        gcgo.fetch(
-            userPoolLimitOrdersCacheEndpoint +
-                new URLSearchParams({
-                    user: userAddress.toLowerCase(),
-                    base: baseToken.address.toLowerCase(),
-                    quote: quoteToken.address.toLowerCase(),
-                    poolIdx: poolIndex.toString(),
-                    chainId: chainId.toLowerCase(),
-                }),
-        )
+        gcgo.userPoolLimitOrders({
+            user: userAddress,
+            base: baseToken.address,
+            quote: quoteToken.address,
+            poolIdx: poolIndex,
+            chainId: chainId,
+            count: 200,
+        })
             .then((userPoolLimitOrderStates: LimitOrderServerIF[]) => {
                 if (userPoolLimitOrderStates) {
                     Promise.all(

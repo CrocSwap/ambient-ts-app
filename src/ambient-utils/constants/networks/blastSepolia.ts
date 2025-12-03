@@ -7,7 +7,7 @@ import { TokenIF } from '../../types';
 import { NetworkIF } from '../../types/NetworkIF';
 import { GCGO_TESTNET_URLS } from '../gcgo';
 import { TopPool } from './TopPool';
-import { GcgoFetcher } from '../../../utils/gcgoFetcher';
+import { GcgoProvider } from '../../../utils/gcgoProvider';
 
 const PUBLIC_RPC_URL = 'https://sepolia.blast.io';
 const SECONDARY_PUBLIC_RPC_URL = 'https://sepolia.blast.io';
@@ -78,7 +78,7 @@ export const BLAST_SEPOLIA_TOKENS: BlastSepoliaTokens = Object.fromEntries(
 export const blastSepolia: NetworkIF = {
     chainId: chainIdHex,
     chainSpec: chainSpecFromSDK,
-    gcgo: new GcgoFetcher(GCGO_TESTNET_URLS, Number(chainIdHex)),
+    gcgo: new GcgoProvider(GCGO_TESTNET_URLS, Number(chainIdHex)),
     GCGO_URLS: GCGO_TESTNET_URLS,
     evmRpcUrls: [PRIMARY_RPC_URL, FALLBACK_RPC_URL],
     chainSpecForAppKit,

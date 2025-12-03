@@ -168,18 +168,15 @@ function Ranges(props: propsIF) {
         )
             return;
         // retrieve user_pool_positions
-        const userPoolPositionsCacheEndpoint = '/user_pool_positions?';
         const forceOnchainLiqUpdate = !isTestnet;
-        gcgo.fetch(
-            userPoolPositionsCacheEndpoint +
-                new URLSearchParams({
-                    user: userAddress.toLowerCase(),
-                    base: baseToken.address.toLowerCase(),
-                    quote: quoteToken.address.toLowerCase(),
-                    poolIdx: poolIndex.toString(),
-                    chainId: chainId.toLowerCase(),
-                }),
-        )
+        gcgo.userPoolPositions({
+            user: userAddress,
+            base: baseToken.address,
+            quote: quoteToken.address,
+            poolIdx: poolIndex,
+            chainId: chainId,
+            count: 200,
+        })
             .then((userPoolPositions: PositionServerIF[]) => {
                 if (userPoolPositions) {
                     Promise.all(

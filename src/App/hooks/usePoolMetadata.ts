@@ -4,7 +4,6 @@ import {
     expandLiquidityData,
     fetchPoolLiquidity,
     fetchPoolRecentChanges,
-    LiquidityCurveServerIF,
 } from '../../ambient-utils/api';
 import { fetchPoolLimitOrders } from '../../ambient-utils/api/fetchPoolLimitOrders';
 import {
@@ -16,6 +15,7 @@ import {
 import {
     LimitOrderIF,
     LimitOrderServerIF,
+    LiquidityCurveServerIF,
     PoolIF,
     PositionIF,
     PositionServerIF,
@@ -295,18 +295,13 @@ export function usePoolMetadata() {
                 activePoolList
             ) {
                 // retrieve pool_positions
-                const allPositionsCacheEndpoint = '/pool_positions?';
-                gcgo.fetch(
-                    allPositionsCacheEndpoint +
-                        new URLSearchParams({
-                            base: baseTokenAddress.toLowerCase(),
-                            quote: quoteTokenAddress.toLowerCase(),
-                            poolIdx: poolIndex.toString(),
-                            chainId: chainId.toLowerCase(),
-                            // n: '100',
-                            n: '200',
-                        }),
-                )
+                gcgo.poolPositions({
+                    base: baseTokenAddress,
+                    quote: quoteTokenAddress,
+                    poolIdx: poolIndex,
+                    chainId: chainId,
+                    count: 200,
+                })
                     .then((poolPositions: PositionServerIF[]) => {
                         if (poolPositions) {
                             Promise.all(
@@ -437,19 +432,15 @@ export function usePoolMetadata() {
                     })
                     .catch(console.error);
                 if (userAddress) {
-                    const userPoolTransactionsCacheEndpoint = '/user_pool_txs?';
-                    gcgo.fetch(
-                        userPoolTransactionsCacheEndpoint +
-                            new URLSearchParams({
-                                user: userAddress.toLowerCase(),
-                                base: baseTokenAddress.toLowerCase(),
-                                quote: quoteTokenAddress.toLowerCase(),
-                                poolIdx: poolIndex.toString(),
-                                chainId: chainId.toLowerCase(),
-                                n: '200',
-                            }),
-                    )
-                        .then((userPoolTransactions: TransactionIF[]) => {
+                    gcgo.userPoolTxs({
+                        user: userAddress,
+                        base: baseTokenAddress,
+                        quote: quoteTokenAddress,
+                        poolIdx: poolIndex,
+                        chainId: chainId,
+                        count: 200,
+                    })
+                        .then((userPoolTransactions: TransactionServerIF[]) => {
                             if (userPoolTransactions) {
                                 const userPoolTransactionsWithoutFills =
                                     userPoolTransactions.filter(
@@ -499,19 +490,15 @@ export function usePoolMetadata() {
                         .catch(console.error);
 
                     // retrieve user_pool_positions
-                    const userPoolPositionsCacheEndpoint =
-                        '/user_pool_positions?';
                     const forceOnchainLiqUpdate = !isTestnet;
-                    gcgo.fetch(
-                        userPoolPositionsCacheEndpoint +
-                            new URLSearchParams({
-                                user: userAddress.toLowerCase(),
-                                base: baseTokenAddress.toLowerCase(),
-                                quote: quoteTokenAddress.toLowerCase(),
-                                poolIdx: poolIndex.toString(),
-                                chainId: chainId.toLowerCase(),
-                            }),
-                    )
+                    gcgo.userPoolPositions({
+                        user: userAddress,
+                        base: baseTokenAddress,
+                        quote: quoteTokenAddress,
+                        poolIdx: poolIndex,
+                        chainId: chainId,
+                        count: 200,
+                    })
                         .then((userPoolPositions: PositionServerIF[]) => {
                             if (userPoolPositions) {
                                 Promise.all(
@@ -559,18 +546,14 @@ export function usePoolMetadata() {
                         .catch(console.error);
 
                     // retrieve user_pool_limit_orders
-                    const userPoolLimitOrdersCacheEndpoint =
-                        '/user_pool_limit_orders?';
-                    gcgo.fetch(
-                        userPoolLimitOrdersCacheEndpoint +
-                            new URLSearchParams({
-                                user: userAddress.toLowerCase(),
-                                base: baseTokenAddress.toLowerCase(),
-                                quote: quoteTokenAddress.toLowerCase(),
-                                poolIdx: poolIndex.toString(),
-                                chainId: chainId.toLowerCase(),
-                            }),
-                    )
+                    gcgo.userPoolLimitOrders({
+                        user: userAddress,
+                        base: baseTokenAddress,
+                        quote: quoteTokenAddress,
+                        poolIdx: poolIndex,
+                        chainId: chainId,
+                        count: 200,
+                    })
                         .then(
                             (
                                 userPoolLimitOrderStates: LimitOrderServerIF[],

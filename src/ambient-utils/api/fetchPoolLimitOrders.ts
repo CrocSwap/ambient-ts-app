@@ -4,7 +4,7 @@ import { getLimitOrderData, SpotPriceFn } from '../dataLayer/functions';
 import { LimitOrderServerIF, PoolIF, TokenIF } from '../types';
 import { FetchContractDetailsFn } from './fetchContractDetails';
 import { TokenPriceFn } from './fetchTokenPrice';
-import { GcgoFetcher } from '../../utils/gcgoFetcher';
+import { GcgoProvider } from '../../utils/gcgoProvider';
 
 interface argsIF {
     tokenList: TokenIF[];
@@ -12,13 +12,13 @@ interface argsIF {
     quote: string;
     poolIdx: number;
     chainId: string;
-    n?: number;
+    n: number;
     page?: number;
     period?: number;
     time?: number;
     timeBefore?: number;
     crocEnv: CrocEnv;
-    gcgo: GcgoFetcher;
+    gcgo: GcgoProvider;
     provider: Provider;
     activePoolList: PoolIF[] | undefined;
     cachedFetchTokenPrice: TokenPriceFn;
@@ -44,31 +44,17 @@ export const fetchPoolLimitOrders = (args: argsIF) => {
         cachedTokenDetails,
     } = args;
 
-    const poolLimitOrderStatesCacheEndpoint = '/pool_limit_orders?';
-
     const poolLimitOrders = gcgo
-        .fetch(
-            timeBefore
-                ? poolLimitOrderStatesCacheEndpoint +
-                      new URLSearchParams({
-                          base: base.toLowerCase(),
-                          quote: quote.toLowerCase(),
-                          poolIdx: poolIdx.toString(),
-                          chainId: chainId.toLowerCase(),
-                          n: n ? n.toString() : '',
-                          timeBefore: timeBefore.toString(),
-                      })
-                : poolLimitOrderStatesCacheEndpoint +
-                      new URLSearchParams({
-                          base: base.toLowerCase(),
-                          quote: quote.toLowerCase(),
-                          poolIdx: poolIdx.toString(),
-                          chainId: chainId.toLowerCase(),
-                          n: n ? n.toString() : '',
-                      }),
-        )
+        .poolLimitOrders({
+            base: base,
+            quote: quote,
+            poolIdx: poolIdx,
+            chainId: chainId,
+            count: n,
+            timeBefore: timeBefore,
+        })
         .then((poolLimitOrderStates: LimitOrderServerIF[]) => {
-            if (!poolLimitOrders) {
+            if (!poolLimitOrderStates) {
                 return [];
             }
 
