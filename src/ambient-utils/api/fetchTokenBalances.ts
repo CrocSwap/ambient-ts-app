@@ -8,6 +8,7 @@ import {
     fetchDepositBalances,
     IDexTokenBalances,
 } from './fetchDepositBalances';
+import { GcgoProvider } from '../../utils/gcgoProvider';
 
 export interface IDepositedTokenBalance {
     token: string;
@@ -29,7 +30,7 @@ export interface IDexBalanceQueryProps {
     address: string;
     chain: string;
     crocEnv: CrocEnv | undefined;
-    GCGO_URL: string;
+    gcgo: GcgoProvider;
     _refreshTime: number;
 }
 
@@ -67,14 +68,14 @@ export const fetchAmbientListWalletBalances = async (
 };
 
 async function fetchDexBalances(props: IDexBalanceQueryProps) {
-    const { address, crocEnv, chain, GCGO_URL } = props;
+    const { address, crocEnv, chain, gcgo } = props;
 
     if (!crocEnv) return;
 
     const dexBalancesFromCache = await fetchDepositBalances({
         user: address,
         chainId: chain,
-        GCGO_URL: GCGO_URL,
+        gcgo: gcgo,
         crocEnv: crocEnv,
     });
     return dexBalancesFromCache;

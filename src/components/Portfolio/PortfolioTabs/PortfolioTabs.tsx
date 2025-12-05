@@ -84,7 +84,7 @@ export default function PortfolioTabs(props: propsIF) {
     const {
         server: { isEnabled: isServerEnabled },
         isUserIdle,
-        activeNetwork: { GCGO_URL, chainId },
+        activeNetwork: { gcgo, chainId },
     } = useContext(AppStateContext);
 
     const { setDataLoadingStatus } = useContext(DataLoadingContext);
@@ -117,9 +117,6 @@ export default function PortfolioTabs(props: propsIF) {
     const [lookupAccountTransactionData, setLookupAccountTransactionData] =
         useState<TransactionIF[] | undefined>();
 
-    const userPositionsCacheEndpoint = GCGO_URL + '/user_positions?';
-    const userLimitOrdersCacheEndpoint = GCGO_URL + '/user_limit_orders?';
-
     useEffect(() => {
         let totalValue = 0;
         if (userVaultData) {
@@ -137,22 +134,55 @@ export default function PortfolioTabs(props: propsIF) {
     }, [JSON.stringify(userVaultData), chainId, userAddress]);
 
     const getLookupUserPositions = async (accountToSearch: string) => {
-        fetch(
-            userPositionsCacheEndpoint +
-                new URLSearchParams({
-                    user: accountToSearch.toLowerCase(),
-                    chainId: chainId.toLowerCase(),
-                }),
-        )
-            .then((response) => response?.json())
-            .then((json) => {
-                const userPositions = json?.data;
-                // temporarily skip ENS fetch
-                if (userPositions && crocEnv && provider) {
-                    Promise.all(
-                        userPositions.map((position: PositionServerIF) => {
-                            return getPositionData(
-                                position,
+        gcgo.userPositions({
+            user: accountToSearch,
+            chainId: chainId,
+            count: 200,
+        }).then((userPositions: PositionServerIF[]) => {
+            // temporarily skip ENS fetch
+            if (userPositions && crocEnv && provider) {
+                Promise.all(
+                    userPositions.map((position: PositionServerIF) => {
+                        return getPositionData(
+                            position,
+                            tokens.tokenUniv,
+                            crocEnv,
+                            provider,
+                            chainId,
+                            activePoolList,
+                            cachedFetchTokenPrice,
+                            cachedQuerySpotPrice,
+                            cachedTokenDetails,
+                        );
+                    }),
+                )
+                    .then((updatedPositions) => {
+                        setLookupAccountPositionData(
+                            updatedPositions.filter((p) => p.positionLiq > 0),
+                        );
+                    })
+                    .finally(() => {
+                        setDataLoadingStatus({
+                            datasetName: 'isLookupUserRangeDataLoading',
+                            loadingStatus: false,
+                        });
+                    });
+            }
+        });
+    };
+
+    const getLookupUserLimitOrders = async (accountToSearch: string) => {
+        gcgo.userLimitOrders({
+            user: accountToSearch,
+            chainId: chainId,
+            count: 200,
+        }).then((userLimitOrderStates: LimitOrderServerIF[]) => {
+            if (userLimitOrderStates && crocEnv && provider) {
+                Promise.all(
+                    userLimitOrderStates.map(
+                        (limitOrder: LimitOrderServerIF) => {
+                            return getLimitOrderData(
+                                limitOrder,
                                 tokens.tokenUniv,
                                 crocEnv,
                                 provider,
@@ -162,68 +192,23 @@ export default function PortfolioTabs(props: propsIF) {
                                 cachedQuerySpotPrice,
                                 cachedTokenDetails,
                             );
-                        }),
-                    )
-                        .then((updatedPositions) => {
-                            setLookupAccountPositionData(
-                                updatedPositions.filter(
-                                    (p) => p.positionLiq > 0,
-                                ),
-                            );
-                        })
-                        .finally(() => {
-                            setDataLoadingStatus({
-                                datasetName: 'isLookupUserRangeDataLoading',
-                                loadingStatus: false,
-                            });
+                        },
+                    ),
+                )
+                    .then((updatedLimitOrderStates) => {
+                        const filteredData = filterLimitArray(
+                            updatedLimitOrderStates,
+                        );
+                        setLookupAccountLimitOrderData(filteredData);
+                    })
+                    .finally(() => {
+                        setDataLoadingStatus({
+                            datasetName: 'isLookupUserOrderDataLoading',
+                            loadingStatus: false,
                         });
-                }
-            });
-    };
-
-    const getLookupUserLimitOrders = async (accountToSearch: string) => {
-        fetch(
-            userLimitOrdersCacheEndpoint +
-                new URLSearchParams({
-                    user: accountToSearch.toLowerCase(),
-                    chainId: chainId.toLowerCase(),
-                }),
-        )
-            .then((response) => response?.json())
-            .then((json) => {
-                const userLimitOrderStates = json?.data;
-                if (userLimitOrderStates && crocEnv && provider) {
-                    Promise.all(
-                        userLimitOrderStates.map(
-                            (limitOrder: LimitOrderServerIF) => {
-                                return getLimitOrderData(
-                                    limitOrder,
-                                    tokens.tokenUniv,
-                                    crocEnv,
-                                    provider,
-                                    chainId,
-                                    activePoolList,
-                                    cachedFetchTokenPrice,
-                                    cachedQuerySpotPrice,
-                                    cachedTokenDetails,
-                                );
-                            },
-                        ),
-                    )
-                        .then((updatedLimitOrderStates) => {
-                            const filteredData = filterLimitArray(
-                                updatedLimitOrderStates,
-                            );
-                            setLookupAccountLimitOrderData(filteredData);
-                        })
-                        .finally(() => {
-                            setDataLoadingStatus({
-                                datasetName: 'isLookupUserOrderDataLoading',
-                                loadingStatus: false,
-                            });
-                        });
-                }
-            });
+                    });
+            }
+        });
     };
 
     const getLookupUserTransactions = async (accountToSearch: string) => {
@@ -234,7 +219,7 @@ export default function PortfolioTabs(props: propsIF) {
                 chainId: chainId,
                 n: 100, // fetch last 100 changes,
                 crocEnv: crocEnv,
-                GCGO_URL: GCGO_URL,
+                gcgo: gcgo,
                 provider,
                 activePoolList,
                 cachedFetchTokenPrice: cachedFetchTokenPrice,

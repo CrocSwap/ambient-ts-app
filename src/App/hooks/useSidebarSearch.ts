@@ -363,18 +363,17 @@ export const useSidebarSearch = (
     useEffect(() => {
         // fn to run query when user enters a hex address
         async function fetchWalletByHex(searchStr: string): Promise<void> {
-            // construct a queryable endpoint for wallet data
-            let walletEndpoint: string = activeNetwork.GCGO_URL;
-            walletEndpoint += '/user_txs?';
-            walletEndpoint += new URLSearchParams({
-                user: searchStr.toLowerCase(),
-                chainId: activeNetwork.chainId.toLowerCase(),
-                n: '1',
-            });
             // determine if user-created search input is a wallet (implied by tx data present)
-            const isWallet: boolean | undefined = await fetch(walletEndpoint)
-                .then((response) => response.json())
-                .then((response) => !!response.data)
+            const isWallet: boolean | undefined = await activeNetwork.gcgo
+                .userTxs({
+                    user: searchStr,
+                    chainId: activeNetwork.chainId,
+                    count: 1,
+                })
+                .then((txs) => {
+                    // if txs are returned, then the input is a wallet
+                    return txs.length > 0;
+                })
                 .catch((err) => {
                     IS_LOCAL_ENV && console.warn(err);
                     return undefined;

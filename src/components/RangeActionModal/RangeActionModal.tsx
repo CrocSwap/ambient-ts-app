@@ -58,7 +58,7 @@ function RangeActionModal(props: propsIF) {
     const posHash = getPositionHash(position);
 
     const {
-        activeNetwork: { GCGO_URL, chainId, poolIndex },
+        activeNetwork: { gcgo, chainId, poolIndex },
     } = useContext(AppStateContext);
     const { userAddress } = useContext(UserDataContext);
     const { crocEnv, provider } = useContext(CrocEnvContext);
@@ -124,8 +124,6 @@ function RangeActionModal(props: propsIF) {
     const areFeesAvailableToWithdraw =
         (feeLiqBaseDecimalCorrected || 0) + (feeLiqQuoteDecimalCorrected || 0) >
         0;
-
-    const positionStatsCacheEndpoint = GCGO_URL + '/position_stats?';
 
     const [removalGasPriceinDollars, setRemovalGasPriceinDollars] = useState<
         string | undefined
@@ -199,25 +197,15 @@ function RangeActionModal(props: propsIF) {
             position.positionType
         ) {
             (async () => {
-                fetch(
-                    positionStatsCacheEndpoint +
-                        new URLSearchParams({
-                            chainId: position.chainId.toLowerCase(),
-                            user: position.user.toLowerCase(),
-                            base: position.base.toLowerCase(),
-                            quote: position.quote.toLowerCase(),
-                            poolIdx: position.poolIdx.toString(),
-                            bidTick: position.bidTick
-                                ? position.bidTick.toString()
-                                : '0',
-                            askTick: position.askTick
-                                ? position.askTick.toString()
-                                : '0',
-                            positionType: position.positionType,
-                        }),
-                )
-                    .then((response) => response.json())
-                    .then((json) => json?.data)
+                gcgo.positionStats({
+                    chainId: position.chainId,
+                    user: position.user,
+                    base: position.base,
+                    quote: position.quote,
+                    poolIdx: position.poolIdx,
+                    bidTick: position.bidTick ? position.bidTick : 0,
+                    askTick: position.askTick ? position.askTick : 0,
+                })
                     .then(async (data: PositionServerIF) => {
                         if (data && crocEnv && provider) {
                             // temporarily skip ENS fetch

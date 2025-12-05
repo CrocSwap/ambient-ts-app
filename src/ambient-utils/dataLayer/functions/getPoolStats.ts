@@ -18,35 +18,27 @@ import {
     excludedTokenAddressesLowercase,
 } from '../../constants';
 import { MAINNET_TOKENS } from '../../constants/networks/ethereumMainnet';
-import { PoolIF, TokenIF } from '../../types';
+import { PoolIF, PoolStatsServerIF, TokenIF } from '../../types';
 import { memoizeCacheQueryFn } from './memoizePromiseFn';
+import { GcgoProvider } from '../../../utils/gcgoProvider';
 
 const getLiquidityFee = async (
     base: string,
     quote: string,
     poolIdx: number,
     chainId: string,
-    GCGO_URL: string,
+    gcgo: GcgoProvider,
     _cacheTimeTag: number | string,
 ): Promise<number | undefined> => {
-    const poolStatsFreshEndpoint = GCGO_URL + '/pool_stats?';
-    return fetch(
-        poolStatsFreshEndpoint +
-            new URLSearchParams({
-                base: base.toLowerCase(),
-                quote: quote.toLowerCase(),
-                poolIdx: poolIdx.toString(),
-                chainId: chainId.toLowerCase(),
-            }),
-    )
-        .then((response) => response?.json())
-        .then((json) => {
-            if (!json?.data) {
-                return undefined;
-            }
-
-            const payload = json.data as PoolStatsServerIF;
-            return payload.feeRate;
+    return gcgo
+        .poolStats({
+            base: base,
+            quote: quote,
+            poolIdx: poolIdx,
+            chainId: chainId,
+        })
+        .then((poolStats: PoolStatsServerIF) => {
+            return poolStats.feeRate;
         })
         .catch(() => {
             return undefined;
@@ -59,93 +51,45 @@ const fetchPoolStats = async (
     quote: string,
     poolIdx: number,
     _cacheTimeTag: number | string,
-    GCGO_URL: string,
+    gcgo: GcgoProvider,
     histTime?: number,
 ): Promise<PoolStatsServerIF | undefined> => {
-    const poolStatsFreshEndpoint = GCGO_URL + '/pool_stats?';
-
     if (histTime) {
-        return fetch(
-            poolStatsFreshEndpoint +
-                new URLSearchParams({
-                    chainId: chainId.toLowerCase(),
-                    base: base.toLowerCase(),
-                    quote: quote.toLowerCase(),
-                    poolIdx: poolIdx.toString(),
-                    histTime: histTime.toString(),
-                }),
-        )
-            .then((response) => response.json())
-            .then((json) => {
-                if (!json?.data) {
-                    return;
-                }
-                const payload = json.data as PoolStatsServerIF;
-                payload.isHistorical = true;
-                return payload;
+        return gcgo
+            .poolStats({
+                chainId: chainId,
+                base: base,
+                quote: quote,
+                poolIdx: poolIdx,
+                histTime: histTime,
+            })
+            .then((poolStats: PoolStatsServerIF) => {
+                return poolStats;
             });
     } else {
-        return fetch(
-            poolStatsFreshEndpoint +
-                new URLSearchParams({
-                    chainId: chainId.toLowerCase(),
-                    base: base.toLowerCase(),
-                    quote: quote.toLowerCase(),
-                    poolIdx: poolIdx.toString(),
-                }),
-        )
-            .then((response) => response.json())
-            .then((json) => {
-                if (!json?.data) {
-                    return;
-                }
-                const payload = json.data as PoolStatsServerIF;
-                payload.isHistorical = false;
-                return payload;
+        return gcgo
+            .poolStats({
+                chainId: chainId,
+                base: base,
+                quote: quote,
+                poolIdx: poolIdx,
+            })
+            .then((poolStats: PoolStatsServerIF) => {
+                return poolStats;
             });
     }
 };
 
 const fetchAllPoolStats = async (
     chainId: string,
-    GCGO_URL: string,
+    gcgo: GcgoProvider,
     _cacheTimeTag: number | string,
     with24hPrices?: boolean,
-): Promise<PoolStatsServerIF | undefined> => {
-    const allPoolStatsEndpoint = GCGO_URL + '/all_pool_stats?';
-
-    if (with24hPrices) {
-        return fetch(
-            allPoolStatsEndpoint +
-                new URLSearchParams({
-                    chainId: chainId.toLowerCase(),
-                    with24hPrices: 'true',
-                }),
-        )
-            .then((response) => response.json())
-            .then((json) => {
-                if (!json?.data) {
-                    return;
-                }
-                const payload = json.data as PoolStatsServerIF;
-                return payload;
-            });
-    } else {
-        return fetch(
-            allPoolStatsEndpoint +
-                new URLSearchParams({
-                    chainId: chainId.toLowerCase(),
-                }),
-        )
-            .then((response) => response.json())
-            .then((json) => {
-                if (!json?.data) {
-                    return;
-                }
-                const payload = json.data as PoolStatsServerIF;
-                return payload;
-            });
-    }
+): Promise<PoolStatsServerIF[] | undefined> => {
+    return gcgo.allPoolStats({
+        chainId: chainId.toLowerCase(),
+        with24hPrices,
+    });
 };
 
 export async function expandPoolStats(
@@ -400,66 +344,37 @@ function decoratePoolStats(
     return stats;
 }
 
-interface PoolStatsServerIF {
-    latestTime: number;
-    baseTvl: number;
-    quoteTvl: number;
-    baseVolume: number;
-    quoteVolume: number;
-    baseFees: number;
-    quoteFees: number;
-    lastPriceSwap: number;
-    feeRate: number;
-    isHistorical: boolean;
-}
-
 const get24hChange = async (
     chainId: string,
     baseToken: string,
     quoteToken: string,
     poolIdx: number,
     denomInBase: boolean,
-    GCGO_URL: string,
+    gcgo: GcgoProvider,
     _cacheTimeTag: number | string,
 ): Promise<number | undefined> => {
-    const poolStatsFreshEndpoint = GCGO_URL + '/pool_stats?';
-
-    const nowQuery = fetch(
-        poolStatsFreshEndpoint +
-            new URLSearchParams({
-                chainId: chainId.toLowerCase(),
-                base: baseToken.toLowerCase(),
-                quote: quoteToken.toLowerCase(),
-                poolIdx: poolIdx.toString(),
-            }),
-    )
-        .then((response) => response.json())
-        .then((json) => {
-            if (!json?.data) {
-                return;
-            }
-            const payload = json.data as PoolStatsServerIF;
-            return payload.lastPriceSwap;
+    const nowQuery = gcgo
+        .poolStats({
+            chainId: chainId,
+            base: baseToken,
+            quote: quoteToken,
+            poolIdx: poolIdx,
+        })
+        .then((poolStats: PoolStatsServerIF) => {
+            return poolStats.lastPriceSwap;
         });
 
     const ydayTime = Math.floor(Date.now() / 1000 - 24 * 3600);
-    const ydayQuery = fetch(
-        poolStatsFreshEndpoint +
-            new URLSearchParams({
-                chainId: chainId.toLowerCase(),
-                base: baseToken.toLowerCase(),
-                quote: quoteToken.toLowerCase(),
-                poolIdx: poolIdx.toString(),
-                histTime: ydayTime.toString(),
-            }),
-    )
-        .then((response) => response.json())
-        .then((json) => {
-            if (!json?.data) {
-                return;
-            }
-            const payload = json.data as PoolStatsServerIF;
-            return payload.lastPriceSwap;
+    const ydayQuery = gcgo
+        .poolStats({
+            chainId: chainId,
+            base: baseToken,
+            quote: quoteToken,
+            poolIdx: poolIdx,
+            histTime: ydayTime,
+        })
+        .then((poolStats: PoolStatsServerIF) => {
+            return poolStats.lastPriceSwap;
         });
 
     const ydayPrice = await ydayQuery;
@@ -493,7 +408,7 @@ export async function getChainStats(
     returnAs: 'cumulative',
     chainId: string,
     crocEnv: CrocEnv,
-    GCGO_URL: string,
+    gcgo: GcgoProvider,
     cachedFetchTokenPrice: TokenPriceFn,
     tokenCount: number,
     activePoolList: PoolIF[] | undefined,
@@ -505,7 +420,7 @@ export async function getChainStats(
     returnAs: 'expanded',
     chainId: string,
     crocEnv: CrocEnv,
-    GCGO_URL: string,
+    gcgo: GcgoProvider,
     cachedFetchTokenPrice: TokenPriceFn,
     tokenCount: number,
     activePoolList: PoolIF[] | undefined,
@@ -517,29 +432,20 @@ export async function getChainStats(
     returnAs: 'cumulative' | 'expanded',
     chainId: string,
     crocEnv: CrocEnv,
-    GCGO_URL: string,
+    gcgo: GcgoProvider,
     cachedFetchTokenPrice: TokenPriceFn,
     tokenCount: number,
     activePoolList: PoolIF[] | undefined,
     ambientTokenList?: TokenIF[],
 ): Promise<DexAggStatsIF | DexTokenAggServerIF[] | undefined> {
-    const chainStatsFreshEndpoint = GCGO_URL + '/chain_stats?';
-
-    return fetch(
-        chainStatsFreshEndpoint +
-            new URLSearchParams({
-                chainId: chainId.toLowerCase(),
-                n: tokenCount.toString(),
-            }),
-    )
-        .then((response) => response?.json())
-        .then((json) => {
-            if (!json?.data) {
-                return undefined;
-            }
-
+    return gcgo
+        .chainStats({
+            chainId: chainId,
+            tokenCount: tokenCount,
+        })
+        .then(async (chainStats) => {
             // Filter out excluded addresses
-            const filteredData = json.data.filter(
+            const filteredData = chainStats.filter(
                 (item: { tokenAddr: string }) =>
                     !excludedTokenAddressesLowercase.includes(
                         item.tokenAddr.toLowerCase(),
@@ -547,11 +453,10 @@ export async function getChainStats(
             );
 
             if (returnAs === 'expanded') {
-                return filteredData;
+                return filteredData as DexTokenAggServerIF[];
             } else if (returnAs === 'cumulative') {
-                const payload = filteredData as DexTokenAggServerIF[];
                 return expandChainStats(
-                    payload,
+                    filteredData,
                     chainId,
                     crocEnv,
                     cachedFetchTokenPrice,
@@ -661,13 +566,13 @@ export type PoolStatsFn = (
     quoteToken: string,
     poolIdx: number,
     _cacheTimeTag: number | string,
-    GCGO_URL: string,
+    gcgo: GcgoProvider,
     histTime?: number,
 ) => Promise<PoolStatsServerIF>;
 
 export type AllPoolStatsFn = (
     chain: string,
-    GCGO_URL: string,
+    gcgo: GcgoProvider,
     _cacheTimeTag: number | string,
     with24hPrices?: boolean,
 ) => Promise<PoolIF[]>;
@@ -678,7 +583,7 @@ export type Change24Fn = (
     quoteToken: string,
     poolIdx: number,
     denomInBase: boolean,
-    GCGO_URL: string,
+    gcgo: GcgoProvider,
     _cacheTimeTag: number | string,
 ) => Promise<number | undefined>;
 
@@ -687,7 +592,7 @@ export type LiquidityFeeFn = (
     quote: string,
     poolIdx: number,
     chainId: string,
-    GCGO_URL: string,
+    gcgo: GcgoProvider,
     _cacheTimeTag: number | string,
 ) => Promise<number | undefined>;
 

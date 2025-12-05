@@ -5,8 +5,9 @@ import { Provider } from 'ethers';
 import { findTokenByAddress } from '../../dataLayer/functions/findTokenByAddress';
 import { TokenIF } from '../../types';
 import { NetworkIF } from '../../types/NetworkIF';
-import { GCGO_TESTNET_URL } from '../gcgo';
+import { GCGO_TESTNET_URLS } from '../gcgo';
 import { TopPool } from './TopPool';
+import { GcgoProvider } from '../../../utils/gcgoProvider';
 
 const PUBLIC_RPC_URL = 'https://swell-testnet.alt.technology';
 const SECONDARY_PUBLIC_RPC_URL = 'https://rpc.ankr.com/swell-testnet';
@@ -67,7 +68,8 @@ export const SWELL_SEPOLIA_TOKENS: SwellSepoliaTokens = Object.fromEntries(
 export const swellSepolia: NetworkIF = {
     chainId: chainIdHex,
     chainSpec: chainSpecFromSDK,
-    GCGO_URL: GCGO_TESTNET_URL,
+    gcgo: new GcgoProvider(GCGO_TESTNET_URLS, Number(chainIdHex)),
+    GCGO_URLS: GCGO_TESTNET_URLS,
     evmRpcUrls: [PRIMARY_RPC_URL, FALLBACK_RPC_URL],
     chainSpecForAppKit,
     defaultPair: [SWELL_SEPOLIA_TOKENS.ETH, SWELL_SEPOLIA_TOKENS.USDC],

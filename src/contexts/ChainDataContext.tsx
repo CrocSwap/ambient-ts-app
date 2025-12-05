@@ -20,17 +20,17 @@ import {
 } from '../ambient-utils/api';
 import { fetchNFT } from '../ambient-utils/api/fetchNft';
 import {
-    GCGO_BLAST_URL,
-    GCGO_ETHEREUM_URL,
-    GCGO_PLUME_URL,
-    GCGO_SCROLL_URL,
-    GCGO_SWELL_URL,
     hiddenTokens,
     supportedNetworks,
     VAULTS_API_URL,
     vaultSupportedNetworkIds,
     ZERO_ADDRESS,
 } from '../ambient-utils/constants';
+import { ethereumMainnet } from '../ambient-utils/constants';
+import { blastMainnet } from '../ambient-utils/constants';
+import { plumeMainnet } from '../ambient-utils/constants';
+import { scrollMainnet } from '../ambient-utils/constants';
+import { swellMainnet } from '../ambient-utils/constants';
 import { tokens as AMBIENT_TOKEN_LIST } from '../ambient-utils/constants/ambient-token-list.json';
 import { getChainStats, getFormattedNumber } from '../ambient-utils/dataLayer';
 import {
@@ -97,7 +97,7 @@ export const ChainDataContext = createContext({} as ChainDataContextIF);
 
 export const ChainDataContextProvider = (props: { children: ReactNode }) => {
     const {
-        activeNetwork: { chainId, GCGO_URL, isTestnet },
+        activeNetwork: { chainId, gcgo, isTestnet },
         isUserIdle,
         isUserOnline,
         isTradeRoute,
@@ -459,7 +459,7 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
         try {
             const gcgoPoolList: Promise<PoolIF[]> = cachedAllPoolStatsFetch(
                 chainId,
-                GCGO_URL,
+                gcgo,
                 poolStatsPollingCacheTime,
                 true,
             );
@@ -519,17 +519,11 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
         isAnalyticsPoolListDefinedOrUnavailable;
 
     useEffect(() => {
-        if (
-            chainId &&
-            GCGO_URL &&
-            isUserOnline &&
-            isAnalyticsPoolListUnavailable
-        ) {
+        if (chainId && gcgo && isUserOnline && isAnalyticsPoolListUnavailable) {
             fetchGcgoPoolList();
         }
     }, [
         chainId,
-        GCGO_URL,
         poolStatsPollingCacheTime,
         isUserOnline,
         tokens.getTokenByAddress,
@@ -667,7 +661,6 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
         isUserConnected,
         userAddress,
         chainId,
-        GCGO_URL,
         isfetchNftTriggered,
     ]);
 
@@ -695,7 +688,7 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
                                 address: userAddress,
                                 chain: chainId,
                                 crocEnv: crocEnv,
-                                GCGO_URL: GCGO_URL,
+                                gcgo,
                                 _refreshTime: everyFiveSeconds,
                             }),
                         ]);
@@ -781,7 +774,6 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
         userAddress,
         chainId,
         everyFiveMinutes,
-        GCGO_URL,
         sessionReceipts.length,
         isAccountRoute,
         isTokenBalanceFetchManuallyTriggerered,
@@ -975,42 +967,42 @@ export const ChainDataContextProvider = (props: { children: ReactNode }) => {
             {
                 chainId: '0x1',
                 env: mainnetCrocEnv,
-                url: GCGO_ETHEREUM_URL,
+                gcgo: ethereumMainnet.gcgo,
                 tokenCount: 10,
             },
             {
                 chainId: '0x82750',
                 env: scrollCrocEnv,
-                url: GCGO_SCROLL_URL,
+                gcgo: scrollMainnet.gcgo,
                 tokenCount: 20,
             },
             {
                 chainId: '0x783',
                 env: swellCrocEnv,
-                url: GCGO_SWELL_URL,
+                gcgo: swellMainnet.gcgo,
                 tokenCount: 10,
             },
             {
                 chainId: '0x13e31',
                 env: blastCrocEnv,
-                url: GCGO_BLAST_URL,
+                gcgo: blastMainnet.gcgo,
                 tokenCount: 10,
             },
             {
                 chainId: '0x18232',
                 env: plumeCrocEnv,
-                url: GCGO_PLUME_URL,
+                gcgo: plumeMainnet.gcgo,
                 tokenCount: 10,
             },
         ];
 
-        chainConfigs.forEach(({ chainId: cId, env, url, tokenCount }) => {
+        chainConfigs.forEach(({ chainId: cId, env, gcgo, tokenCount }) => {
             if (!env) return;
             getChainStats(
                 'cumulative',
                 cId,
                 env,
-                url,
+                gcgo,
                 cachedFetchTokenPrice,
                 tokenCount,
                 activePoolList,

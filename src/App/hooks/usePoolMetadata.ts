@@ -4,7 +4,6 @@ import {
     expandLiquidityData,
     fetchPoolLiquidity,
     fetchPoolRecentChanges,
-    LiquidityCurveServerIF,
 } from '../../ambient-utils/api';
 import { fetchPoolLimitOrders } from '../../ambient-utils/api/fetchPoolLimitOrders';
 import {
@@ -16,6 +15,7 @@ import {
 import {
     LimitOrderIF,
     LimitOrderServerIF,
+    LiquidityCurveServerIF,
     PoolIF,
     PositionIF,
     PositionServerIF,
@@ -48,7 +48,7 @@ export function usePoolMetadata() {
     const {
         isUserIdle,
         isUserOnline,
-        activeNetwork: { chainId, poolIndex, GCGO_URL, isTestnet },
+        activeNetwork: { chainId, poolIndex, gcgo, isTestnet },
         isTradeRoute,
     } = useContext(AppStateContext);
     const {
@@ -295,21 +295,14 @@ export function usePoolMetadata() {
                 activePoolList
             ) {
                 // retrieve pool_positions
-                const allPositionsCacheEndpoint = GCGO_URL + '/pool_positions?';
-                fetch(
-                    allPositionsCacheEndpoint +
-                        new URLSearchParams({
-                            base: baseTokenAddress.toLowerCase(),
-                            quote: quoteTokenAddress.toLowerCase(),
-                            poolIdx: poolIndex.toString(),
-                            chainId: chainId.toLowerCase(),
-                            // n: '100',
-                            n: '200',
-                        }),
-                )
-                    .then((response) => response.json())
-                    .then((json) => {
-                        const poolPositions = json.data;
+                gcgo.poolPositions({
+                    base: baseTokenAddress,
+                    quote: quoteTokenAddress,
+                    poolIdx: poolIndex,
+                    chainId: chainId,
+                    count: 200,
+                })
+                    .then((poolPositions: PositionServerIF[]) => {
                         if (poolPositions) {
                             Promise.all(
                                 poolPositions.map(
@@ -370,7 +363,7 @@ export function usePoolMetadata() {
                     chainId: chainId,
                     n: 100,
                     crocEnv: crocEnv,
-                    GCGO_URL: GCGO_URL,
+                    gcgo: gcgo,
                     provider: provider,
                     activePoolList,
                     cachedFetchTokenPrice: cachedFetchTokenPrice,
@@ -409,7 +402,7 @@ export function usePoolMetadata() {
                     chainId: chainId,
                     n: 100,
                     crocEnv: crocEnv,
-                    GCGO_URL: GCGO_URL,
+                    gcgo: gcgo,
                     provider: provider,
                     activePoolList,
                     cachedFetchTokenPrice: cachedFetchTokenPrice,
@@ -439,23 +432,15 @@ export function usePoolMetadata() {
                     })
                     .catch(console.error);
                 if (userAddress) {
-                    const userPoolTransactionsCacheEndpoint =
-                        GCGO_URL + '/user_pool_txs?';
-                    fetch(
-                        userPoolTransactionsCacheEndpoint +
-                            new URLSearchParams({
-                                user: userAddress.toLowerCase(),
-                                base: baseTokenAddress.toLowerCase(),
-                                quote: quoteTokenAddress.toLowerCase(),
-                                poolIdx: poolIndex.toString(),
-                                chainId: chainId.toLowerCase(),
-                                n: '200',
-                            }),
-                    )
-                        .then((response) => response.json())
-                        .then((json) => {
-                            const userPoolTransactions =
-                                json.data as TransactionIF[];
+                    gcgo.userPoolTxs({
+                        user: userAddress,
+                        base: baseTokenAddress,
+                        quote: quoteTokenAddress,
+                        poolIdx: poolIndex,
+                        chainId: chainId,
+                        count: 200,
+                    })
+                        .then((userPoolTransactions: TransactionServerIF[]) => {
                             if (userPoolTransactions) {
                                 const userPoolTransactionsWithoutFills =
                                     userPoolTransactions.filter(
@@ -505,23 +490,16 @@ export function usePoolMetadata() {
                         .catch(console.error);
 
                     // retrieve user_pool_positions
-                    const userPoolPositionsCacheEndpoint =
-                        GCGO_URL + '/user_pool_positions?';
                     const forceOnchainLiqUpdate = !isTestnet;
-                    fetch(
-                        userPoolPositionsCacheEndpoint +
-                            new URLSearchParams({
-                                user: userAddress.toLowerCase(),
-                                base: baseTokenAddress.toLowerCase(),
-                                quote: quoteTokenAddress.toLowerCase(),
-                                poolIdx: poolIndex.toString(),
-                                chainId: chainId.toLowerCase(),
-                            }),
-                    )
-                        .then((response) => response.json())
-                        .then((json) => {
-                            const userPoolPositions = json.data;
-
+                    gcgo.userPoolPositions({
+                        user: userAddress,
+                        base: baseTokenAddress,
+                        quote: quoteTokenAddress,
+                        poolIdx: poolIndex,
+                        chainId: chainId,
+                        count: 200,
+                    })
+                        .then((userPoolPositions: PositionServerIF[]) => {
                             if (userPoolPositions) {
                                 Promise.all(
                                     userPoolPositions.map(
@@ -568,65 +546,65 @@ export function usePoolMetadata() {
                         .catch(console.error);
 
                     // retrieve user_pool_limit_orders
-                    const userPoolLimitOrdersCacheEndpoint =
-                        GCGO_URL + '/user_pool_limit_orders?';
-                    fetch(
-                        userPoolLimitOrdersCacheEndpoint +
-                            new URLSearchParams({
-                                user: userAddress.toLowerCase(),
-                                base: baseTokenAddress.toLowerCase(),
-                                quote: quoteTokenAddress.toLowerCase(),
-                                poolIdx: poolIndex.toString(),
-                                chainId: chainId.toLowerCase(),
-                            }),
-                    )
-                        .then((response) => response?.json())
-                        .then((json) => {
-                            const userPoolLimitOrderStates = json?.data;
-                            if (userPoolLimitOrderStates) {
-                                Promise.all(
-                                    userPoolLimitOrderStates.map(
-                                        (limitOrder: LimitOrderServerIF) => {
-                                            return getLimitOrderData(
-                                                limitOrder,
-                                                tokens.tokenUniv,
-                                                crocEnv,
-                                                provider,
-                                                chainId,
-                                                activePoolList,
-                                                cachedFetchTokenPrice,
-                                                cachedQuerySpotPrice,
-                                                cachedTokenDetails,
-                                            );
-                                        },
-                                    ),
-                                ).then((updatedLimitOrderStates) => {
-                                    const filteredData = filterLimitArray(
-                                        updatedLimitOrderStates,
-                                    );
-                                    setUserLimitOrdersByPool({
-                                        dataReceived: true,
-                                        limitOrders: filteredData,
-                                    });
+                    gcgo.userPoolLimitOrders({
+                        user: userAddress,
+                        base: baseTokenAddress,
+                        quote: quoteTokenAddress,
+                        poolIdx: poolIndex,
+                        chainId: chainId,
+                        count: 200,
+                    })
+                        .then(
+                            (
+                                userPoolLimitOrderStates: LimitOrderServerIF[],
+                            ) => {
+                                if (userPoolLimitOrderStates) {
+                                    Promise.all(
+                                        userPoolLimitOrderStates.map(
+                                            (
+                                                limitOrder: LimitOrderServerIF,
+                                            ) => {
+                                                return getLimitOrderData(
+                                                    limitOrder,
+                                                    tokens.tokenUniv,
+                                                    crocEnv,
+                                                    provider,
+                                                    chainId,
+                                                    activePoolList,
+                                                    cachedFetchTokenPrice,
+                                                    cachedQuerySpotPrice,
+                                                    cachedTokenDetails,
+                                                );
+                                            },
+                                        ),
+                                    ).then((updatedLimitOrderStates) => {
+                                        const filteredData = filterLimitArray(
+                                            updatedLimitOrderStates,
+                                        );
+                                        setUserLimitOrdersByPool({
+                                            dataReceived: true,
+                                            limitOrders: filteredData,
+                                        });
 
+                                        setDataLoadingStatus({
+                                            datasetName:
+                                                'isConnectedUserPoolOrderDataLoading',
+                                            loadingStatus: false,
+                                        });
+                                    });
+                                } else {
+                                    setUserLimitOrdersByPool({
+                                        dataReceived: false,
+                                        limitOrders: [],
+                                    });
                                     setDataLoadingStatus({
                                         datasetName:
                                             'isConnectedUserPoolOrderDataLoading',
                                         loadingStatus: false,
                                     });
-                                });
-                            } else {
-                                setUserLimitOrdersByPool({
-                                    dataReceived: false,
-                                    limitOrders: [],
-                                });
-                                setDataLoadingStatus({
-                                    datasetName:
-                                        'isConnectedUserPoolOrderDataLoading',
-                                    loadingStatus: false,
-                                });
-                            }
-                        })
+                                }
+                            },
+                        )
                         .catch(console.error);
                 }
             }
@@ -742,7 +720,7 @@ export function usePoolMetadata() {
                 baseTokenAddress &&
                 quoteTokenAddress &&
                 crocEnv &&
-                GCGO_URL &&
+                gcgo &&
                 crocEnvChainMatches &&
                 tokenChainMatches &&
                 isChartVisible &&
@@ -764,7 +742,7 @@ export function usePoolMetadata() {
                         baseTokenAddress.toLowerCase(),
                         quoteTokenAddress.toLowerCase(),
                         poolIndex,
-                        GCGO_URL,
+                        gcgo,
                     )
                         .then((rawCurveData) => {
                             if (rawCurveData) {
@@ -782,7 +760,6 @@ export function usePoolMetadata() {
         baseTokenAddress,
         quoteTokenAddress,
         poolIndex,
-        GCGO_URL,
         totalPositionUsdValueForUpdateTrigger.current,
         isChartVisible,
         contextMatchesParams,
