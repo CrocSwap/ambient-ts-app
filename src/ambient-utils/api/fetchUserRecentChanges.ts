@@ -1,19 +1,19 @@
 import { CrocEnv } from '@crocswap-libs/sdk';
 import { Provider } from 'ethers';
 import { getTransactionData, SpotPriceFn } from '../dataLayer/functions';
-import { PoolIF, TokenIF, TransactionIF } from '../types';
+import { PoolIF, TokenIF, TransactionIF, TransactionServerIF } from '../types';
 import { FetchContractDetailsFn } from './fetchContractDetails';
 import { TokenPriceFn } from './fetchTokenPrice';
+import { GcgoProvider } from '../../utils/gcgoProvider';
 
 interface argsIF {
     tokenList: TokenIF[];
 
     user: string;
     chainId: string;
-    n?: number;
-    page?: number;
+    n: number;
     crocEnv: CrocEnv;
-    GCGO_URL: string;
+    gcgo: GcgoProvider;
     provider: Provider;
     activePoolList: PoolIF[] | undefined;
     cachedFetchTokenPrice: TokenPriceFn;
@@ -29,7 +29,7 @@ export const fetchUserRecentChanges = (args: argsIF) => {
         chainId,
         n,
         crocEnv,
-        GCGO_URL,
+        gcgo,
         provider,
         activePoolList,
         cachedFetchTokenPrice,
@@ -38,36 +38,20 @@ export const fetchUserRecentChanges = (args: argsIF) => {
         timeBefore,
     } = args;
 
-    const userRecentChangesCacheEndpoint = GCGO_URL + '/user_txs?';
-
-    const poolChanges = fetch(
-        timeBefore
-            ? userRecentChangesCacheEndpoint +
-                  new URLSearchParams({
-                      user: user.toLowerCase(),
-                      chainId: chainId.toLowerCase(),
-                      timeBefore: timeBefore.toString(),
-                      n: n ? n.toString() : '', // positive integer	(Optional.) If n and page are provided, query returns a page of results with at most n entries.
-                      // page: page ? page.toString() : '', // nonnegative integer	(Optional.) If n and page are provided, query returns the page-th page of results. Page numbers are 0-indexed.
-                  })
-            : userRecentChangesCacheEndpoint +
-                  new URLSearchParams({
-                      user: user.toLowerCase(),
-                      chainId: chainId.toLowerCase(),
-                      n: n ? n.toString() : '', // positive integer	(Optional.) If n and page are provided, query returns a page of results with at most n entries.
-                      // page: page ? page.toString() : '', // nonnegative integer	(Optional.) If n and page are provided, query returns the page-th page of results. Page numbers are 0-indexed.
-                  }),
-    )
-        .then((response) => response?.json())
-        .then((json) => {
-            const userTransactions = json?.data as TransactionIF[];
-
+    const poolChanges = gcgo
+        .userTxs({
+            user: user,
+            chainId: chainId,
+            timeBefore: timeBefore,
+            count: n,
+        })
+        .then((userTransactions: TransactionServerIF[]) => {
             if (!userTransactions) {
                 return [] as TransactionIF[];
             }
 
             return Promise.allSettled(
-                userTransactions.map((tx: TransactionIF) =>
+                userTransactions.map((tx: TransactionServerIF) =>
                     getTransactionData(
                         tx,
                         tokenList,

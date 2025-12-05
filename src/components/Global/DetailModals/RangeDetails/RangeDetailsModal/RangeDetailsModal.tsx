@@ -86,7 +86,7 @@ function RangeDetailsModal(props: propsIF) {
     >();
 
     const {
-        activeNetwork: { GCGO_URL, chainId, poolIndex },
+        activeNetwork: { gcgo, chainId, poolIndex },
         snackbar: { open: openSnackbar },
     } = useContext(AppStateContext);
     const { cachedQuerySpotPrice, cachedFetchTokenPrice, cachedTokenDetails } =
@@ -361,33 +361,25 @@ function RangeDetailsModal(props: propsIF) {
     };
 
     useEffect(() => {
-        const positionStatsCacheEndpoint = GCGO_URL + '/position_stats?';
-
         updateLiq();
 
         if (position.positionType) {
-            fetch(
-                positionStatsCacheEndpoint +
-                    new URLSearchParams({
-                        user: user.toLowerCase(),
-                        bidTick: bidTick.toString(),
-                        askTick: askTick.toString(),
-                        base: baseTokenAddress.toLowerCase(),
-                        quote: quoteTokenAddress.toLowerCase(),
-                        poolIdx: poolIndex.toString(),
-                        chainId: chainId.toLowerCase(),
-                        positionType: position.positionType,
-                    }),
-            )
-                .then((response) => response?.json())
-                .then(async (json) => {
-                    if (!crocEnv || !provider || !json?.data) {
+            gcgo.positionStats({
+                user: user,
+                bidTick: bidTick,
+                askTick: askTick,
+                base: baseTokenAddress,
+                quote: quoteTokenAddress,
+                poolIdx: poolIndex,
+                chainId: chainId,
+            })
+                .then(async (positionPayload: PositionServerIF) => {
+                    if (!crocEnv || !provider || !positionPayload) {
                         return;
                     }
-                    setServerPositionId(json?.data?.positionId);
+                    setServerPositionId(positionPayload.positionId);
                     // temporarily skip ENS fetch
                     const forceOnchainLiqUpdate = userMatchesConnectedAccount;
-                    const positionPayload = json?.data as PositionServerIF;
                     const positionStats = await getPositionData(
                         positionPayload,
                         tokens.tokenUniv,

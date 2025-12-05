@@ -1,32 +1,22 @@
 import { CrocEnv, tickToPrice, toDisplayPrice } from '@crocswap-libs/sdk';
 import { SpotPriceFn } from '../dataLayer';
 import { TokenPriceFn } from './fetchTokenPrice';
+import { GcgoProvider } from '../../utils/gcgoProvider';
+import { LiquidityCurveServerIF } from '../types';
 
 export const fetchPoolLiquidity = async (
     chainId: string,
     base: string,
     quote: string,
     poolIdx: number,
-    GCGO_URL: string,
+    gcgo: GcgoProvider,
 ): Promise<LiquidityCurveServerIF | undefined> => {
-    const poolLiquidityCacheEndpoint = GCGO_URL + '/pool_liq_curve?';
-    return await fetch(
-        poolLiquidityCacheEndpoint +
-            new URLSearchParams({
-                base: base.toLowerCase(),
-                quote: quote.toLowerCase(),
-                poolIdx: poolIdx.toString(),
-                chainId: chainId.toLowerCase(),
-            }),
-    )
-        .then((response) => response.json())
-        .then(async (json) => {
-            if (!json.data) {
-                return undefined;
-            }
-            const bumps = json.data as LiquidityCurveServerIF;
-            return bumps;
-        });
+    return await gcgo.poolLiqCurve({
+        base: base,
+        quote: quote,
+        poolIdx: poolIdx,
+        chainId: chainId,
+    });
 };
 
 export async function expandLiquidityData(
@@ -258,13 +248,4 @@ export interface LiquidityRangeIF {
     cumDeltaBase: number;
     cumDeltaQuote: number;
     cumAverageUSD: number;
-}
-
-export interface LiquidityCurveServerIF {
-    ambientLiq: number;
-    liquidityBumps: {
-        bumpTick: number;
-        liquidityDelta: number;
-        latestUpdateTime: number;
-    }[];
 }

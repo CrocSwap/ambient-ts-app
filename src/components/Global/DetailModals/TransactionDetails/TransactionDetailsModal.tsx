@@ -39,7 +39,7 @@ function TransactionDetailsModal(props: propsIF) {
     const { tx, isBaseTokenMoneynessGreaterOrEqual, isAccountView, onClose } =
         props;
     const {
-        activeNetwork: { chainId, GCGO_URL },
+        activeNetwork: { chainId, gcgo },
         snackbar: { open: openSnackbar },
     } = useContext(AppStateContext);
 
@@ -59,30 +59,22 @@ function TransactionDetailsModal(props: propsIF) {
     useEffect(() => {
         if (tx.entityType !== 'liqchange') return;
 
-        const positionStatsCacheEndpoint = GCGO_URL + '/position_stats?';
-
-        fetch(
-            positionStatsCacheEndpoint +
-                new URLSearchParams({
-                    user: tx.user.toLowerCase(),
-                    bidTick: tx.bidTick.toString(),
-                    askTick: tx.askTick.toString(),
-                    base: tx.base.toLowerCase(),
-                    quote: tx.quote.toLowerCase(),
-                    poolIdx: tx.poolIdx.toString(),
-                    chainId: chainId.toLowerCase(),
-                    positionType: tx.positionType,
-                }),
-        )
-            .then((response) => response?.json())
-            .then(async (json) => {
-                if (!crocEnv || !provider || !json?.data) {
+        gcgo.positionStats({
+            user: tx.user,
+            bidTick: tx.bidTick,
+            askTick: tx.askTick,
+            base: tx.base,
+            quote: tx.quote,
+            poolIdx: tx.poolIdx,
+            chainId: chainId,
+        })
+            .then(async (positionPayload: PositionServerIF) => {
+                if (!crocEnv || !provider || !positionPayload) {
                     return;
                 }
                 // temporarily skip ENS fetch
                 const forceOnchainLiqUpdate = false;
 
-                const positionPayload = json?.data as PositionServerIF;
                 const positionStats = await getPositionData(
                     positionPayload,
                     tokens.tokenUniv,

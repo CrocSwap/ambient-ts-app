@@ -25,7 +25,7 @@ const useInfiniteScrollFetchers = () => {
         useContext(CachedDataContext);
 
     const {
-        activeNetwork: { chainId, poolIndex, GCGO_URL },
+        activeNetwork: { chainId, poolIndex, gcgo },
     } = useContext(AppStateContext);
 
     const { crocEnv, provider } = useContext(CrocEnvContext);
@@ -53,7 +53,7 @@ const useInfiniteScrollFetchers = () => {
                     n: fetchCount,
                     timeBefore: OLDEST_TIME,
                     crocEnv: crocEnv,
-                    GCGO_URL: GCGO_URL,
+                    gcgo: gcgo,
                     provider: provider,
                     activePoolList,
                     cachedFetchTokenPrice: cachedFetchTokenPrice,
@@ -86,7 +86,7 @@ const useInfiniteScrollFetchers = () => {
                     n: fetchCount,
                     timeBefore: OLDEST_TIME,
                     crocEnv: crocEnv,
-                    GCGO_URL: GCGO_URL,
+                    gcgo: gcgo,
                     provider: provider,
                     cachedFetchTokenPrice: cachedFetchTokenPrice,
                     cachedQuerySpotPrice: cachedQuerySpotPrice,
@@ -119,7 +119,7 @@ const useInfiniteScrollFetchers = () => {
                     n: fetchCount,
                     timeBefore: OLDEST_TIME,
                     crocEnv: crocEnv,
-                    GCGO_URL: GCGO_URL,
+                    gcgo: gcgo,
                     provider: provider,
                     activePoolList,
 
@@ -156,7 +156,7 @@ const useInfiniteScrollFetchers = () => {
                     n: fetchCount,
                     timeBefore: OLDEST_TIME,
                     crocEnv: crocEnv,
-                    GCGO_URL: GCGO_URL,
+                    gcgo: gcgo,
                     provider: provider,
                     activePoolList,
                     cachedFetchTokenPrice: cachedFetchTokenPrice,
@@ -197,7 +197,7 @@ const useInfiniteScrollFetchers = () => {
                     n: fetchCount,
                     timeBefore: OLDEST_TIME,
                     crocEnv: crocEnv,
-                    GCGO_URL: GCGO_URL,
+                    gcgo: gcgo,
                     provider: provider,
                     activePoolList,
                     cachedFetchTokenPrice: cachedFetchTokenPrice,

@@ -453,35 +453,29 @@ function Reposition() {
         setCurrentQuoteQtyDisplayTruncated,
     ] = useState<string>(position?.positionLiqQuoteTruncated || '...');
 
-    const positionStatsCacheEndpoint =
-        activeNetwork.GCGO_URL + '/position_stats?';
     const poolIndex = position ? lookupChain(position.chainId).poolIndex : 0;
 
     const fetchCurrentCollateral = () => {
         position
-            ? fetch(
-                  positionStatsCacheEndpoint +
-                      new URLSearchParams({
-                          user: position.user.toLowerCase(),
-                          bidTick: position.bidTick.toString(),
-                          askTick: position.askTick.toString(),
-                          base: position.base.toLowerCase(),
-                          quote: position.quote.toLowerCase(),
-                          poolIdx: poolIndex.toString(),
-                          chainId: position.chainId.toLowerCase(),
-                          positionType: position.positionType,
-                      }),
-              )
-                  .then((response) => response?.json())
-                  .then(async (json) => {
-                      if (!crocEnv || !provider || !json?.data) {
+            ? activeNetwork.gcgo
+                  .positionStats({
+                      user: position.user,
+                      bidTick: position.bidTick,
+                      askTick: position.askTick,
+                      base: position.base,
+                      quote: position.quote,
+                      poolIdx: poolIndex,
+                      chainId: position.chainId,
+                  })
+                  .then(async (data: PositionServerIF) => {
+                      if (!crocEnv || !provider || !data) {
                           setCurrentBaseQtyDisplayTruncated('...');
                           setCurrentQuoteQtyDisplayTruncated('...');
                           return;
                       }
                       // temporarily skip ENS fetch
                       const positionStats = await getPositionData(
-                          json.data as PositionServerIF,
+                          data,
                           tokens.tokenUniv,
                           crocEnv,
                           provider,

@@ -5,8 +5,9 @@ import { Provider } from 'ethers';
 import { findTokenByAddress } from '../../dataLayer/functions/findTokenByAddress';
 import { TokenIF } from '../../types';
 import { NetworkIF } from '../../types/NetworkIF';
-import { GCGO_TESTNET_URL } from '../gcgo';
+import { GCGO_TESTNET_URLS } from '../gcgo';
 import { TopPool } from './TopPool';
+import { GcgoProvider } from '../../../utils/gcgoProvider';
 
 const RPC_URLS = {
     PUBLIC: 'https://sepolia-rpc.scroll.io',
@@ -67,7 +68,8 @@ export const SCROLL_SEPOLIA_TOKENS: ScrollSepoliaTokens = Object.fromEntries(
 export const scrollSepolia: NetworkIF = {
     chainId: chainIdHex,
     chainSpec: chainSpecFromSDK,
-    GCGO_URL: GCGO_TESTNET_URL,
+    gcgo: new GcgoProvider(GCGO_TESTNET_URLS, Number(chainIdHex)),
+    GCGO_URLS: GCGO_TESTNET_URLS,
     evmRpcUrls: [PRIMARY_RPC_URL, FALLBACK_RPC_URL],
     chainSpecForAppKit,
     defaultPair: [SCROLL_SEPOLIA_TOKENS.ETH, SCROLL_SEPOLIA_TOKENS.USDC],

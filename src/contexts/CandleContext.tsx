@@ -79,7 +79,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
 
     const { isChartVisible } = useContext(TradeTokenContext);
     const {
-        activeNetwork: { chainId, poolIndex, GCGO_URL },
+        activeNetwork: { chainId, poolIndex, gcgo },
     } = useContext(AppStateContext);
     const { crocEnv } = useContext(CrocEnvContext);
 
@@ -409,7 +409,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                 true,
                 chainId,
                 poolIndex,
-                GCGO_URL,
+                gcgo,
                 candleTimeLocal || defaultCandleDuration,
                 baseToken,
                 quoteToken,
@@ -507,7 +507,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
             true,
             chainId,
             poolIndex,
-            GCGO_URL,
+            gcgo,
             candleTimeLocal,
             baseToken,
             quoteToken,

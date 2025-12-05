@@ -17,6 +17,9 @@ export * from './chainHexIds';
 // TokenIF, TokenListIF
 export * from './token';
 
+// ChainStatsServerIF, PoolStatsServerIF
+export * from './stats';
+
 // TransactionIF, TransactionServerIF
 export * from './transaction';
 
@@ -44,3 +47,6 @@ export enum RecordType {
     Position = 'PositionIF',
     LimitOrder = 'LimitOrderIF',
 }
+
+// GCGO indexer query interface
+export * from './GcgoQueryParamsIF';

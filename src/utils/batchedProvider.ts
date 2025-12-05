@@ -317,7 +317,7 @@ export class BatchedJsonRpcProvider extends JsonRpcProvider {
                         ),
                     ),
                 ]);
-                if (response.error) throw new Error(response.error);
+                if (response && response.error) throw new Error(response.error);
                 this.goodProviderIndex = providerIndex;
                 this.saveInCache(method, params, response, ttlMsec);
                 return response;

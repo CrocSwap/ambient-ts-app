@@ -73,7 +73,7 @@ function Transactions(props: propsIF) {
     const { chartSettings } = useContext(ChartContext);
     const { crocEnv, provider } = useContext(CrocEnvContext);
     const {
-        activeNetwork: { chainId, poolIndex, GCGO_URL },
+        activeNetwork: { chainId, poolIndex, gcgo },
     } = useContext(AppStateContext);
 
     const { setOutsideControl, showAllData: showAllDataSelection } =
@@ -232,7 +232,7 @@ function Transactions(props: propsIF) {
             period: candleTime.time,
             time: filter?.time,
             crocEnv: crocEnv,
-            GCGO_URL: GCGO_URL,
+            gcgo,
             provider,
             activePoolList,
             cachedFetchTokenPrice: cachedFetchTokenPrice,

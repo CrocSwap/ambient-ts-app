@@ -125,7 +125,7 @@ export const GraphDataContext = createContext({} as GraphDataContextIF);
 
 export const GraphDataContextProvider = (props: { children: ReactNode }) => {
     const {
-        activeNetwork: { GCGO_URL, chainId, poolIndex, isTestnet },
+        activeNetwork: { gcgo, chainId, poolIndex, isTestnet },
         server: { isEnabled: isServerEnabled },
         isUserIdle,
         isUserOnline,
@@ -693,7 +693,7 @@ export const GraphDataContextProvider = (props: { children: ReactNode }) => {
                         recordType: recordTargets[i],
                         user: userAddress,
                         chainId: chainId,
-                        gcUrl: GCGO_URL,
+                        gcgo: gcgo,
                         provider,
                         tokenUniv: tokens.tokenUniv,
                         crocEnv,
@@ -715,14 +715,14 @@ export const GraphDataContextProvider = (props: { children: ReactNode }) => {
                         });
                     } else {
                         // default user_positions
-                        setLimitOrdersByUser({
+                        (setLimitOrdersByUser({
                             dataReceived: true,
                             limitOrders: updatedLedger as LimitOrderIF[],
                         }),
                             setDataLoadingStatus({
                                 datasetName: 'isConnectedUserOrderDataLoading',
                                 loadingStatus: false,
-                            });
+                            }));
                     }
                 } catch (error) {
                     console.error(error);
@@ -735,7 +735,7 @@ export const GraphDataContextProvider = (props: { children: ReactNode }) => {
                     user: userAddress,
                     chainId: chainId,
                     crocEnv: crocEnv,
-                    GCGO_URL: GCGO_URL,
+                    gcgo: gcgo,
                     provider,
                     n: 200,
                     activePoolList,

@@ -49,7 +49,7 @@ function Portfolio(props: propsIF) {
 
     const {
         walletModal: { open: openModalWallet },
-        activeNetwork: { chainId, GCGO_URL },
+        activeNetwork: { chainId, gcgo },
     } = useContext(AppStateContext);
     const {
         userAddress,
@@ -315,7 +315,7 @@ function Portfolio(props: propsIF) {
                         address: resolvedAddress,
                         chain: chainId,
                         crocEnv: crocEnv,
-                        GCGO_URL: GCGO_URL,
+                        gcgo: gcgo,
                         _refreshTime: everyFiveMinutes,
                     });
 
@@ -387,7 +387,6 @@ function Portfolio(props: propsIF) {
         chainId,
         everyFiveMinutes,
         connectedAccountActive,
-        GCGO_URL,
     ]);
 
     const [showProfileSettings, setShowProfileSettings] = useState(false);

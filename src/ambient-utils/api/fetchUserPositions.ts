@@ -23,12 +23,13 @@ import {
     RecordType,
     TokenIF,
 } from '../types';
+import { GcgoProvider } from '../../utils/gcgoProvider';
 // TODOJG move to types
 interface RecordRequestIF {
     recordType: RecordType;
     user: string;
     chainId: string;
-    gcUrl?: string;
+    gcgo: GcgoProvider;
     tokenUniv?: TokenIF[];
     crocEnv?: CrocEnv;
     provider?: Provider;
@@ -43,28 +44,27 @@ const fetchUserPositions = async ({
     recordType,
     user,
     chainId,
-    gcUrl,
+    gcgo,
 }: {
     recordType: RecordType;
     user: string;
     chainId: string;
-    gcUrl?: string;
-}): Promise<Response> => {
-    let selectedEndpoint;
+    gcgo: GcgoProvider;
+}): Promise<PositionServerIF[] | LimitOrderServerIF[]> => {
     if (recordType == RecordType.LimitOrder) {
-        selectedEndpoint = gcUrl + '/user_limit_orders?';
+        return gcgo.userLimitOrders({
+            user: user,
+            chainId: chainId,
+            count: 200,
+        });
     } else {
         // default to 'user_positions'
-        selectedEndpoint = gcUrl + '/user_positions?';
+        return gcgo.userPositions({
+            user: user,
+            chainId: chainId,
+            count: 200,
+        });
     }
-    const res = await fetch(
-        selectedEndpoint +
-            new URLSearchParams({
-                user: user.toLowerCase(),
-                chainId: chainId.toLowerCase(),
-            }),
-    );
-    return res;
 };
 
 const decorateUserPositions = async ({
@@ -81,7 +81,7 @@ const decorateUserPositions = async ({
     cachedTokenDetails,
 }: {
     recordType: RecordType;
-    userPositions: PositionIF[] | LimitOrderIF[];
+    userPositions: PositionServerIF[] | LimitOrderServerIF[];
     tokenUniv: TokenIF[];
     crocEnv: CrocEnv;
     provider: Provider;
@@ -154,7 +154,7 @@ const fetchDecorated = async ({
     recordType,
     user,
     chainId,
-    gcUrl,
+    gcgo,
     tokenUniv,
     crocEnv,
     provider,
@@ -164,13 +164,12 @@ const fetchDecorated = async ({
     cachedQuerySpotPrice,
     cachedTokenDetails,
 }: RecordRequestIF): Promise<PositionIF[] | LimitOrderIF[]> => {
-    const response = await fetchUserPositions({
+    const userPositions = await fetchUserPositions({
         recordType,
         user,
         chainId,
-        gcUrl,
+        gcgo,
     });
-    const json = await response?.json();
     // Compromise between reusing RecordRequestIF and ensuring that these variables are safely assigned.
     const fieldsToCheck = {
         tokenUniv,
@@ -186,7 +185,6 @@ const fetchDecorated = async ({
         }
     }
 
-    const userPositions = json?.data;
     if (userPositions && crocEnv) {
         const updatedPositions = await decorateUserPositions({
             recordType: recordType,
@@ -210,7 +208,7 @@ const fetchSimpleDecorated = async ({
     recordType,
     user,
     chainId,
-    gcUrl,
+    gcgo,
     provider,
     tokenUniv,
     crocEnv,
@@ -234,7 +232,7 @@ const fetchSimpleDecorated = async ({
 
         // Session Information:
         chainId: chainId,
-        gcUrl: gcUrl,
+        gcgo: gcgo,
         provider: provider,
         tokenUniv: tokenUniv,
         crocEnv: crocEnv,
