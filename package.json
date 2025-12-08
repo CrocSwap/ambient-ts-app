@@ -84,7 +84,7 @@
         "@types/react-color": "^3.0.13",
         "@types/react-dom": "^19.2.3",
         "@types/react-transition-group": "^4.4.12",
-        "@vitejs/plugin-react": "^5.1.1",
+        "@vitejs/plugin-react": "^5.1.2",
         "adm-zip": "^0.5.16",
         "dotenv": "^17.2.3",
         "eslint": "^9.39.1",
