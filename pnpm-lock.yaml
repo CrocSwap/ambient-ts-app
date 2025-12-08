@@ -185,8 +185,8 @@ importers:
         specifier: ^7.2.6
         version: 7.2.6(@types/node@24.10.1)(yaml@2.8.2)
       vite-plugin-checker:
-        specifier: ^0.11.0
-        version: 0.11.0(eslint@9.39.1)(optionator@0.9.4)(typescript@5.9.3)(vite@7.2.6(@types/node@24.10.1)(yaml@2.8.2))
+        specifier: ^0.12.0
+        version: 0.12.0(eslint@9.39.1)(optionator@0.9.4)(typescript@5.9.3)(vite@7.2.6(@types/node@24.10.1)(yaml@2.8.2))
       vitest:
         specifier: ^4.0.15
         version: 4.0.15(@types/node@24.10.1)(yaml@2.8.2)
@@ -3983,18 +3983,18 @@ packages:
       typescript:
         optional: true
 
-  vite-plugin-checker@0.11.0:
-    resolution: {integrity: sha512-iUdO9Pl9UIBRPAragwi3as/BXXTtRu4G12L3CMrjx+WVTd9g/MsqNakreib9M/2YRVkhZYiTEwdH2j4Dm0w7lw==}
+  vite-plugin-checker@0.12.0:
+    resolution: {integrity: sha512-CmdZdDOGss7kdQwv73UyVgLPv0FVYe5czAgnmRX2oKljgEvSrODGuClaV3PDR2+3ou7N/OKGauDDBjy2MB07Rg==}
     engines: {node: '>=16.11'}
     peerDependencies:
       '@biomejs/biome': '>=1.7'
-      eslint: '>=7'
+      eslint: '>=9.39.1'
       meow: ^13.2.0
       optionator: ^0.9.4
       oxlint: '>=1'
       stylelint: '>=16'
       typescript: '*'
-      vite: '>=5.4.20'
+      vite: '>=5.4.21'
       vls: '*'
       vti: '*'
       vue-tsc: ~2.2.10 || ^3.0.0
@@ -9114,7 +9114,7 @@ snapshots:
       - utf-8-validate
       - zod
 
-  vite-plugin-checker@0.11.0(eslint@9.39.1)(optionator@0.9.4)(typescript@5.9.3)(vite@7.2.6(@types/node@24.10.1)(yaml@2.8.2)):
+  vite-plugin-checker@0.12.0(eslint@9.39.1)(optionator@0.9.4)(typescript@5.9.3)(vite@7.2.6(@types/node@24.10.1)(yaml@2.8.2)):
     dependencies:
       '@babel/code-frame': 7.27.1
       chokidar: 4.0.3
