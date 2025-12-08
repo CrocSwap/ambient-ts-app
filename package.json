@@ -101,7 +101,7 @@
         "rollup-plugin-visualizer": "^6.0.5",
         "superagent": "^10.2.3",
         "typescript": "^5.9.3",
-        "vite": "^7.2.6",
+        "vite": "^7.2.7",
         "vite-plugin-checker": "^0.11.0",
         "vitest": "^4.0.15"
     },
