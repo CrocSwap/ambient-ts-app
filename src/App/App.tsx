@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import SnackbarComponent from '../components/Global/SnackbarComponent/SnackbarComponent';
 
 import PageHeader from './components/PageHeader/PageHeader';
+import FogoPresaleBanner from './components/FogoPresaleBanner/FogoPresaleBanner';
 
 import ChatPanel from '../components/Chat/ChatPanel';
 import AppOverlay from '../components/Global/AppOverlay/AppOverlay';
@@ -144,6 +145,9 @@ export default function App() {
 
     return (
         <>
+            {import.meta.env.VITE_FOGO_SHOW_PRESALE_BANNER === 'true' && (
+                <FogoPresaleBanner />
+            )}
             {location.pathname == '/' && platformName !== 'futa' && (
                 <PageHeader />
             )}
