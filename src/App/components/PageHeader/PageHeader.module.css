@@ -1,3 +1,5 @@
+
+
 .trade_links_container {
     width: 200px;
     height: 200px;
@@ -113,6 +115,19 @@
     border-radius: var(--border-radius);
     gap: 4px;
 }
+/* ------------PRESALE BANNER */
+.fogo_header_banner_wrapper a {
+    display: inline-block;
+}
+
+.fogo_header_banner_wrapper img {
+    display: block;
+    height: 50px;
+    width: auto;
+    max-width: 100%;
+    object-fit: contain;
+}
+/* -----------------END PRESALE BANNER---- */
 
 @media (max-width: 800px) {
     .primaryNavigation {

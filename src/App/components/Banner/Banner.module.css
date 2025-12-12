@@ -1,0 +1,13 @@
+.banner {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  overflow: hidden;
+  box-sizing: border-box;
+
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+}

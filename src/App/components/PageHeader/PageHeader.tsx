@@ -45,7 +45,9 @@ import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import NetworkSelector from './NetworkSelector/NetworkSelector';
 import styles from './PageHeader.module.css';
 import UserMenu from './UserMenu/UserMenu';
-
+import { Banner } from '../Banner/Banner';
+import { motion } from 'framer-motion';
+import PresaleBannerWide from '../../../assets/images/banners/presale-banner-wide.svg';
 const PageHeader = function () {
     const {
         walletModal: { open: openWalletModal },
@@ -449,8 +451,27 @@ const PageHeader = function () {
     const [replayTutorial, setReplayTutorial] = useState(false);
     const tutorialBtnRef = useRef<HTMLDivElement>(null);
 
+    const PRESALE_URL = 'https://presale.fogo.io/';
+
     return (
         <>
+            <Banner height='50px'>
+                <div className={styles.fogo_header_banner_wrapper}>
+                    <motion.a
+                        href={PRESALE_URL}
+                        target='_blank'
+                        rel='noopener noreferrer'
+                        initial={{ clipPath: 'inset(0 100% 0 0)' }}
+                        animate={{ clipPath: 'inset(0 0% 0 0)' }}
+                        transition={{ duration: 1.2, ease: 'easeOut' }}
+                    >
+                        <img
+                            src={PresaleBannerWide}
+                            alt='Fogo Presale Banner'
+                        />
+                    </motion.a>
+                </div>
+            </Banner>
             <header
                 className={styles.primaryHeader}
                 data-testid={'page-header'}
