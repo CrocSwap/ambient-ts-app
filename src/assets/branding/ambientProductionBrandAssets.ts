@@ -42,11 +42,11 @@ export const ambientProductionBrandAssets: brandIF = {
             cobrandingLogo: blastLogo,
         },
         // monad testnet
-        '0x279f': {
-            color: ['purple_dark', 'purple_light', 'futa_dark'],
-            premiumColor: [],
-            cobrandingLogo: monadLogo,
-        },
+        // '0x279f': {
+        //     color: ['purple_dark', 'purple_light', 'futa_dark'],
+        //     premiumColor: [],
+        //     cobrandingLogo: monadLogo,
+        // },
     },
     platformName: 'ambient',
     fontSet: 'ambient',
