@@ -42,6 +42,7 @@ if (SHOULD_LOG_ANALYTICS) {
     initPlausible({
         domain: 'ambient.finance',
         endpoint: 'https://pls.embindexer.net/ev',
+        captureOnLocalhost: false,
         outboundLinks: true,
         customProperties: {
             version: packageJson.version,
