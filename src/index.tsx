@@ -1,4 +1,5 @@
 import isValidProp from '@emotion/is-prop-valid';
+import { init as initPlausible } from '@plausible-analytics/tracker';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
@@ -10,9 +11,13 @@ import './index.css';
 import {
     brand,
     GLOBAL_MODAL_PORTAL_ID,
+    SHOULD_LOG_ANALYTICS,
+    SPLIT_TEST_VERSION,
     supportedNetworks,
     WALLETCONNECT_PROJECT_ID,
 } from './ambient-utils/constants';
+import { getDefaultLanguage, getResolutionSegment } from './utils/analytics';
+import packageJson from '../package.json';
 // import baseLogo from './assets/images/networks/base_network_logo_with_margin.webp';
 import { EthersAdapter } from '@reown/appkit-adapter-ethers';
 
@@ -32,6 +37,22 @@ import swellSepoliaLogo from './assets/images/networks/swell_sepolia.webp';
 import ErrorBoundary from './components/Error/ErrorBoundary';
 import GlobalErrorFallback from './components/Error/GlobalErrorFallback';
 import { GlobalContexts } from './contexts/GlobalContexts';
+
+if (SHOULD_LOG_ANALYTICS) {
+    initPlausible({
+        domain: 'ambient.finance',
+        endpoint: 'https://pls.embindexer.net/ev',
+        outboundLinks: true,
+        customProperties: {
+            version: packageJson.version,
+            splittestversion: SPLIT_TEST_VERSION,
+            windowheight: getResolutionSegment(innerHeight),
+            windowwidth: getResolutionSegment(innerWidth),
+            defaultlanguage: getDefaultLanguage(),
+            preferredlanguage: navigator.language,
+        },
+    });
+}
 
 const appKitNetworks = Object.values(supportedNetworks).map(
     ({ chainSpecForAppKit }) => {
