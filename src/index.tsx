@@ -39,8 +39,24 @@ import GlobalErrorFallback from './components/Error/GlobalErrorFallback';
 import { GlobalContexts } from './contexts/GlobalContexts';
 
 if (SHOULD_LOG_ANALYTICS) {
+    const plausibleDomain =
+        brand === 'ambientProduction'
+            ? 'ambient.finance'
+            : brand === 'ambientTestnet'
+              ? 'testnet.ambient.finance'
+              : brand === 'scroll'
+                ? 'scroll.ambient.finance'
+                : brand === 'swell'
+                  ? 'swell.ambient.finance'
+                  : brand === 'blast'
+                    ? 'blast.ambient.finance'
+                    : brand === 'plume'
+                      ? 'plume.ambient.finance'
+                      : brand === 'futa'
+                        ? 'futa.ambient.finance'
+                        : 'ambient.finance';
     initPlausible({
-        domain: 'ambient.finance',
+        domain: plausibleDomain,
         endpoint: 'https://pls.embindexer.net/ev',
         captureOnLocalhost: false,
         outboundLinks: true,
