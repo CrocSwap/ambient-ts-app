@@ -205,3 +205,10 @@ export const ATLAS_REFUND_RECIPIENT =
 export const ATLAS_REFUND_PERCENT = import.meta.env.VITE_ATLAS_REFUND_PERCENT
     ? import.meta.env.VITE_ATLAS_REFUND_PERCENT
     : '0x0';
+
+export const SHOULD_LOG_ANALYTICS =
+    import.meta.env.VITE_SHOULD_LOG_ANALYTICS &&
+    import.meta.env.VITE_SHOULD_LOG_ANALYTICS.toLowerCase() === 'true';
+
+export const SPLIT_TEST_VERSION =
+    import.meta.env.VITE_SPLIT_TEST_VERSION || 'control';

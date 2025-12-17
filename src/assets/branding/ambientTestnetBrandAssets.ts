@@ -14,11 +14,11 @@ export const ambientTestnetBrandAssets: brandIF = {
             premiumColor: [],
         },
         // monad testnet
-        '0x279f': {
-            color: ['purple_dark', 'purple_light', 'futa_dark'],
-            premiumColor: [],
-            cobrandingLogo: monadLogo,
-        },
+        // '0x279f': {
+        //     color: ['purple_dark', 'purple_light', 'futa_dark'],
+        //     premiumColor: [],
+        //     cobrandingLogo: monadLogo,
+        // },
         // swell sepolia
         '0x784': {
             color: ['purple_dark', 'purple_light', 'futa_dark'],

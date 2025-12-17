@@ -41,6 +41,16 @@
     Cache-Control = "public, max-age=31536000, immutable"
 
 
+# Redirect monad.ambient.finance traffic to perps.ambient.finance
+[[redirects]]
+  from = "/*"
+  to = "https://perps.ambient.finance"
+  status = 302
+  force = true
+  conditions = {Host = [
+    "monad.ambient.finance"
+  ]}
+
 # Allow blocked countries to access /blocked.html
 [[redirects]]
   from = "/blocked.html"

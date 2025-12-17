@@ -50,12 +50,12 @@ export const defaultBrandAssets: brandIF = {
             color: ['purple_dark', 'purple_light', 'futa_dark'],
             premiumColor: [],
         },
-        '0x279f': {
-            // monad testnet
-            color: ['purple_dark', 'purple_light', 'futa_dark'],
-            premiumColor: [],
-            cobrandingLogo: monadLogo,
-        },
+        // '0x279f': {
+        //     // monad testnet
+        //     color: ['purple_dark', 'purple_light', 'futa_dark'],
+        //     premiumColor: [],
+        //     cobrandingLogo: monadLogo,
+        // },
         // scroll sepolia
         '0x8274f': {
             color: ['purple_dark', 'purple_light', 'futa_dark'],
