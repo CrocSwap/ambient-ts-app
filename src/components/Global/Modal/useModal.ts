@@ -11,7 +11,7 @@ export const useModal = (
     // TODO:  'closeModalEvent' is a magic value (must be defined in multiple files)
     // TODO:  ... we should rework things such that it only needs to be defined once
 
-    // click handlers to to open and close the modal
+    // click handlers to open and close the modal
     const openModal = useCallback((): void => setIsModalOpen(true), []);
     const closeModal = useCallback((): void => {
         // close the modal
