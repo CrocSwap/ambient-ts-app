@@ -8,7 +8,7 @@
         "@d3fc/d3fc-extent": "^4.0.2",
         "@emotion/react": "^11.14.0",
         "@emotion/styled": "^11.14.1",
-        "@mui/material": "^7.3.6",
+        "@mui/material": "^7.3.7",
         "@plausible-analytics/tracker": "^0.4.4",
         "@reown/appkit": "^1.8.15",
         "@reown/appkit-adapter-ethers": "^1.8.15",
