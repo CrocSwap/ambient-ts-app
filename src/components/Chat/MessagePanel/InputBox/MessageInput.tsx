@@ -282,7 +282,7 @@ export default function MessageInput(props: MessageInputProps) {
         inputRef.current?.focus();
     };
 
-    const handleInputChange = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    const handleInputChange = (e: React.FormEvent<HTMLInputElement>) => {
         const newMessage = e.currentTarget.value;
         setMessage(newMessage);
         setInputLength(newMessage.length);
