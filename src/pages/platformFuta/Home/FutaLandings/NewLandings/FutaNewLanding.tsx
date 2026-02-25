@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useFutaHomeContext } from '../../../../../contexts/Futa/FutaHomeContext';
 import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
 import FadingTextGrid from '../../Animations/FadingTextGrid';
 import FutaLandingNav from '../FutaLandingNav';
@@ -16,13 +15,16 @@ const TOTAL_SECTIONS = 5;
 const SCROLL_THRESHOLD = 5; // Pixels to scroll before triggering section change
 
 export default function FutaNewLanding() {
-    const {
-        hasVideoPlayedOnce,
-        setHasVideoPlayedOnce,
-        showHomeVideoLocalStorage,
-        skipLandingPage,
-        showLandingPageTemp,
-    } = useFutaHomeContext();
+    const [hasVideoPlayedOnce, setHasVideoPlayedOnce] = useState(false);
+    const [showLandingPageTemp] = useState(false);
+    const [showHomeVideoLocalStorage] = useState(() => {
+        const saved = localStorage.getItem('showHomeVideoLocalStorage');
+        return saved === null ? true : saved === 'true';
+    });
+    const [skipLandingPage] = useState(() => {
+        const saved = localStorage.getItem('skipLandingPage');
+        return saved === null ? false : saved === 'true';
+    });
     const [activeSection, setActiveSection] = useState(0);
     const [showMainContent, setShowMainContent] = useState(false);
     const navigate = useNavigate();

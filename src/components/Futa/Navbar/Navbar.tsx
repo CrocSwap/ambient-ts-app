@@ -8,6 +8,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
     DISCORD_LINK,
     DOCS_LINK,
+    SHOW_TUTOS_DEFAULT,
     X_LINK,
 } from '../../../ambient-utils/constants';
 import {
@@ -19,7 +20,6 @@ import NetworkSelector from '../../../App/components/PageHeader/NetworkSelector/
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import { AuctionsContext } from '../../../contexts/AuctionsContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
-import { useFutaHomeContext } from '../../../contexts/Futa/FutaHomeContext';
 import { GraphDataContext } from '../../../contexts/GraphDataContext';
 import { ReceiptContext } from '../../../contexts/ReceiptContext';
 import { TokenBalanceContext } from '../../../contexts/TokenBalanceContext';
@@ -99,15 +99,39 @@ export default function Navbar() {
 
     const { selectedTicker } = useContext(AuctionsContext);
 
-    const {
-        showHomeVideoLocalStorage,
-        setShowHomeVideoLocalStorage,
-        showTutosLocalStorage,
-        bindShowTutosLocalStorage,
-        skipLandingPage,
-        setSkipLandingPage,
-        setShowLandingPageTemp,
-    } = useFutaHomeContext();
+    const [showHomeVideoLocalStorage, setShowHomeVideoLocalStorage] = useState(
+        () => {
+            const saved = localStorage.getItem('showHomeVideoLocalStorage');
+            return saved === null ? true : saved === 'true';
+        },
+    );
+    const [showTutosLocalStorage, setShowTutosLocalStorage] = useState(() => {
+        const lsValue = localStorage.getItem('showTutosLocalStorage');
+        return lsValue === null
+            ? SHOW_TUTOS_DEFAULT === 'true'
+            : lsValue === 'true';
+    });
+    const [skipLandingPage, setSkipLandingPage] = useState(() => {
+        const saved = localStorage.getItem('skipLandingPage');
+        return saved === null ? false : saved === 'true';
+    });
+    const [, setShowLandingPageTemp] = useState(false);
+
+    const bindShowTutosLocalStorage = (value: boolean) => {
+        localStorage.setItem('showTutosLocalStorage', value.toString());
+        setShowTutosLocalStorage(value);
+    };
+
+    useEffect(() => {
+        localStorage.setItem(
+            'showHomeVideoLocalStorage',
+            showHomeVideoLocalStorage.toString(),
+        );
+    }, [showHomeVideoLocalStorage]);
+
+    useEffect(() => {
+        localStorage.setItem('skipLandingPage', skipLandingPage.toString());
+    }, [skipLandingPage]);
 
     // set page title
     useEffect(() => {
