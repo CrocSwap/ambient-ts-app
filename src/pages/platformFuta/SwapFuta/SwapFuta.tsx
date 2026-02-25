@@ -34,7 +34,7 @@ function SwapFuta() {
                   label: 'Chart',
                   data: (
                       <>
-                          <Trade futaActiveTab={activeTab} />
+                          <Trade />
                       </>
                   ),
               }
@@ -119,7 +119,7 @@ function SwapFuta() {
     return (
         <section className={styles.mainSection}>
             <div className={styles.chartSection}>
-                <Trade futaActiveTab={activeTab} />
+                <Trade />
             </div>
 
             {!isFullScreen && (
