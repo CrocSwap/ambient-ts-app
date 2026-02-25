@@ -212,7 +212,7 @@ function Reposition() {
     };
 
     // if chart is at ambient width, keep ambient width, otherwise use the default
-    // otherwise the the width rapidly switches back and forth between the two when returning to an in progress reposition
+    // otherwise the width rapidly switches back and forth between the two when returning to an in progress reposition
     const [rangeWidthPercentage, setRangeWidthPercentage] = useState(
         simpleRangeWidth === 100 || !position
             ? 100
