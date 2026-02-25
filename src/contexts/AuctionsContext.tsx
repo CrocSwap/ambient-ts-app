@@ -12,7 +12,7 @@ import { AuctionDataIF } from '../ambient-utils/dataLayer/functions/getAuctionDa
 import {
     tickerWatchlistIF,
     useTickerWatchlist,
-} from '../pages/platformFuta/useTickerWatchlist';
+} from '../utils/auctions/useTickerWatchlist';
 import { AppStateContext } from './AppStateContext';
 import { CachedDataContext } from './CachedDataContext';
 import { UserDataContext } from './UserDataContext';
