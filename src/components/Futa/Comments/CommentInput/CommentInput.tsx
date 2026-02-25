@@ -28,7 +28,7 @@ export default function CommentInput(props: CommentInputProps) {
     const shouldShowCircularProgressBar = inputLength > 126;
     const fillPercentage = (inputLength / _characterLimit) * 84;
 
-    const handleInputChange = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    const handleInputChange = (e: React.FormEvent<HTMLInputElement>) => {
         let newMessage = e.currentTarget.value;
         if (newMessage.length > _characterLimit) {
             newMessage = newMessage.substring(0, _characterLimit);
