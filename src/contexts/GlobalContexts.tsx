@@ -11,8 +11,6 @@ import { ChartContextProvider } from './ChartContext';
 import { CrocEnvContextProvider } from './CrocEnvContext';
 import { DataLoadingContextProvider } from './DataLoadingContext';
 import { ExploreContextProvider } from './ExploreContext';
-import { FutaHomeContextProvider } from './Futa/FutaHomeContext';
-import { FutaSearchableTickerContextProvider } from './Futa/FutaSearchableTickerContext';
 import { GraphDataContextProvider } from './GraphDataContext';
 import { PoolContextProvider } from './PoolContext';
 import { RangeContextProvider } from './RangeContext';
@@ -52,29 +50,25 @@ export const GlobalContexts = (props: { children: React.ReactNode }) => {
                                                             <AuctionsContextProvider>
                                                                 <XpLeadersContextProvider>
                                                                     <ChartContextProvider>
-                                                                        <FutaSearchableTickerContextProvider>
-                                                                            <FutaHomeContextProvider>
-                                                                                <GraphDataContextProvider>
-                                                                                    <TradeTokenContextProvider>
-                                                                                        <PoolContextProvider>
-                                                                                            <CandleContextProvider>
-                                                                                                <TradeTableContextProvider>
-                                                                                                    <UserPreferenceContextProvider>
-                                                                                                        <SidebarContextProvider>
-                                                                                                            <ExploreContextProvider>
-                                                                                                                {
-                                                                                                                    props.children
-                                                                                                                }
-                                                                                                            </ExploreContextProvider>
-                                                                                                        </SidebarContextProvider>
-                                                                                                    </UserPreferenceContextProvider>
-                                                                                                </TradeTableContextProvider>
-                                                                                            </CandleContextProvider>
-                                                                                        </PoolContextProvider>
-                                                                                    </TradeTokenContextProvider>
-                                                                                </GraphDataContextProvider>
-                                                                            </FutaHomeContextProvider>
-                                                                        </FutaSearchableTickerContextProvider>
+                                                                        <GraphDataContextProvider>
+                                                                            <TradeTokenContextProvider>
+                                                                                <PoolContextProvider>
+                                                                                    <CandleContextProvider>
+                                                                                        <TradeTableContextProvider>
+                                                                                            <UserPreferenceContextProvider>
+                                                                                                <SidebarContextProvider>
+                                                                                                    <ExploreContextProvider>
+                                                                                                        {
+                                                                                                            props.children
+                                                                                                        }
+                                                                                                    </ExploreContextProvider>
+                                                                                                </SidebarContextProvider>
+                                                                                            </UserPreferenceContextProvider>
+                                                                                        </TradeTableContextProvider>
+                                                                                    </CandleContextProvider>
+                                                                                </PoolContextProvider>
+                                                                            </TradeTokenContextProvider>
+                                                                        </GraphDataContextProvider>
                                                                     </ChartContextProvider>
                                                                 </XpLeadersContextProvider>
                                                             </AuctionsContextProvider>
