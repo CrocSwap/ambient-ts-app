@@ -4,7 +4,7 @@ import {
     mockAccountData2,
     mockAuctionDetailsServerResponseGenerator,
     mockGlobalAuctionData,
-} from '../../../pages/platformFuta/mockAuctionData';
+} from '../mockAuctionData';
 import { CURRENT_AUCTION_VERSION } from '../../constants';
 import { memoizeCacheQueryFn } from './memoizePromiseFn';
 
