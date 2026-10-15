@@ -43,8 +43,8 @@ importers:
         specifier: ^15.2.13
         version: 15.2.13(d3-array@3.2.4)(d3-brush@3.0.0)(d3-dispatch@3.0.1)(d3-fetch@3.0.1)(d3-path@3.1.0)(d3-random@3.0.1)(d3-scale-chromatic@3.1.0)(d3-scale@4.0.2)(d3-selection@3.0.0)(d3-shape@3.2.0)(d3-time@3.1.0)(d3-zoom@3.0.0)
       emoji-picker-react:
-        specifier: ^4.22.3
-        version: 4.22.3(react@19.3.0)
+        specifier: ^5.0.0
+        version: 5.0.0(react@19.3.0)
       ethers:
         specifier: ^6.17.0
         version: 6.17.0
@@ -2223,9 +2223,9 @@ packages:
   electron-to-chromium@1.5.443:
     resolution: {integrity: sha512-TDJG36L9A3CWWwZ97HKaE+Iz1sW80pNp6sAU0owzCIV3Zc9eVyRqZK8Vz6NKuMIU8WjP0pIkoqCa0VRf/yFD0Q==}
 
-  emoji-picker-react@4.22.3:
-    resolution: {integrity: sha512-jrAkkoN69l5lA2Xp6P5axqoK1YdHNS1+MKMlLxwltnnnaXrojUjZaolgI/U8vdx8vFWqG42yYqpLSR83f6pwiw==}
-    engines: {node: '>=10'}
+  emoji-picker-react@5.0.0:
+    resolution: {integrity: sha512-TiWM6Fbhi42SyfdVx20jJuqOOszY/sO/XyiBcTlIgMEkgN7LOxIk2pXJybfvC0qDD/ld9iT0feM3qg9tH1C/Pg==}
+    engines: {node: '>=18'}
     peerDependencies:
       react: '>=16.8'
 
@@ -6997,7 +6997,7 @@ snapshots:
 
   electron-to-chromium@1.5.443: {}
 
-  emoji-picker-react@4.22.3(react@19.3.0):
+  emoji-picker-react@5.0.0(react@19.3.0):
     dependencies:
       react: 19.3.0
       shipstyles: 1.0.0
